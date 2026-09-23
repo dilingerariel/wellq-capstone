@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram id="wellq-uc" name="Casos de uso - WellQ">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- System boundary -->
+        <mxCell id="boundary" value="Sistema WellQ — Módulo de exámenes médicos" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#79776E;verticalAlign=top;fontSize=14;fontStyle=1;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="75" width="1340" height="640" as="geometry" />
+        </mxCell>
+
+        <!-- Use cases: column 1 (Paciente) -->
+        <mxCell id="uc1" value="Cargar examen médico" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="190" y="163" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc2" value="Consultar mis exámenes médicos" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="190" y="283" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc3" value="Editar datos de un examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="190" y="403" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc4" value="Eliminar un examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="190" y="563" width="220" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Use cases: column 2 (Confirmación) -->
+        <mxCell id="uc5" value="Confirmar valores extraídos del examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="163" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc6" value="Corregir valores extraídos del examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="283" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc7" value="Solicitar reprocesamiento de extracción" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="403" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc8" value="Consultar valores extraídos del examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="563" width="220" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Use cases: column 3 (sistema + compartidos) -->
+        <mxCell id="uc9" value="Extraer datos estructurados del examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#1F1E1C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="710" y="163" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc10" value="Descargar un examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="710" y="283" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc11" value="Consultar catálogo de marcadores" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="710" y="403" width="220" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Use cases: column 4 (clínico principal) -->
+        <mxCell id="uc12" value="Consultar exámenes de un paciente autorizado" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="970" y="163" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc13" value="Registrar revisión clínica de un examen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="970" y="283" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc14" value="Validar clínicamente los valores confirmados" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="970" y="403" width="220" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Use cases: column 5 (reportería clínica) -->
+        <mxCell id="uc15" value="Consultar reporte clínico de laboratorio" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="163" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc16" value="Consultar evolución longitudinal de marcadores" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="283" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc17" value="Consultar puntaje por pilar de salud" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="403" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="uc18" value="Exportar reporte de laboratorio a PDF" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E6F1FB;strokeColor=#185FA5;fontColor=#0C447C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="563" width="220" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Nota: administrador sin casos de uso -->
+        <mxCell id="note1" value="Rol confirmado por el equipo de producto&lt;br&gt;Sin casos de uso definidos en el documento maestro v1.0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F3EF;strokeColor=#C9C7BD;dashed=1;fontSize=11;fontColor=#55534C;" vertex="1" parent="1">
+          <mxGeometry x="640" y="735" width="360" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Actores primarios -->
+        <mxCell id="pPaciente" value="Paciente" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#1F1E1C;fontColor=#1F1E1C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="55" y="360" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pClinico" value="Clínico" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#1F1E1C;fontColor=#1F1E1C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1565" y="360" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pAdmin" value="Administrador de la clínica" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#1F1E1C;fontColor=#1F1E1C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="805" y="810" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Actores secundarios (sistemas externos) -->
+        <mxCell id="sGCS" value="" style="shape=umlActor;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#5F5E5A;" vertex="1" parent="1">
+          <mxGeometry x="287" y="5" width="26" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="sGCSLabel" value="«sistema»&lt;br&gt;Almacenamiento en la nube (GCS)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#55534C;" vertex="1" parent="1">
+          <mxGeometry x="320" y="10" width="260" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="sLLM" value="" style="shape=umlActor;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#5F5E5A;" vertex="1" parent="1">
+          <mxGeometry x="807" y="5" width="26" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="sLLMLabel" value="«sistema»&lt;br&gt;Motor de extracción multimodal (LLM)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#55534C;" vertex="1" parent="1">
+          <mxGeometry x="845" y="10" width="290" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Asociaciones actor - caso de uso (ortogonales, con codos) ===== -->
+        <!-- Paciente: locales columna 1 -->
+        <mxCell id="a1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="70" y="200"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="70" y="320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc3">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="70" y="440"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc4">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="70" y="600"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Paciente: a través de corredores -->
+        <mxCell id="a5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc5">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="390"/><mxPoint x="430" y="200"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc8">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="390"/><mxPoint x="430" y="600"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc10">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="690" y="390"/><mxPoint x="690" y="320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pPaciente" target="uc11">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="690" y="390"/><mxPoint x="690" y="440"/></Array></mxGeometry>
+        </mxCell>
+
+        <!-- Clínico: locales columna 5 -->
+        <mxCell id="a9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc15">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1580" y="200"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc16">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1580" y="320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc17">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1580" y="440"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc18">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1580" y="600"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Clínico: a través de corredores -->
+        <mxCell id="a13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc12">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1210" y="390"/><mxPoint x="1210" y="200"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc13">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1210" y="390"/><mxPoint x="1210" y="320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc14">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1210" y="390"/><mxPoint x="1210" y="440"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc10">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="950" y="390"/><mxPoint x="950" y="320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc11">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="950" y="390"/><mxPoint x="950" y="440"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="a18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pClinico" target="uc8">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="690" y="390"/><mxPoint x="690" y="600"/></Array></mxGeometry>
+        </mxCell>
+
+        <!-- Secundarios -->
+        <mxCell id="a19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sGCS" target="uc1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="a20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;startArrow=none;html=1;strokeColor=#8A887F;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sLLM" target="uc9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== include (con codos) ===== -->
+        <mxCell id="inc1" value="«include»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#185FA5;fontColor=#0C447C;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="uc1" target="uc9">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="300" y="140"/><mxPoint x="820" y="140"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="inc2" value="«include»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#185FA5;fontColor=#0C447C;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="uc5" target="uc8">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="690" y="200"/><mxPoint x="690" y="600"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="inc3" value="«include»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#185FA5;fontColor=#0C447C;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="uc14" target="uc8">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="950" y="440"/><mxPoint x="950" y="600"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="inc4" value="«include»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#185FA5;fontColor=#0C447C;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="uc18" target="uc15">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1210" y="600"/><mxPoint x="1210" y="200"/></Array></mxGeometry>
+        </mxCell>
+
+        <!-- ===== extend (con codos) ===== -->
+        <mxCell id="ext1" value="«extend»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#993C1D;fontColor=#712B13;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="uc6" target="uc5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ext2" value="«extend»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#993C1D;fontColor=#712B13;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="uc7" target="uc8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

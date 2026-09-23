@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: wellq-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: wellq_clinical
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - wellq-network
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wellq-api
+    ports:
+      - "8000:8000"
+    environment:
+      MONGODB_URI: mongodb://root:password@mongodb:27017/wellq_clinical?authSource=admin
+      MONGODB_DB: wellq_clinical
+      GCS_PROJECT_ID: ${GCS_PROJECT_ID}
+      GCS_BUCKET_NAME: ${GCS_BUCKET_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      DEBUG: "False"
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+    networks:
+      - wellq-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  mongodb_data:
+
+networks:
+  wellq-network:
+    driver: bridge
