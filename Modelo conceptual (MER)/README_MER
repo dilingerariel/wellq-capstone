@@ -1,0 +1,26 @@
+## Diseño de la Base de Datos y Relaciones
+Para que el modelo soporte correctamente la arquitectura SaaS, el aislamiento de datos y las normativas de seguridad, estructuramos las relaciones de la siguiente manera:
+
+PLAN_COMERCIAL y CLINICA (1:N)
+Un plan (ej. Básico o Premium) sirve para muchas clínicas, pero cada clínica tiene obligatoriamente un plan asignado. Lo diseñamos así para poder controlar fácilmente los límites de almacenamiento y las funciones que cada cliente puede usar.
+
+CLINICA hacia USUARIO, PACIENTE y EXAMEN_MEDICO (1:N)
+Esta es la base técnica de nuestra arquitectura multitenant. Cada usuario, paciente y examen pertenece obligatoriamente a una sola clínica. Esto asegura la privacidad total de los datos, haciendo imposible que una clínica vea por error la información o el historial de otra.
+
+USUARIO y ROL (N:1)
+Implementamos control de acceso (RBAC) obligando a que todo usuario tenga un rol asignado (como "Médico" o "Admin"). Así el sistema sabe exactamente qué vistas o botones habilitarle a cada persona.
+
+ROL y PERMISO (M:N)
+Como un rol tiene muchos permisos y un mismo permiso puede repetirse en varios roles, resolvimos esta relación cruzada agregando la tabla puente `ROL_PERMISO` para vincularlos correctamente a nivel relacional.
+
+PACIENTE y EXAMEN_MEDICO (1:N)
+Un paciente acumula múltiples exámenes a lo largo del tiempo, pero cada examen pertenece a un único paciente de forma obligatoria. No permitimos exámenes huérfanos sin dueño.
+
+USUARIO y EXAMEN_MEDICO (1:N)
+Por temas de trazabilidad clínica, cada examen registra obligatoriamente qué profesional (usuario) lo subió al sistema. Así sabemos siempre quién gestionó la ficha.
+
+USUARIO y LOG_AUDITORIA (1:N)
+Para cumplir con normativas de protección de datos, cada evento importante guarda obligatoriamente el usuario que detonó la acción. Si alguien borra o altera un registro, sabemos exactamente quién fue.
+
+EXAMEN_MEDICO y LOG_AUDITORIA (1:N)
+Si alguien visualiza o descarga un documento, el log registra a qué examen se accedió. A diferencia de las demás, esta relación es opcional, porque hay acciones en el sistema (como equivocarse de contraseña al entrar) que se registran en la auditoría pero no tienen nada que ver con un examen médico.
