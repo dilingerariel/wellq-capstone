@@ -1,0 +1,89 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="1831AE32-A880-3689-5B47-BEBC1504CAF9" name="PLAN COMERCIAL">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>100C8A6F-3D28-4651-2739-2E4EB5A70970</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id_plan" id="46175774-035B-EA0D-5261-E098AA7532B7">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>8D30BB3F-58CA-2F66-D81B-017A86D9E4EF</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="nombre_plan" id="AF839901-041B-780D-92E4-24B527484F78">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>4E7B8628-4282-61C1-FC02-862D503D8B32</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="limite_almacenamiento_gb" id="3876E81A-BD00-E41E-D87F-D39A5327C0C2">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>2AF8361A-53E9-4F87-A7FA-BA7C645A80A1</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="auditoria_avanzada" id="D395D093-8FDE-C410-9DFA-C0A2F65F063B">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>05E2D969-3B8B-D41F-5A41-4C2276E3DBC3</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="D283177F-1232-A4DA-C3F2-8FD27F6C83E4" name="PLAN COMERCIAL PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>05DC52F8-2906-52A6-2C86-B2EE6ABFF8F3</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>46175774-035B-EA0D-5261-E098AA7532B7</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

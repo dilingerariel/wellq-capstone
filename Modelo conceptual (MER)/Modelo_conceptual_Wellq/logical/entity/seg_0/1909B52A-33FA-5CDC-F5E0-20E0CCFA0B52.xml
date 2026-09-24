@@ -1,0 +1,103 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="1909B52A-33FA-5CDC-F5E0-20E0CCFA0B52" name="PACIENTE">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>17367C43-F103-AB5F-C076-8A8F7A8FA5B2</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id_paciente" id="91571D5B-C84D-AAA3-BFC1-3E1D02AADF48">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>3ECBAA2E-C1A2-DA85-8129-55DFD13E0267</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="rut_paciente" id="A26468A6-007A-F226-061F-3E636983AB3F">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>A9C1DD6D-FA2B-D0B3-4FC0-9BF9D9281304</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>12</dataTypeSize>
+<ownDataTypeParameters>12,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="nombres_paciente" id="6E995197-4754-137B-8F32-ED83B7843937">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>5354EBE1-B395-8FA2-1B7F-3CD612BC1242</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="fecha_nacimiento" id="F08C2A9D-1CE9-7E6B-9B44-75CF8323E09A">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>89B38E5A-2BB1-588E-C862-408A03C1118A</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_clinica" id="8A999BA5-C18C-C87A-4AE8-E3C219F5AE8D">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>2E91180A-5F7B-003E-1C6F-08013978EBC2</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<referedAttribute>2B4A9D60-A44B-276B-2D73-83FC76B13E07</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="3495E3E1-0221-336B-851C-5798121A0C76" name="PACIENTE PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>56554C78-08C6-4E5F-CA18-64FC0CD90EB8</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>91571D5B-C84D-AAA3-BFC1-3E1D02AADF48</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

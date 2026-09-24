@@ -1,0 +1,90 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="61B037E3-9100-4077-56FC-C67A459CECF9" name="ROL PERMISO">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>FDFC3A53-1678-8132-45FF-3D445B0318DC</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id_rol_1" id="5EF795FA-5008-533B-3AC9-6A1080354EC1">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>2FD8336B-59CA-C3FE-FCA7-1E1DD6E58841</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_permisos" id="FA734150-D522-0AB4-E166-A7B741E908B4">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>2612D149-F35F-0A42-DF75-BE7A010271F5</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_permiso" id="7C68A67F-FAED-215D-0681-6722339FA3CD">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>C96F6B1C-890E-F295-8C44-87074580A845</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<referedAttribute>E81752DE-7CB5-029D-3DBE-D5DF83B57F7A</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_rol" id="438A7662-4F94-B58F-3995-94CD72912CC4">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>83CA78AA-A9F8-5F91-6700-6D96FE99165B</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<referedAttribute>754A590E-4340-B0E4-05CB-21EF6F3F6932</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="8CDC7826-A0E4-B2AD-8347-FF3E72FF83C1" name="ROL PERMISO PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>945EE71B-1318-439B-26E1-6156C1A978F2</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>5EF795FA-5008-533B-3AC9-6A1080354EC1</attributeRef>
+<attributeRef>FA734150-D522-0AB4-E166-A7B741E908B4</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

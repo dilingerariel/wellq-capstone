@@ -1,0 +1,160 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="00C98D8F-BB77-F959-9149-2420DAFDE91E" name="USUARIO">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>3732AF1F-83B2-AF33-80AC-B1B2AF3B4D45</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id_usuario" id="470A7DD6-31EC-F836-B4A7-19E6DD9A08D7">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>0558C316-B6C2-3A43-4AB7-C4496BDF772F</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="rut" id="78B949E4-512A-0337-BEB3-265305BE09CD">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>906AADC7-24BA-FC5F-2D7F-BCBD2828BB95</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>12</dataTypeSize>
+<ownDataTypeParameters>12,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="nombres" id="2F29DCEC-BF63-FCA1-9D30-31620C9C5483">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>95CD6843-2A55-BE32-4D79-30A2E4080FC8</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="apellidos" id="C25EB7B8-BCE1-266B-4588-BACD2FBF1794">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>187BFD54-3F34-31DD-04CD-A4A9EFD599E4</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="correo" id="AD4EB259-830E-24C5-4A24-20F69178EA6A">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>0493CB10-F47B-EF3F-9C31-3BBD6C4C2E62</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="contrasena" id="C298CAF6-8E7D-E172-C0F0-517B9B70FB1B">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>DA35EC66-80F5-A0F2-EA05-247D4B8F90F5</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>255</dataTypeSize>
+<ownDataTypeParameters>255,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="estado_activo" id="377F7179-F81C-B2D5-8AE0-2E815009FE4E">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>54F05D12-611F-5A55-4B5C-656925E75E46</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_clinica" id="CC8E132D-E5B2-AEC6-1547-A7D4AD0B2826">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>AB177D36-4EC8-9F17-915E-0E6B472928D0</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<referedAttribute>2B4A9D60-A44B-276B-2D73-83FC76B13E07</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_rol" id="8110ACFD-3132-C2DB-15A6-F5FAE190D800">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>294B05C3-7396-8565-19E8-F8D0BB7C483F</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<referedAttribute>754A590E-4340-B0E4-05CB-21EF6F3F6932</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="3BFB9F48-F022-58DA-5158-6763A68C7539" name="USUARIO PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>F8DFDDDB-123F-D671-447E-F55951DEBB89</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>470A7DD6-31EC-F836-B4A7-19E6DD9A08D7</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

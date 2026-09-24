@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="LOG_AUDITORIA_EXAMEN_MEDICO_FK" directorySegmentName="seg_0" id="DA9C9235-DB2D-4958-D023-05FAEFDD61FD">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>D7C7E2DB-137C-16ED-76A1-BA93FB01714D</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<sourcePk>8D734BEF-1EC1-D89D-10E1-721FC6DA9111</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>F71A4C62-A089-C334-3E31-F2477AEC9D5B</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>3A3BD4D9-9509-69C0-0AB4-03C5BBC53D2F</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

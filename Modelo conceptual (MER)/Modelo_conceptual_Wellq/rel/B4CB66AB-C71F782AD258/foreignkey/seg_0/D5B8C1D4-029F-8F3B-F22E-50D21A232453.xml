@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="D5B8C1D4-029F-8F3B-F22E-50D21A232453" containerWithKeyObject="FDFC3A53-1678-8132-45FF-3D445B0318DC" localFKIndex="99008DC2-41C0-C290-8144-2266715B5CBA" name="ROL_PERMISO_PERMISO_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:11:58 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<referredTableLongName>PERMISO</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>3169F780-C323-EA4E-9580-4BE28BB04E3A</referredTableID>
+<keyObject>4F7A5DD4-55BB-6E37-69BD-34968955FB37</keyObject>
+<referredKeyID>4F7A5DD4-55BB-6E37-69BD-34968955FB37</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>id_permiso</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

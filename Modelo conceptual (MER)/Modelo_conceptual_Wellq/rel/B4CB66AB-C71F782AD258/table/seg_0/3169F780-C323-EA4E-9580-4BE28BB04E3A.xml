@@ -1,0 +1,58 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="3169F780-C323-EA4E-9580-4BE28BB04E3A" name="PERMISO">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:13:47 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<ordsAlias>table_3</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_permiso" id="DA000868-6A33-4271-AE40-618BD7303CAB">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:14:11 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="nombre_permiso" id="01869215-A1D8-2EFA-D2EE-A0D086598140">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:14:26 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>50</dataTypeSize>
+<ownDataTypeParameters>50,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="descripcion_perm" id="907643A6-8861-47E5-A6FB-180E1F325FB1">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:14:50 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>255</dataTypeSize>
+<ownDataTypeParameters>255,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="4F7A5DD4-55BB-6E37-69BD-34968955FB37" name="PERMISO_PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:45:19 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="DA000868-6A33-4271-AE40-618BD7303CAB"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

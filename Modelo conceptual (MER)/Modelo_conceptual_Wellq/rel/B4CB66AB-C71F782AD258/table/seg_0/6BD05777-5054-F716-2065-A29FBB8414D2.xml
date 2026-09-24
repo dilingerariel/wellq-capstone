@@ -1,0 +1,161 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="6BD05777-5054-F716-2065-A29FBB8414D2" name="EXAMEN_MEDICO">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:20:04 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<ordsAlias>table_6</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_examen" id="0D608548-8FE2-8A75-7F17-99CF051FE80F">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:20:33 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="tipo_examen" id="A7E3E3FC-F7A7-523C-94EA-2736FF1AEE93">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:20:47 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>50</dataTypeSize>
+<ownDataTypeParameters>50,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="fecha_examen" id="97A3D1AF-1FE6-99AE-289D-7F74571903FF">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:20:59 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="minio_bucket" id="301BD80B-5B5F-3D31-AE20-001CC075DC85">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:21:16 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="minio_object_key" id="770A7783-AA56-1A32-EE84-AA96C26E2BF9">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:21:35 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>255</dataTypeSize>
+<ownDataTypeParameters>255,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="estado_borrado" id="65AEBAA4-18D6-D5D6-7C81-331C131F6C8F">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:21:55 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CLINICA_id_clinica" id="7F8F1B67-908F-A136-A445-28789D412C06">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:09:14 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="0ACD3764-5AD8-B061-0449-4A1553F8AAC4" referredColumn="FDE626B3-E3CB-7FA1-C25A-6149A12DD1F8"/>
+</associations>
+</Column>
+<Column name="PACIENTE_id_paciente" id="2D11E85B-A47B-BF0D-3595-38ED3C305914">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:18:38 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="8785B045-3454-8787-812C-53765FF1FC00" referredColumn="3ECBAA2E-C1A2-DA85-8129-55DFD13E0267"/>
+</associations>
+</Column>
+<Column name="USUARIO_id_usuario" id="D6B469B8-9B64-F835-8310-BF1589D3D39C">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:19:24 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="027D5CE0-6C18-353D-D57C-F56AE880BE40" referredColumn="0558C316-B6C2-3A43-4AB7-C4496BDF772F"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="189D419B-28DD-E592-CB23-421E6AF83714" name="EXAMEN_MEDICO_PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:45:11 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="0D608548-8FE2-8A75-7F17-99CF051FE80F"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="10CD2EA9-CA66-023C-6329-38EF613DF8B9" name="EXAMEN_MEDICO_CLINICA_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:09:14 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7F8F1B67-908F-A136-A445-28789D412C06"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="936E3E90-DC1D-6F92-E813-94DFF5C0534C" name="EXAMEN_MEDICO_PACIENTE_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:18:38 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="2D11E85B-A47B-BF0D-3595-38ED3C305914"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="D12DA88C-C55D-3868-D097-DFE2A269D8FC" name="EXAMEN_MEDICO_USUARIO_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:19:24 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D6B469B8-9B64-F835-8310-BF1589D3D39C"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

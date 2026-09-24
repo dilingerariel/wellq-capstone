@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="8955DF5C-AD83-B10C-2676-844B5F68E70C" containerWithKeyObject="48BF65AE-A120-53D0-4499-69E811FA2E3A" localFKIndex="A5D1326A-2858-E706-C771-710850DE1E0D" name="CLINICA_PLAN_COMERCIAL_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:50:26 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<referredTableLongName>PLAN_COMERCIAL</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>100C8A6F-3D28-4651-2739-2E4EB5A70970</referredTableID>
+<keyObject>05DC52F8-2906-52A6-2C86-B2EE6ABFF8F3</keyObject>
+<referredKeyID>05DC52F8-2906-52A6-2C86-B2EE6ABFF8F3</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>id_plan</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

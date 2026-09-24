@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="CLINICA_PLAN_COMERCIAL_FK" directorySegmentName="seg_0" id="16E9E345-C438-2406-FEC5-D6443A084F16">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>8955DF5C-AD83-B10C-2676-844B5F68E70C</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<sourcePk>D283177F-1232-A4DA-C3F2-8FD27F6C83E4</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>1831AE32-A880-3689-5B47-BEBC1504CAF9</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>8A70B61F-F9C6-D510-B7E1-1453A3407AA4</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

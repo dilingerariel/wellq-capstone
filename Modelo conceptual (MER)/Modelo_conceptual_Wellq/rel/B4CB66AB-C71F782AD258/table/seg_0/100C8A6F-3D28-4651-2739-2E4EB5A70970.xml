@@ -1,0 +1,67 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="100C8A6F-3D28-4651-2739-2E4EB5A70970" name="PLAN_COMERCIAL">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:26:26 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<ordsAlias>table_8</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_plan" id="8D30BB3F-58CA-2F66-D81B-017A86D9E4EF">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:26:40 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="nombre_plan" id="4E7B8628-4282-61C1-FC02-862D503D8B32">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:26:49 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="limite_almacenamiento_gb" id="2AF8361A-53E9-4F87-A7FA-BA7C645A80A1">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:26:59 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="auditoria_avanzada" id="05E2D969-3B8B-D41F-5A41-4C2276E3DBC3">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:27:13 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="05DC52F8-2906-52A6-2C86-B2EE6ABFF8F3" name="PLAN_COMERCIAL_PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:44:43 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="8D30BB3F-58CA-2F66-D81B-017A86D9E4EF"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

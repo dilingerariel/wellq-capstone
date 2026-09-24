@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="ROL_PERMISO_PERMISO_FK" directorySegmentName="seg_0" id="C96F6B1C-890E-F295-8C44-87074580A845">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>D5B8C1D4-029F-8F3B-F22E-50D21A232453</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<sourcePk>65882CF2-DD76-D4C3-DF8A-475EBE321592</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>C0B147FD-FD16-AD76-099A-9CCD8D399ADC</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>61B037E3-9100-4077-56FC-C67A459CECF9</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="0F904C41-C8B5-4E40-029D-D629A07AF7AD" containerWithKeyObject="3732AF1F-83B2-AF33-80AC-B1B2AF3B4D45" localFKIndex="85B3E2D2-824D-19E3-D1B6-F7D509868FED" name="USUARIO_ROL_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:11:19 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<referredTableLongName>ROL</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>C40290EC-4734-7BDA-F2E0-91641A96F41F</referredTableID>
+<keyObject>3EBEE269-6570-63C9-BFD7-9D22DF2ED4C4</keyObject>
+<referredKeyID>3EBEE269-6570-63C9-BFD7-9D22DF2ED4C4</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>id_rol</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

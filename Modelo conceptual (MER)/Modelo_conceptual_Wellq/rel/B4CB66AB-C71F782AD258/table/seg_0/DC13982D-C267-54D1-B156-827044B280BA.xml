@@ -1,0 +1,152 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="DC13982D-C267-54D1-B156-827044B280BA" name="LOG_AUDITORIA">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:22:06 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<ordsAlias>table_7</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_log" id="57ED6479-28DD-4FD5-ACA5-D12BAF7B11A2">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:22:19 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="accion" id="F094BA0C-A1B2-1EAD-6AB2-EFDFC204B7AF">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:22:34 UTC</createdTime>
+<commentInRDBMS><![CDATA[Subida, Descarga, Borrado]]></commentInRDBMS>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>50</dataTypeSize>
+<ownDataTypeParameters>50,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="fecha_hora" id="0BBF9495-B4D1-B09B-6E6B-27D59E13CC33">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:23:03 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT047</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ip_origen" id="369E15D6-6D05-DD52-BD22-B3F6DE813881">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:23:26 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>45</dataTypeSize>
+<ownDataTypeParameters>45,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="resultado" id="4D5D07AC-FC3F-15E5-7AFB-55BC77FC06B0">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:23:39 UTC</createdTime>
+<commentInRDBMS><![CDATA[Exito, Error 403, etc.]]></commentInRDBMS>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>20</dataTypeSize>
+<ownDataTypeParameters>20,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CLINICA_id_clinica" id="AEB0DBD6-1E57-181D-A27A-7A69F95EBB3E">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:09:28 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="551C290B-3B95-1980-E770-EA2992997F3A" referredColumn="FDE626B3-E3CB-7FA1-C25A-6149A12DD1F8"/>
+</associations>
+</Column>
+<Column name="USUARIO_id_usuario" id="D2C9E4E8-E73D-51DE-04D4-DF8F476C9EF4">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:20:02 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="4C44385B-60A2-7E9A-702F-85BCA1CA9136" referredColumn="0558C316-B6C2-3A43-4AB7-C4496BDF772F"/>
+</associations>
+</Column>
+<Column name="EXAMEN_MEDICO_id_examen" id="7133E461-4D01-5A37-8678-0D63D2352EAE">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:23:57 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D7C7E2DB-137C-16ED-76A1-BA93FB01714D" referredColumn="0D608548-8FE2-8A75-7F17-99CF051FE80F"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="87D37BD8-AB12-4E66-8B59-D0CD7407862A" name="LOG_AUDITORIA_PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:44:57 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="57ED6479-28DD-4FD5-ACA5-D12BAF7B11A2"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="97B36CFE-3A9E-678B-4C13-963743446D11" name="LOG_AUDITORIA_CLINICA_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:09:28 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="AEB0DBD6-1E57-181D-A27A-7A69F95EBB3E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="36805D04-71EB-307A-7270-07224AD73883" name="LOG_AUDITORIA_USUARIO_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:20:02 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D2C9E4E8-E73D-51DE-04D4-DF8F476C9EF4"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="C5DBB405-BE04-E9E6-CCBA-D6BB160E0CD7" name="LOG_AUDITORIA_EXAMEN_MEDICO_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:23:57 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7133E461-4D01-5A37-8678-0D63D2352EAE"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

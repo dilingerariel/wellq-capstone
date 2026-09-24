@@ -1,0 +1,94 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="FDFC3A53-1678-8132-45FF-3D445B0318DC" name="ROL_PERMISO">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:34:55 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<ordsAlias>table_10</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_rol" id="2FD8336B-59CA-C3FE-FCA7-1E1DD6E58841">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:35:43 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="id_permisos" id="2612D149-F35F-0A42-DF75-BE7A010271F5">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:35:59 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="PERMISO_id_permiso" id="A5AD33DE-B80C-949F-94DA-D453E40B87D7">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:11:58 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D5B8C1D4-029F-8F3B-F22E-50D21A232453" referredColumn="DA000868-6A33-4271-AE40-618BD7303CAB"/>
+</associations>
+</Column>
+<Column name="ROL_id_rol" id="B7E3450E-B933-76D0-C1CF-E839A05C0103">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:16:56 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="A2307A01-EDD0-50F8-49AA-48294517093D" referredColumn="97DC8F15-00FB-30C9-0DEB-9CE0D3FD1C75"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="945EE71B-1318-439B-26E1-6156C1A978F2" name="ROL_PERMISO_PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:35:43 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="2FD8336B-59CA-C3FE-FCA7-1E1DD6E58841"/>
+<colUsage columnID="2612D149-F35F-0A42-DF75-BE7A010271F5"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="99008DC2-41C0-C290-8144-2266715B5CBA" name="ROL_PERMISO_PERMISO_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:11:58 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="A5AD33DE-B80C-949F-94DA-D453E40B87D7"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="9ED7BC3F-62D3-8AF3-242B-15219890B284" name="ROL_PERMISO_ROL_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:16:56 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="B7E3450E-B933-76D0-C1CF-E839A05C0103"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

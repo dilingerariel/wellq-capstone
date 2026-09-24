@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="LOG_AUDITORIA_USUARIO_FK" directorySegmentName="seg_0" id="9A6CF168-1849-604B-B217-2B4B7A184EAE">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>4C44385B-60A2-7E9A-702F-85BCA1CA9136</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<sourcePk>3BFB9F48-F022-58DA-5158-6763A68C7539</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>00C98D8F-BB77-F959-9149-2420DAFDE91E</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>3A3BD4D9-9509-69C0-0AB4-03C5BBC53D2F</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

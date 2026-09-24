@@ -1,0 +1,91 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="17367C43-F103-AB5F-C076-8A8F7A8FA5B2" name="PACIENTE">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:18:38 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<ordsAlias>table_5</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_paciente" id="3ECBAA2E-C1A2-DA85-8129-55DFD13E0267">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:18:55 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="rut_paciente" id="A9C1DD6D-FA2B-D0B3-4FC0-9BF9D9281304">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:19:07 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>12</dataTypeSize>
+<ownDataTypeParameters>12,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="nombres_paciente" id="5354EBE1-B395-8FA2-1B7F-3CD612BC1242">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:19:23 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="fecha_nacimiento" id="89B38E5A-2BB1-588E-C862-408A03C1118A">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:19:48 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CLINICA_id_clinica" id="A62F6E85-6A63-337C-C57E-33B434E00F80">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:08:28 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="DD1AFC42-7926-FE16-4D7E-BC5153E9048B" referredColumn="FDE626B3-E3CB-7FA1-C25A-6149A12DD1F8"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="56554C78-08C6-4E5F-CA18-64FC0CD90EB8" name="PACIENTE_PK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 21:45:16 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3ECBAA2E-C1A2-DA85-8129-55DFD13E0267"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="234E4C76-4AF3-ABBC-75C8-A1AF3A43F831" name="PACIENTE_CLINICA_FK">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:08:28 UTC</createdTime>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="A62F6E85-6A63-337C-C57E-33B434E00F80"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

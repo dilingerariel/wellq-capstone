@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="USUARIO_CLINICA_FK" directorySegmentName="seg_0" id="AB177D36-4EC8-9F17-915E-0E6B472928D0">
+<createdBy>Benja</createdBy>
+<createdTime>2026-09-23 22:30:16 UTC</createdTime>
+<generatorID>D2400845-E103-AD67-8DF5-29C1118D7FDC</generatorID>
+<ownerDesignName>Modelo_conceptual_Wellq</ownerDesignName>
+<engineerTo>
+<item key="B4CB66AB-0C66-A95D-ABFA-C71F782AD258" value="true"/>
+</engineerTo>
+<sourcePk>3602893B-23B3-40EF-64F5-F00C1EB89494</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>8A70B61F-F9C6-D510-B7E1-1453A3407AA4</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>00C98D8F-BB77-F959-9149-2420DAFDE91E</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>
