@@ -44,16 +44,39 @@ def get_database() -> Database:
     return mongodb.db
 
 def init_indexes(db: Database):
-    """Garantizar que existan los índices requeridos"""
+    """Garantizar que existan los índices requeridos según el Documento Maestro"""
     try:
-        collection = db.clinical_tests
-        collection.create_index([("clinical_test_id", 1)], unique=True)
-        collection.create_index([("patient_id", 1), ("test_date", -1), ("created_at", -1)])
-        collection.create_index([("patient_id", 1), ("upload.client_upload_id", 1)], unique=True)
-        collection.create_index([("upload.upload_id", 1)], unique=True)
-        collection.create_index([("case_id", 1), ("test_date", -1)])
-        collection.create_index([("appointment_id", 1), ("test_date", -1)])
-        collection.create_index([("upload.status", 1), ("updated_at", 1)])
-        logger.info("✅ Índices de MongoDB verificados/creados.")
+        # 1. clinical_tests
+        db.clinical_tests.create_index([("clinical_test_id", 1)], unique=True)
+        db.clinical_tests.create_index([("patient_id", 1), ("test_date", -1), ("created_at", -1)])
+        db.clinical_tests.create_index([("patient_id", 1), ("upload.client_upload_id", 1)], unique=True)
+        db.clinical_tests.create_index([("upload.upload_id", 1)], unique=True)
+        db.clinical_tests.create_index([("case_id", 1), ("test_date", -1)])
+        db.clinical_tests.create_index([("appointment_id", 1), ("test_date", -1)])
+        db.clinical_tests.create_index([("upload.status", 1), ("updated_at", 1)])
+        db.clinical_tests.create_index([("extraction.status", 1), ("updated_at", 1)])
+        db.clinical_tests.create_index([("patient_id", 1), ("extraction.status", 1)])
+
+        # 2. clinical_test_extractions
+        db.clinical_test_extractions.create_index([("clinical_test_id", 1), ("created_at", -1)])
+        db.clinical_test_extractions.create_index([("extraction_id", 1)], unique=True)
+
+        # 3. clinical_markers
+        db.clinical_markers.create_index([("patient_id", 1), ("marker_code", 1), ("measured_on", -1)])
+        db.clinical_markers.create_index([("patient_id", 1), ("measured_on", -1)])
+        db.clinical_markers.create_index([("clinical_test_id", 1)])
+
+        # 4. marker_catalog
+        db.marker_catalog.create_index([("marker_code", 1)], unique=True)
+
+        # 5. score_snapshots
+        db.score_snapshots.create_index([("patient_id", 1), ("computed_at", -1)])
+        db.score_snapshots.create_index([("snapshot_id", 1)], unique=True)
+
+        # Sembrar/actualizar catálogo inicial
+        from app.services.catalog import catalog_service
+        catalog_service.seed_catalog(db)
+
+        logger.info("✅ Índices de MongoDB, Catálogo Canónico y Snapshots verificados/creados.")
     except Exception as e:
-        logger.warning(f"Aviso al crear índices (posiblemente ya existen): {e}")
+        logger.warning(f"Aviso al crear índices o sembrar catálogo: {e}")

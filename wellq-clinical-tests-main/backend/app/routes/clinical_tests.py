@@ -24,24 +24,29 @@ from app.config import settings
 router = APIRouter()
 
 def process_upload_validation(upload_id: str):
-    """Tarea en segundo plano que simula validación de MIME y escaneo de malware"""
+    """Tarea en segundo plano: escaneo de seguridad y ejecución del pipeline de extracción (Componente B)"""
     time.sleep(2)  # Simula tiempo de escaneo
     try:
         db = get_database()
-        db.clinical_tests.update_one(
-            {"upload.upload_id": upload_id},
-            {
-                "$set": {
-                    "upload.status": UploadStatus.READY_FOR_REVIEW.value,
-                    "upload.validated_at": datetime.utcnow(),
-                    "upload.processing_status": {
-                        "malware_scan": ScanStatus.PASSED.value,
-                        "mime_validation": ScanStatus.PASSED.value,
-                    },
-                    "updated_at": datetime.utcnow(),
+        test_doc = db.clinical_tests.find_one({"upload.upload_id": upload_id})
+        if test_doc:
+            db.clinical_tests.update_one(
+                {"_id": test_doc["_id"]},
+                {
+                    "$set": {
+                        "upload.status": UploadStatus.READY_FOR_REVIEW.value,
+                        "upload.validated_at": datetime.utcnow(),
+                        "upload.processing_status": {
+                            "malware_scan": ScanStatus.PASSED.value,
+                            "mime_validation": ScanStatus.PASSED.value,
+                        },
+                        "updated_at": datetime.utcnow(),
+                    }
                 }
-            }
-        )
+            )
+            # Ejecutar el motor de extracción automáticamente (Componente B)
+            from app.services.extractor import extraction_engine
+            extraction_engine.run_extraction_pipeline(test_doc["clinical_test_id"], db)
     except Exception as e:
         print(f"Error procesando validación para {upload_id}: {e}")
 
@@ -812,3 +817,66 @@ async def review_clinical_test(
     )
     updated_doc = db.clinical_tests.find_one({"_id": doc["_id"]})
     return format_clinical_test_response(updated_doc)
+
+# ============ ENDPOINT 18: GET LAB SCORE ============
+
+from app.models.scoring import LabScoreResponse
+
+@router.get(
+    "/patients/{patient_id}/lab-score",
+    response_model=LabScoreResponse,
+)
+async def get_lab_score(
+    patient_id: str,
+    history: bool = False,
+    user: TokenPayload = Depends(get_current_user),
+    db: Database = Depends(get_database),
+):
+    """
+    ENDPOINT #18: GET /api/v1/patients/{patient_id}/lab-score
+    Consultar puntaje vigente e histórico del paciente.
+    Accesible por el paciente dueño o un clínico autorizado.
+    """
+    # Control de acceso: paciente accede a su propio puntaje, clínico a paciente autorizado
+    if user.role == "patient":
+        if user.patient_id != patient_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "FORBIDDEN", "message": "No tienes acceso al puntaje de otro paciente"}
+            )
+    elif user.role == "clinician":
+        await require_clinician_access(patient_id, user.clinician_id)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "FORBIDDEN", "message": "Rol no autorizado"}
+        )
+
+    # Obtener snapshot vigente (más reciente)
+    current_snapshot = db.score_snapshots.find_one(
+        {"patient_id": patient_id},
+        sort=[("computed_at", -1)]
+    )
+
+    if not current_snapshot:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"code": "NO_SCORE", "message": "No hay puntaje calculado aún"}
+        )
+
+    current_snapshot.pop("_id", None)
+
+    history_snapshots = None
+    if history:
+        history_snapshots = list(
+            db.score_snapshots.find(
+                {"patient_id": patient_id}
+            ).sort("computed_at", -1).limit(50)
+        )
+        for snap in history_snapshots:
+            snap.pop("_id", None)
+
+    return LabScoreResponse(
+        current_snapshot=current_snapshot,
+        history=history_snapshots
+    )

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from app.config import settings
-from app.routes import clinical_tests
+from app.routes import clinical_tests, extractions, scoring
 from app.database import connect_to_mongo, close_mongo_connection
 
 # Logging
@@ -39,6 +39,18 @@ app.include_router(
     clinical_tests.router,
     prefix="/api/v1",
     tags=["clinical-tests"],
+)
+
+app.include_router(
+    extractions.router,
+    prefix="/api/v1",
+    tags=["extractions"],
+)
+
+app.include_router(
+    scoring.router,
+    prefix="/api/v1",
+    tags=["scoring"],
 )
 
 # Health check

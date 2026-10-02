@@ -15,8 +15,10 @@ class TokenPayload:
         self.clinician_id = clinician_id
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> TokenPayload:
-    """Verificar JWT y retornar payload"""
-    token = credentials.credentials
+    raw_token = credentials.credentials.strip()
+    if raw_token.lower().startswith("bearer "):
+        raw_token = raw_token[7:].strip()
+    token = "".join(raw_token.split())
     
     try:
         payload = jwt.decode(
