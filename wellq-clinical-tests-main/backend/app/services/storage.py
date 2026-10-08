@@ -101,6 +101,27 @@ class StorageService:
             "expires_at": expires_at_iso,
         }
 
+    def upload_bytes(self, object_key: str, data: bytes, content_type: str = "application/octet-stream") -> str:
+        """Subir contenido generado por el servidor (p. ej. el PDF del reporte) al bucket privado.
+
+        Devuelve el modo de almacenamiento usado:
+          - "gcs":   subido al bucket real (prefijo privado indicado en object_key).
+          - "local": modo desarrollo sin credenciales; se guarda en ./exports/<nombre> para poder abrirlo.
+        Si GCS está configurado y la subida falla, lanza excepción: un export no debe perderse en silencio.
+        """
+        if self.client and self.bucket:
+            blob = self.bucket.blob(object_key)
+            blob.upload_from_string(data, content_type=content_type)
+            logger.info(f"Objeto subido a GCS: {object_key} ({len(data)} bytes)")
+            return "gcs"
+
+        os.makedirs("exports", exist_ok=True)
+        local_path = os.path.join("exports", os.path.basename(object_key))
+        with open(local_path, "wb") as fh:
+            fh.write(data)
+        logger.info(f"Modo mock: objeto guardado localmente en {local_path} ({len(data)} bytes)")
+        return "local"
+
     def verify_object_exists(self, object_key: str) -> bool:
         """Verificar si el objeto existe en GCS"""
         if self.client and self.bucket:

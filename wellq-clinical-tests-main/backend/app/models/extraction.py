@@ -12,6 +12,8 @@ class ExtractionStatus(str, Enum):
     EXTRACTION_FAILED = "extraction_failed"
     UNREADABLE = "unreadable"
     DISCARDED = "discarded"
+    NOT_APPLICABLE = "not_applicable"
+    REJECTED = "rejected"
 
 class DocumentType(str, Enum):
     BLOOD_PANEL = "blood_panel"
@@ -64,7 +66,9 @@ class MarkerItem(BaseModel):
     status: MarkerStatus = MarkerStatus.NORMAL
     confidence: ConfidenceScores = Field(default_factory=ConfidenceScores)
     edited: bool = False
-    edited_by: Optional[str] = None
+    edited_by: Optional[str] = None  # patient | clinician (§7.3)
+    edited_by_id: Optional[str] = None  # identificador de quien editó
+    edited_at: Optional[datetime] = None
     original_value_canonical: Optional[float] = None
 
 class PanelItem(BaseModel):

@@ -36,11 +36,12 @@ def test_users():
         "clinician_id": clinician_id,
     }
 
-def test_complete_extraction_and_confirmation_flow(test_users):
+def test_complete_extraction_and_confirmation_flow(test_users, grant_access):
     headers_p = test_users["headers_patient"]
     headers_c = test_users["headers_clinician"]
     patient_id = test_users["patient_id"]
-
+    grant_access(patient_id, test_users["clinician_id"])
+    
     client_upload_id = f"upl_ext_{uuid.uuid4().hex[:8]}"
     sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
@@ -79,11 +80,14 @@ def test_complete_extraction_and_confirmation_flow(test_users):
         )
         assert r_comp.status_code == 200
 
-        # Esperar 3 segundos para que la tarea en segundo plano finalice escaneo y extracción
-        time.sleep(3)
-
         # ============ 3. TEST ENDPOINT #12: GET /extraction ============
-        r_ext = client.get(f"/clinical-tests/{clinical_test_id}/extraction", headers=headers_p)
+        # §7.4.1: mientras la extracción está en cola o procesando, el GET responde 409 EXTRACTION_NOT_READY
+        r_ext = None
+        for _ in range(40):
+            time.sleep(0.5)
+            r_ext = client.get(f"/clinical-tests/{clinical_test_id}/extraction", headers=headers_p)
+            if r_ext.status_code != 409:
+                break
         assert r_ext.status_code == 200
         ext_data = r_ext.json()
         assert ext_data["clinical_test_id"] == clinical_test_id
@@ -175,7 +179,7 @@ def test_complete_extraction_and_confirmation_flow(test_users):
         clin_val = {
             "validation_status": "validated",
             "marker_corrections": [
-                {"marker_code": "ldl_cholesterol", "value_raw": "135", "unit_raw": "mg/dL"}
+                {"marker_code": "cholesterol_total", "value_raw": "205", "unit_raw": "mg/dL"}
             ],
             "clinical_note": "Ajuste validado por médico tratante."
         }
@@ -190,11 +194,12 @@ def test_complete_extraction_and_confirmation_flow(test_users):
         assert val_data["confirmation"]["status"] == "clinically_validated"
 
         # ============ 7. TEST ENDPOINT #14: REPROCESAR EXTRACCIÓN ============
+        # §7.4.3: solo se permite desde extraction_failed, unreadable, discarded y, con confirmación
+        # explícita, desde confirmed. Un examen clinically_validated NO se puede reprocesar.
         r_reproc = client.post(
             f"/clinical-tests/{clinical_test_id}/extraction/reprocess",
             headers={"Authorization": headers_p["Authorization"], "Idempotency-Key": "id_reproc"}
         )
-        assert r_reproc.status_code == 200
-        reproc_data = r_reproc.json()
-        assert reproc_data["extraction_id"] != extraction_id
-        assert reproc_data["status"] == "awaiting_confirmation"
+        assert r_reproc.status_code == 409
+        assert r_reproc.json()["detail"]["code"] == "REPROCESS_NOT_ALLOWED"
+        # (el reproceso exitoso y sus reglas se prueban en test_extraction_rules.py)

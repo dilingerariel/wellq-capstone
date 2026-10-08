@@ -1,10 +1,13 @@
 import logging
+import re
 from typing import Optional, Dict, Any, List
 from pymongo.database import Database
 
 logger = logging.getLogger(__name__)
 
 # Catálogo canónico inicial de marcadores para WellQ v1.0
+# Factores de conversión: los del §5.5.2 del Documento Maestro (colesterol 38,67; glucosa 18,016;
+# vitamina D 0,4; hemoglobina 0,1) y, para el resto, los del catálogo v1 (pendientes de validación clínica).
 INITIAL_MARKER_CATALOG = [
     {
         "marker_code": "cholesterol_total",
@@ -77,7 +80,7 @@ INITIAL_MARKER_CATALOG = [
         "specimen": "blood",
         "canonical_unit": "mg/dL",
         "supported_units": ["mg/dL", "mmol/L"],
-        "unit_conversions": {"mg/dL": 1.0, "mmol/L": 18.0182},
+        "unit_conversions": {"mg/dL": 1.0, "mmol/L": 18.016},
         "plausible_range": {"min": 20.0, "max": 1000.0},
         "default_reference": {"low": 70.0, "high": 100.0},
         "pillars": ["cardio", "muscle"],
@@ -124,9 +127,9 @@ INITIAL_MARKER_CATALOG = [
         "panel_code": "bone_panel",
         "specimen": "blood",
         "canonical_unit": "ng/mL",
-        "supported_units": ["ng/mL", "nmol/L"],
-        "unit_conversions": {"ng/mL": 1.0, "nmol/L": 0.4006},
-        "plausible_range": {"min": 3.0, "max": 200.0},
+        "supported_units": ["ng/mL", "ug/L", "nmol/L"],
+        "unit_conversions": {"ng/mL": 1.0, "ug/L": 1.0, "nmol/L": 0.4},
+        "plausible_range": {"min": 0.0, "max": 200.0},
         "default_reference": {"low": 30.0, "high": 100.0},
         "pillars": ["bone", "joint"],
         "directionality": "higher_better",
@@ -175,6 +178,10 @@ PILLAR_THEORETICAL_WEIGHTS = {
     "cardio": 1.0,
 }
 
+# Valores censurados (§5.4): "< 0,3" => censoring "left"; "> 500" => censoring "right"
+_CENSORED_RE = re.compile(r"^\s*(<=|>=|<|>|≤|≥)\s*(.+)$")
+
+
 class CatalogService:
     def __init__(self):
         self.catalog_by_code: Dict[str, dict] = {item["marker_code"]: item for item in INITIAL_MARKER_CATALOG}
@@ -220,11 +227,14 @@ class CatalogService:
         db: Optional[Database] = None
     ) -> Dict[str, Any]:
         """
-        Validación determinista contra el catálogo canónico:
+        Validación determinista contra el catálogo canónico (§5.5):
         - Verifica existencia de marcador (422 UNKNOWN_MARKER)
-        - Verifica unidad admitida (422 UNIT_NOT_SUPPORTED)
-        - Valida plausibilidad fisiológica (422 VALUE_IMPLAUSIBLE)
-        - Convierte a unidad canónica y calcula estatus
+        - Verifica unidad admitida (422 UNIT_NOT_SUPPORTED): una unidad fuera de la tabla de conversión
+          NO se convierte ni se puntúa
+        - Interpreta valores censurados ("< 0,3" => censoring "left"; "> 500" => "right")
+        - Convierte a unidad canónica
+        - Valida plausibilidad fisiológica sobre el valor YA convertido (422 VALUE_IMPLAUSIBLE)
+        - Calcula el estatus respecto del rango de referencia
         """
         marker_def = self.get_marker(marker_code, db)
         if not marker_def:
@@ -243,11 +253,16 @@ class CatalogService:
                 "message": f"La unidad '{unit_raw}' no es admitida para el marcador '{marker_code}'. Admitidas: {supported}",
             }
 
-        # Parsear número
+        # Parsear número (con posible operador de censura)
+        censoring = None
+        text = str(value_raw).strip()
+        match = _CENSORED_RE.match(text)
+        if match:
+            censoring = "left" if match.group(1) in ("<", "<=", "≤") else "right"
+            text = match.group(2)
         try:
             # Limpiar comas por puntos si vienen de documentos en español
-            val_clean = str(value_raw).replace(",", ".").strip()
-            num_val = float(val_clean)
+            num_val = float(text.replace(",", ".").replace(" ", ""))
         except ValueError:
             return {
                 "valid": False,
@@ -255,21 +270,24 @@ class CatalogService:
                 "message": f"El valor '{value_raw}' no puede ser interpretado como número",
             }
 
-        # Validar intervalo de plausibilidad fisiológica
-        plausible = marker_def.get("plausible_range", {})
-        p_min = plausible.get("min", 0.0)
-        p_max = plausible.get("max", 999999.0)
-        if num_val < p_min or num_val > p_max:
-            return {
-                "valid": False,
-                "error_code": "VALUE_IMPLAUSIBLE",
-                "message": f"El valor {num_val} para '{marker_code}' está fuera del rango fisiológicamente plausible ({p_min} - {p_max} {unit_raw})",
-            }
-
         # Conversión a unidad canónica
         conv_factor = marker_def.get("unit_conversions", {}).get(unit_raw, 1.0)
         val_canonical = round(num_val * conv_factor, 2)
         unit_canonical = marker_def.get("canonical_unit", unit_raw)
+
+        # Validar intervalo de plausibilidad fisiológica (en unidad canónica)
+        plausible = marker_def.get("plausible_range", {})
+        p_min = plausible.get("min", 0.0)
+        p_max = plausible.get("max", 999999.0)
+        if val_canonical < p_min or val_canonical > p_max:
+            return {
+                "valid": False,
+                "error_code": "VALUE_IMPLAUSIBLE",
+                "message": (
+                    f"El valor {num_val} {unit_raw} ({val_canonical} {unit_canonical}) para '{marker_code}' "
+                    f"está fuera del rango fisiológicamente plausible ({p_min} - {p_max} {unit_canonical})"
+                ),
+            }
 
         # Determinar status respecto a rango de referencia
         default_ref = marker_def.get("default_reference", {})
@@ -292,6 +310,7 @@ class CatalogService:
             "value_canonical": val_canonical,
             "unit_canonical": unit_canonical,
             "conversion_factor": conv_factor,
+            "censoring": censoring,
             "status": status,
             "reference": {
                 "low": low,

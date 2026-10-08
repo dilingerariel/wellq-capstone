@@ -39,12 +39,13 @@ def clinician_auth():
         "clinician_id": clinician_id,
     }
 
-def test_endpoints_5_to_11_lifecycle(patient_auth, clinician_auth):
+def test_endpoints_5_to_11_lifecycle(patient_auth, clinician_auth, grant_access):
     headers_p = patient_auth["headers"]
     patient_id = patient_auth["patient_id"]
     headers_c = clinician_auth["headers"]
     clinician_id = clinician_auth["clinician_id"]
-
+    grant_access(patient_id, clinician_id)
+    
     client_upload_id = f"upl_{uuid.uuid4().hex[:8]}"
     sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 

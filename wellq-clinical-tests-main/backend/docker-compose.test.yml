@@ -1,0 +1,5 @@
+services:
+  fastapi:
+    environment:
+      MONGODB_DB: wellq_test
+      MONGODB_URI: mongodb://root:password@mongodb:27017/wellq_test?authSource=admin

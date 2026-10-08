@@ -13,7 +13,7 @@ SECRET = "your-secret-key-here"
 ALGORITHM = "HS256"
 
 @pytest.fixture
-def test_users():
+def test_users(grant_access):
     patient_id = f"P_SCORE_{uuid.uuid4().hex[:6]}"
     other_patient_id = f"P_OTHER_{uuid.uuid4().hex[:6]}"
     clinician_id = f"DOC_SCORE_{uuid.uuid4().hex[:6]}"
@@ -34,6 +34,7 @@ def test_users():
         algorithm=ALGORITHM
     )
 
+    grant_access(patient_id, clinician_id)
     return {
         "headers_p": {
             "Authorization": f"Bearer {token_p}",
@@ -83,8 +84,8 @@ def test_full_scoring_flow_and_endpoint_18(test_users):
     Flujo de integración completo:
     1. Carga de examen y extracción automática
     2. Confirmación del paciente -> dispara cálculo de subscores y score_snapshot
-    3. Endpoint #18: GET /api/v1/patients/{patient_id}/lab-score
-    4. Validación de control de acceso
+    3. Endpoint #18: GET /api/v1/patients/{patient_id}/lab-score (SOLO CLÍNICO, §9.5.3)
+    4. Validación de control de acceso (paciente dueño y otro paciente reciben 403)
     5. Validación clínica con corrección médica -> recalcula score_snapshot y consulta con ?history=true
     """
     headers_p = test_users["headers_p"]
@@ -122,11 +123,13 @@ def test_full_scoring_flow_and_endpoint_18(test_users):
         res_comp = client.post(f"/clinical-tests/uploads/{upload_id}/complete", json=complete_payload, headers=headers_p)
         assert res_comp.status_code == 200
 
-        # Esperar 3s a que la extracción en background termine
-        time.sleep(3)
-
-        # Obtener extracción propuesta
-        res_ext = client.get(f"/clinical-tests/{clinical_test_id}/extraction", headers=headers_p)
+        # Esperar a que la extracción en background termine (409 EXTRACTION_NOT_READY mientras tanto)
+        res_ext = None
+        for _ in range(40):
+            time.sleep(0.5)
+            res_ext = client.get(f"/clinical-tests/{clinical_test_id}/extraction", headers=headers_p)
+            if res_ext.status_code != 409:
+                break
         assert res_ext.status_code == 200
         ext_data = res_ext.json()
         extraction_id = ext_data["extraction_id"]
@@ -144,8 +147,8 @@ def test_full_scoring_flow_and_endpoint_18(test_users):
         )
         assert res_conf.status_code == 200
 
-        # 3. ENDPOINT #18: GET /api/v1/patients/{patient_id}/lab-score (como paciente)
-        res_score = client.get(f"/patients/{patient_id}/lab-score", headers=headers_p)
+        # 3. ENDPOINT #18 como CLÍNICO (el puntaje no se muestra al paciente, §1.2)
+        res_score = client.get(f"/patients/{patient_id}/lab-score", headers=headers_c)
         assert res_score.status_code == 200
         score_data = res_score.json()
 
@@ -168,22 +171,23 @@ def test_full_scoring_flow_and_endpoint_18(test_users):
         assert "subscore" in first_contrib
         assert first_contrib["subscore"] >= 0
 
-        # 4. Control de acceso: otro paciente no puede acceder
+        # 4. Control de acceso
+        # 4a. El propio paciente NO puede ver el puntaje (solo clínico)
+        res_patient_own = client.get(f"/patients/{patient_id}/lab-score", headers=headers_p)
+        assert res_patient_own.status_code == 403
+
+        # 4b. Otro paciente tampoco
         res_forbidden = client.get(f"/patients/{patient_id}/lab-score", headers=headers_other)
         assert res_forbidden.status_code == 403
-
-        # Clínico accede al puntaje con su relación clínica
-        res_doc_score = client.get(f"/patients/{patient_id}/lab-score", headers=headers_c)
-        assert res_doc_score.status_code == 200
 
         # 5. Validación clínica con corrección médica -> genera un segundo snapshot inmutable
         val_payload = {
             "validation_status": "validated",
             "marker_corrections": [
                 {
-                    "marker_code": "cholesterol_total",
-                    "value_raw": "165.0",
-                    "unit_raw": "mg/dL",
+                    "marker_code": "hemoglobin",
+                    "value_raw": "13.0",
+                    "unit_raw": "g/dL",
                     "reason": "transcription_error"
                 }
             ],
@@ -203,3 +207,16 @@ def test_full_scoring_flow_and_endpoint_18(test_users):
         assert hist_data["current_snapshot"]["trigger"] == "clinician_correction"
         assert hist_data["history"] is not None
         assert len(hist_data["history"]) >= 1
+
+
+def test_lab_score_no_score_available(test_users):
+    """§9.5.3 / §13.5: sin snapshot, el endpoint 18 responde 404 NO_SCORE_AVAILABLE con motivo (no calcula al vuelo)."""
+    headers_c = test_users["headers_c"]
+    patient_id = test_users["patient_id"]  # paciente nuevo, sin exámenes
+
+    with httpx.Client(base_url=BASE_URL, timeout=15) as client:
+        res = client.get(f"/patients/{patient_id}/lab-score", headers=headers_c)
+        assert res.status_code == 404
+        detail = res.json()["detail"]
+        assert detail["code"] == "NO_SCORE_AVAILABLE"
+        assert detail["reason"] in ("no_confirmed_exams", "insufficient_coverage")
