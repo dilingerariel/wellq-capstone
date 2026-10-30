@@ -131,14 +131,16 @@ class ScoringEngine:
         db: Database,
         trigger: str = "manual_recompute",
         window_months: int = 12,
-        excluded_markers_info: Optional[List[dict]] = None
+        excluded_markers_info: Optional[List[dict]] = None,
+        scoring_version_override: Optional[str] = None,
+        persist: bool = True,
     ) -> Optional[dict]:
         """
         Paso 3 y 4: Agregación por pilar, cálculo de índice global y generación de snapshot.
-        Persiste el snapshot en la colección `score_snapshots`.
+        Persiste el snapshot en la colección `score_snapshots` si persist=True.
         """
-        # 🔍 DEBUG: Verificar trigger recibido
-        logger.info(f"🔴 [SCORING] compute_patient_score INICIADO - patient_id={patient_id}, trigger={trigger}")
+        active_version = scoring_version_override or self.scoring_version
+        logger.info(f"🔴 [SCORING] compute_patient_score INICIADO - patient_id={patient_id}, trigger={trigger}, version={active_version}, persist={persist}")
         
         now = datetime.utcnow()
         window_start = now - timedelta(days=int(window_months * 30.5))
@@ -183,17 +185,18 @@ class ScoringEngine:
                 catalog_item=cat
             )
 
-            # Actualizar en clinical_markers si cambió el subscore o scoring_version
-            db.clinical_markers.update_one(
-                {"_id": m["_id"]},
-                {
-                    "$set": {
-                        "subscore": subscore,
-                        "scoring_version": self.scoring_version,
-                        "updated_at": now,
+            # Actualizar en clinical_markers si persist=True
+            if persist:
+                db.clinical_markers.update_one(
+                    {"_id": m["_id"]},
+                    {
+                        "$set": {
+                            "subscore": subscore,
+                            "scoring_version": active_version,
+                            "updated_at": now,
+                        }
                     }
-                }
-            )
+                )
 
             active_subscores[code] = {
                 "marker_code": code,
@@ -292,7 +295,7 @@ class ScoringEngine:
             "patient_id": patient_id,
             "computed_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "trigger": trigger,
-            "scoring_version": self.scoring_version,
+            "scoring_version": active_version,
             "catalog_version": self.catalog_version,
             "window": {
                 "months": window_months,
@@ -307,9 +310,10 @@ class ScoringEngine:
             "excluded_markers": excluded_markers_info or [],
         }
 
-        # Guardar snapshot inmutable en MongoDB
-        db.score_snapshots.insert_one(snapshot_doc)
-        logger.info(f"✅ Snapshot de puntaje generado para paciente {patient_id}: id={snapshot_id}, lab_index={lab_index}")
+        # Guardar snapshot inmutable en MongoDB si persist=True (§8.8)
+        if persist:
+            db.score_snapshots.insert_one(snapshot_doc)
+            logger.info(f"✅ Snapshot de puntaje generado para paciente {patient_id}: id={snapshot_id}, lab_index={lab_index}, version={active_version}")
 
         # Retornar documento sin _id de MongoDB para serialización directa
         snapshot_doc.pop("_id", None)

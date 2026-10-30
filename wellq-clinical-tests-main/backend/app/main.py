@@ -58,13 +58,31 @@ app.include_router(
 async def health():
     return {"status": "ok"}
 
+# Dashboard Frontend UI
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/dashboard", StaticFiles(directory=static_dir, html=True), name="dashboard")
+
+exports_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "exports"))
+if os.path.exists(exports_dir):
+    app.mount("/exports", StaticFiles(directory=exports_dir), name="exports")
+
+@app.get("/demo")
+async def demo():
+    return RedirectResponse(url="/dashboard/")
+
 # Root
 @app.get("/")
 async def root():
     return {
         "app": settings.APP_NAME,
         "version": "1.0.0",
-        "status": "running"
+        "status": "running",
+        "dashboard": "/dashboard/"
     }
 
 if __name__ == "__main__":
