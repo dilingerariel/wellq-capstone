@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WellQ — Plataforma Integral de Inteligencia Clínica</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- CryptoJS CDN (Para generación local de tokens JWT HS256 y hashing SHA-256) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            wellq: {
+              blue: '#0284c7',
+              cyan: '#06b6d4',
+              teal: '#0d9488',
+              card: '#0f172a',
+              border: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    .badge-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-high { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-info { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-normal { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased overflow-hidden">
+
+  <!-- TOPBAR -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 py-3 flex items-center justify-between z-20 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-cyan-500 to-blue-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+        <i data-lucide="activity" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">WellQ</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Clinical Intelligence 2.0</span>
+        </div>
+        <p class="text-xs text-slate-400">Panel Interactivo de Verificación de Endpoints y Servicios</p>
+      </div>
+    </div>
+
+    <!-- Active Profile & Role Selector -->
+    <div class="flex items-center space-x-4">
+      <!-- API Status Indicator -->
+      <div id="apiHealthBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="text-slate-300 font-mono" id="apiStatusText">API: Verificando...</span>
+      </div>
+
+      <!-- Role Selector -->
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <button id="btnRolePatient" onclick="switchRole('patient')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 bg-brand-600 text-white shadow-sm">
+          <i data-lucide="user" class="w-3.5 h-3.5"></i>
+          <span>Paciente (P-1001)</span>
+        </button>
+        <button id="btnRoleClinician" onclick="switchRole('clinician')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 text-slate-400 hover:text-white">
+          <i data-lucide="stethoscope" class="w-3.5 h-3.5"></i>
+          <span>Médico (DOC-501)</span>
+        </button>
+      </div>
+
+      <!-- Quick Settings / Token View -->
+      <button onclick="toggleTokenModal()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Configurar JWT / Endpoint">
+        <i data-lucide="key" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+      <div class="p-4 border-b border-slate-800/80">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Módulos del Sistema</span>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1.5 text-sm" id="sidebarNav">
+        <!-- Patient Views -->
+        <div class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider px-3 pt-2 pb-1 flex items-center space-x-1.5">
+          <i data-lucide="user-check" class="w-3 h-3"></i>
+          <span>Portal Paciente</span>
+        </div>
+        <button onclick="navigateTab('tab-upload')" id="nav-tab-upload" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="upload-cloud" class="w-4 h-4 text-emerald-400"></i>
+          <span class="truncate">1. Carga y Extracción</span>
+        </button>
+        <button onclick="navigateTab('tab-patient-tests')" id="nav-tab-patient-tests" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="folder" class="w-4 h-4 text-emerald-400"></i>
+          <span class="truncate">2. Mis Exámenes</span>
+        </button>
+
+        <!-- Clinician Views -->
+        <div class="text-[11px] font-semibold text-sky-400 uppercase tracking-wider px-3 pt-4 pb-1 flex items-center space-x-1.5">
+          <i data-lucide="stethoscope" class="w-3 h-3"></i>
+          <span>Portal Clínico</span>
+        </div>
+        <button onclick="navigateTab('tab-clinician-tests')" id="nav-tab-clinician-tests" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="clipboard-check" class="w-4 h-4 text-sky-400"></i>
+          <span class="truncate">3. Revisión y Validación</span>
+        </button>
+        <button onclick="navigateTab('tab-score')" id="nav-tab-score" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="gauge" class="w-4 h-4 text-sky-400"></i>
+          <span class="truncate">4. WellQ Score & Pilares</span>
+        </button>
+        <button onclick="navigateTab('tab-series')" id="nav-tab-series" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="trending-up" class="w-4 h-4 text-sky-400"></i>
+          <span class="truncate">5. Series Longitudinales</span>
+        </button>
+        <button onclick="navigateTab('tab-report')" id="nav-tab-report" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i>
+          <span class="truncate">6. Reporte y PDF Oficial</span>
+        </button>
+
+        <!-- Shared / Global Views -->
+        <div class="text-[11px] font-semibold text-purple-400 uppercase tracking-wider px-3 pt-4 pb-1 flex items-center space-x-1.5">
+          <i data-lucide="database" class="w-3 h-3"></i>
+          <span>Catálogo & Auditoría</span>
+        </div>
+        <button onclick="navigateTab('tab-catalog')" id="nav-tab-catalog" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+          <i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i>
+          <span class="truncate">7. Catálogo Canónico</span>
+        </button>
+      </nav>
+
+      <!-- Current Identity Card -->
+      <div class="p-3 m-3 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span>Identidad activa:</span>
+          <span id="roleLabel" class="text-brand-400 font-semibold uppercase">PACIENTE</span>
+        </div>
+        <div class="font-mono text-slate-200 truncate" id="currentUserIdText">P-1001</div>
+        <div class="text-[10px] text-slate-500 mt-1 truncate" id="currentSubText">sub: usr_P-1001</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 overflow-y-auto bg-slate-950 p-6">
+      
+      <!-- NOTIFICATION BANNER -->
+      <div id="toastNotification" class="hidden fixed bottom-6 right-6 max-w-md bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-start space-x-3 z-50">
+        <div id="toastIcon" class="mt-0.5"><i data-lucide="info" class="w-5 h-5 text-emerald-400"></i></div>
+        <div class="flex-1 text-sm">
+          <div id="toastTitle" class="font-semibold text-slate-100">Notificación</div>
+          <div id="toastMessage" class="text-slate-400 text-xs mt-0.5">Mensaje descriptivo</div>
+        </div>
+        <button onclick="hideToast()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- TAB 1: CARGA Y EXTRACCIÓN (PACIENTE)                             -->
+      <!-- ================================================================ -->
+      <section id="tab-upload" class="tab-content space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+            <span>Carga de Exámenes y Extracción de Marcadores</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Endpoints #1, #2, #3, #4, #12, #13, #14</span>
+          </h1>
+          <p class="text-sm text-slate-400 mt-1">Simula o carga un examen médico, visualiza la extracción realizada por el LLM con confianzas por campo y confirma los resultados para integrarlos al activo longitudinal.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Step 1: Formulario de Subida -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <h2 class="text-base font-semibold text-white flex items-center space-x-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">1</span>
+              <span>Subir Examen Clínico</span>
+            </h2>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1">Título del Examen</label>
+                <input id="upTitle" type="text" value="Perfil Bioquímico e Inflamatorio" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1">Tipo de Estudio</label>
+                <select id="upTestType" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                  <option value="blood_test">Analítica de Sangre (blood_test)</option>
+                  <option value="imaging_report">Informe de Imagenología (imaging_report)</option>
+                  <option value="clinical_letter">Informe Clínico / Epicrisis (clinical_letter)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1">Fecha de Toma de Muestra</label>
+                <input id="upTestDate" type="date" value="2026-10-15" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1">Archivo PDF</label>
+                <input id="upFileInput" type="file" accept=".pdf" class="w-full text-slate-400 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700 cursor-pointer">
+              </div>
+
+              <div class="pt-2">
+                <button onclick="executeUploadFlow()" id="btnStartUpload" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium shadow-lg shadow-emerald-500/20 transition flex items-center justify-center space-x-2">
+                  <i data-lucide="upload" class="w-4 h-4"></i>
+                  <span>Iniciar Carga y Extracción</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Upload Progress Status -->
+            <div id="uploadStatusBox" class="hidden p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400" id="uploadStepText">Procesando...</span>
+                <span class="text-emerald-400 font-mono font-semibold" id="uploadPercentText">0%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="uploadProgressBar" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+              </div>
+              <p class="text-[11px] text-slate-500 font-mono" id="uploadDetailText">Iniciando upload_id...</p>
+            </div>
+          </div>
+
+          <!-- Step 2: Extraction Preview & Patient Confirmation -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 lg:col-span-2 flex flex-col">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-semibold text-white flex items-center space-x-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">2</span>
+                <span>Propuesta de Extracción LLM</span>
+                <span id="currentExamIdBadge" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono hidden"></span>
+              </h2>
+              <div class="flex items-center space-x-2">
+                <button onclick="reprocessCurrentExtraction()" id="btnReprocess" class="hidden text-xs py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center space-x-1">
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                  <span>Reprocesar</span>
+                </button>
+                <button onclick="confirmCurrentExtraction()" id="btnConfirmExtraction" class="hidden text-xs py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition flex items-center space-x-1 shadow-sm">
+                  <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                  <span>Confirmar Marcadores</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State / Markers Table Container -->
+            <div id="extractionContainer" class="flex-1 flex flex-col items-center justify-center border border-dashed border-slate-800 rounded-xl p-8 text-center text-slate-500">
+              <i data-lucide="file-search" class="w-12 h-12 stroke-[1.2] mb-2 text-slate-600"></i>
+              <p class="text-sm text-slate-400 font-medium">Ningún examen en revisión actualmente</p>
+              <p class="text-xs text-slate-500 max-w-sm mt-1">Inicia la carga de un examen a la izquierda o selecciona uno existente en "Mis Exámenes" para inspeccionar los marcadores extraídos.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- TAB 2: MIS EXÁMENES (PACIENTE)                                   -->
+      <!-- ================================================================ -->
+      <section id="tab-patient-tests" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+              <span>Mis Exámenes Clínicos</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Endpoints #5, #6, #7, #8, #9</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Historial de exámenes cargados en la plataforma WellQ por el paciente <span class="font-mono text-emerald-400">P-1001</span>.</p>
+          </div>
+          <button onclick="loadPatientExams()" class="text-xs px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Actualizar</span>
+          </button>
+        </div>
+
+        <div id="patientExamsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- TAB 3: REVISIÓN Y VALIDACIÓN CLÍNICA (MÉDICO)                    -->
+      <!-- ================================================================ -->
+      <section id="tab-clinician-tests" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+              <span>Revisión y Validación Clínica</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">Endpoints #10, #11, #15</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Espacio de trabajo del clínico para auditar exámenes asignados, registrar notas de revisión y emitir correcciones médicas con precedencia oficial.</p>
+          </div>
+          <div class="flex items-center space-x-3 text-xs">
+            <label class="text-slate-400">Paciente ID:</label>
+            <input id="clinicianTargetPatientInput" type="text" value="P-1001" class="w-28 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-mono">
+            <button onclick="loadClinicianPatientExams()" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium transition">Consultar</button>
+          </div>
+        </div>
+
+        <div id="clinicianExamsContainer" class="space-y-4">
+          <!-- Table of exams -->
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- TAB 4: WELLQ HEALTH SCORE & PILARES (MÉDICO)                      -->
+      <!-- ================================================================ -->
+      <section id="tab-score" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+              <span>WellQ Health Score & Pilares de Salud</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">Endpoint #18 (§8.5, §8.8)</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Cálculo determinista de 0 a 100 de salud metabólica e integral, desglosado en los 4 pilares y penalizado por banderas clínicas activas.</p>
+          </div>
+          <button onclick="loadLabScore()" class="text-xs px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Recargar Score</span>
+          </button>
+        </div>
+
+        <!-- Score Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="scoreMetricsCards">
+          <!-- Main Global Index -->
+          <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+            <div class="flex items-center justify-between text-slate-400 text-xs">
+              <span class="font-medium uppercase tracking-wider">Índice Global</span>
+              <i data-lucide="gauge" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div class="my-3 flex items-baseline space-x-2">
+              <span id="scoreGlobalValue" class="text-5xl font-black text-white tracking-tight">--</span>
+              <span class="text-sm text-slate-500">/ 100</span>
+            </div>
+            <div class="text-[11px] text-slate-400 flex justify-between border-t border-slate-800/80 pt-2">
+              <span>Base: <b id="scoreBaseValue" class="text-slate-300">--</b></span>
+              <span>Penalización: <b id="scorePenaltyValue" class="text-rose-400">--</b></span>
+            </div>
+          </div>
+
+          <!-- 4 Pillars Quick Summary Cards -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-slate-400 text-xs">
+              <span>🫀 Cardio</span>
+              <span id="scorePillarCardioStatus" class="badge-normal text-[10px] px-1.5 py-0.5 rounded">--</span>
+            </div>
+            <div class="text-2xl font-bold text-white mt-2" id="scorePillarCardioVal">--</div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div id="scorePillarCardioBar" class="bg-rose-500 h-full w-0"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-slate-400 text-xs">
+              <span>💪 Músculo</span>
+              <span id="scorePillarMuscleStatus" class="badge-normal text-[10px] px-1.5 py-0.5 rounded">--</span>
+            </div>
+            <div class="text-2xl font-bold text-white mt-2" id="scorePillarMuscleVal">--</div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div id="scorePillarMuscleBar" class="bg-emerald-500 h-full w-0"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between text-slate-400 text-xs">
+              <span>🦴 Hueso & 🦵 Artic.</span>
+              <span id="scorePillarsBoneJointStatus" class="badge-normal text-[10px] px-1.5 py-0.5 rounded">--</span>
+            </div>
+            <div class="text-2xl font-bold text-white mt-2" id="scorePillarsBoneJointVal">--</div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div id="scorePillarsBoneJointBar" class="bg-cyan-500 h-full w-0"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Flags & Snapshot History -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Active Flags Box -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm font-semibold text-white flex items-center justify-between">
+              <span>Banderas Clínicas de Alerta</span>
+              <span id="flagsCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">0 activas</span>
+            </h3>
+            <div id="flagsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+              <div class="text-xs text-slate-500 text-center py-6">Sin banderas activas registradas.</div>
+            </div>
+          </div>
+
+          <!-- History of Snapshots -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm font-semibold text-white flex items-center justify-between">
+              <span>Historial Inmutable de Snapshots (§8.8)</span>
+              <span id="historyCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">0 snapshots</span>
+            </h3>
+            <div id="historySnapshotsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- TAB 5: SERIES LONGITUDINALES (MÉDICO)                            -->
+      <!-- ================================================================ -->
+      <section id="tab-series" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+              <span>Series Longitudinales de Marcadores</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">Endpoint #17 (§9.5.2)</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Evolución temporal de analíticas clínicas con valores canónicos, variaciones absolutas y rangos de referencia.</p>
+          </div>
+          <button onclick="loadLongitudinalSeries()" class="text-xs px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium transition flex items-center space-x-1.5">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            <span>Cargar Series</span>
+          </button>
+        </div>
+
+        <!-- Marker Code Selector Pills -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <label class="block text-xs font-semibold text-slate-300">Seleccionar Marcadores a Visualizar (máximo 20):</label>
+          <div class="flex flex-wrap gap-2 text-xs" id="seriesMarkerPills">
+            <label class="cursor-pointer bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-slate-300 hover:border-sky-500">
+              <input type="checkbox" value="glucose" checked class="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-0">
+              <span>Glucosa</span>
+            </label>
+            <label class="cursor-pointer bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-slate-300 hover:border-sky-500">
+              <input type="checkbox" value="cholesterol_total" checked class="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-0">
+              <span>Colesterol Total</span>
+            </label>
+            <label class="cursor-pointer bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-slate-300 hover:border-sky-500">
+              <input type="checkbox" value="hdl" checked class="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-0">
+              <span>HDL</span>
+            </label>
+            <label class="cursor-pointer bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-slate-300 hover:border-sky-500">
+              <input type="checkbox" value="creatinine" checked class="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-0">
+              <span>Creatinina</span>
+            </label>
+            <label class="cursor-pointer bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-slate-300 hover:border-sky-500">
+              <input type="checkbox" value="vitamin_d" checked class="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-0">
+              <span>Vitamina D</span>
+            </label>
+            <label class="cursor-pointer bg-slate-950 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-slate-300 hover:border-sky-500">
+              <input type="checkbox" value="hemoglobin" class="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-0">
+              <span>Hemoglobina</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="h-80 w-full">
+            <canvas id="longitudinalChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- TAB 6: REPORTE & EXPORTACIÓN PDF (MÉDICO)                         -->
+      <!-- ================================================================ -->
+      <section id="tab-report" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+              <span>Reporte Completo de Laboratorio & Exportación PDF</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">Endpoints #19, #20</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Generación y descarga del reporte oficial con motor ReportLab y trazabilidad de versiones.</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button onclick="loadLabReportPayload()" class="text-xs px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1.5">
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              <span>Consultar Payload</span>
+            </button>
+            <button onclick="exportLabReportPdf()" id="btnExportPdf" class="text-xs px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-medium shadow-lg shadow-sky-500/20 transition flex items-center space-x-2">
+              <i data-lucide="file-down" class="w-4 h-4"></i>
+              <span>Generar y Descargar PDF Oficial</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="reportPayloadViewer" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 font-mono text-xs text-slate-300 max-h-96 overflow-y-auto">
+          <p class="text-slate-500">Haz clic en "Consultar Payload" para inspeccionar la estructura completa del reporte (§9.5.1) o en "Generar y Descargar PDF Oficial" para emitir el documento descargable.</p>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- TAB 7: CATÁLOGO CANÓNICO & AUDITORÍA                             -->
+      <!-- ================================================================ -->
+      <section id="tab-catalog" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-white flex items-center space-x-2">
+              <span>Catálogo Canónico de Marcadores & Recálculo Controlado</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono">Endpoint #16 (§8.8, §13.5)</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">Diccionario de marcadores estandarizados con unidades admitidas, rangos típicos y pilares asociados.</p>
+          </div>
+          <input id="catalogSearchInput" oninput="filterCatalogTable()" type="text" placeholder="Buscar por marcador o pilar..." class="w-64 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500">
+        </div>
+
+        <!-- SOP Recompute Command Highlight -->
+        <div class="bg-gradient-to-r from-purple-950/40 via-slate-900 to-slate-900 border border-purple-500/20 rounded-2xl p-4 text-xs space-y-2">
+          <div class="flex items-center space-x-2 text-purple-300 font-semibold">
+            <i data-lucide="terminal" class="w-4 h-4"></i>
+            <span>Procedimiento de Recálculo Masivo Controlado (§13.5 y §8.8)</span>
+          </div>
+          <p class="text-slate-400">Para ejecutar la herramienta CLI de recálculo masivo controlado con comparación de distribuciones estadísticas antes vs después:</p>
+          <div class="flex items-center space-x-2 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-emerald-400">
+            <span class="text-slate-500">$</span>
+            <span class="flex-1 select-all">docker exec wellq-api python scripts/recompute_scoring.py --version "score-v1.1" --output exports/simulacion.md</span>
+          </div>
+        </div>
+
+        <!-- Catalog Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950 text-slate-400 font-semibold border-b border-slate-800">
+              <tr>
+                <th class="p-3">Código</th>
+                <th class="p-3">Nombre</th>
+                <th class="p-3">Panel</th>
+                <th class="p-3">Unidad Canónica</th>
+                <th class="p-3">Unidades Soportadas</th>
+                <th class="p-3">Pilares</th>
+                <th class="p-3">Rango Típico</th>
+              </tr>
+            </thead>
+            <tbody id="catalogTableBody" class="divide-y divide-slate-800/60 font-mono">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: JWT & SETTINGS -->
+  <div id="tokenModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+          <span>Autenticación JWT & Configuración</span>
+        </h3>
+        <button onclick="toggleTokenModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Base URL de la API</label>
+          <input id="cfgApiBaseUrl" type="text" value="http://localhost:8000/api/v1" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 font-mono">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">JWT Secret Key (HS256)</label>
+          <input id="cfgJwtSecret" type="text" value="your-secret-key-here" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 font-mono">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Token JWT Actual (generado dinámicamente)</label>
+          <textarea id="cfgCurrentJwtText" rows="3" readonly class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-[11px] font-mono text-emerald-400 break-all"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="toggleTokenModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    // --- STATE MANAGEMENT ---
+    const STATE = {
+      apiBaseUrl: window.location.origin.includes(':8000') ? `${window.location.origin}/api/v1` : 'http://localhost:8000/api/v1',
+      jwtSecret: 'your-secret-key-here',
+      currentRole: 'patient', // 'patient' | 'clinician'
+      patientId: 'P-1001',
+      clinicianId: 'DOC-501',
+      activeUploadId: null,
+      activeClinicalTestId: null,
+      activeExtractionId: null,
+      activeExtractionData: null,
+      longitudinalChartInstance: null,
+    };
+
+    // --- JWT CLIENT-SIDE ENCODER (HS256) ---
+    function base64url(source) {
+      let encodedSource = CryptoJS.enc.Base64.stringify(source);
+      encodedSource = encodedSource.replace(/=+$/, '');
+      encodedSource = encodedSource.replace(/\+/g, '-');
+      encodedSource = encodedSource.replace(/\//g, '_');
+      return encodedSource;
+    }
+
+    function generateJwt(role, id) {
+      const header = { alg: "HS256", typ: "JWT" };
+      let payload = { sub: `usr_${id}`, role: role };
+      if (role === 'patient') {
+        payload.patient_id = id;
+      } else {
+        payload.clinician_id = id;
+      }
+
+      const stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
+      const encodedHeader = base64url(stringifiedHeader);
+
+      const stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(payload));
+      const encodedData = base64url(stringifiedData);
+
+      const token = encodedHeader + "." + encodedData;
+      const signature = CryptoJS.HmacSHA256(token, STATE.jwtSecret);
+      const encodedSignature = base64url(signature);
+
+      return token + "." + encodedSignature;
+    }
+
+    function getCurrentToken() {
+      const id = STATE.currentRole === 'patient' ? STATE.patientId : STATE.clinicianId;
+      return generateJwt(STATE.currentRole, id);
+    }
+
+    function getAuthHeaders(extra = {}) {
+      return {
+        'Authorization': `Bearer ${getCurrentToken()}`,
+        'Accept': 'application/json',
+        ...extra
+      };
+    }
+
+    // --- TOAST NOTIFICATIONS ---
+    function showToast(title, message, isError = false) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastMessage').innerText = message;
+      document.getElementById('toastIcon').innerHTML = isError 
+        ? '<i data-lucide="alert-circle" class="w-5 h-5 text-rose-500"></i>'
+        : '<i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>';
+      toast.classList.remove('hidden');
+      lucide.createIcons();
+      setTimeout(hideToast, 5000);
+    }
+
+    function hideToast() {
+      document.getElementById('toastNotification').classList.add('hidden');
+    }
+
+    // --- ROLE SWITCHER ---
+    function switchRole(role) {
+      STATE.currentRole = role;
+      const btnP = document.getElementById('btnRolePatient');
+      const btnC = document.getElementById('btnRoleClinician');
+      const lbl = document.getElementById('roleLabel');
+      const curId = document.getElementById('currentUserIdText');
+      const curSub = document.getElementById('currentSubText');
+
+      if (role === 'patient') {
+        btnP.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 bg-brand-600 text-white shadow-sm';
+        btnC.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 text-slate-400 hover:text-white';
+        lbl.innerText = 'PACIENTE';
+        lbl.className = 'text-brand-400 font-semibold uppercase';
+        curId.innerText = STATE.patientId;
+        curSub.innerText = `sub: usr_${STATE.patientId}`;
+        navigateTab('tab-upload');
+      } else {
+        btnC.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 bg-sky-600 text-white shadow-sm';
+        btnP.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center space-x-1.5 text-slate-400 hover:text-white';
+        lbl.innerText = 'MÉDICO CLÍNICO';
+        lbl.className = 'text-sky-400 font-semibold uppercase';
+        curId.innerText = STATE.clinicianId;
+        curSub.innerText = `sub: usr_${STATE.clinicianId}`;
+        navigateTab('tab-score');
+      }
+      updateTokenDisplay();
+      showToast(`Modo cambiado a ${role === 'patient' ? 'Paciente (P-1001)' : 'Médico Clínico (DOC-501)'}`, 'Token de autenticación recalculado automáticamente');
+    }
+
+    function updateTokenDisplay() {
+      const txt = document.getElementById('cfgCurrentJwtText');
+      if (txt) txt.value = getCurrentToken();
+    }
+
+    function toggleTokenModal() {
+      const modal = document.getElementById('tokenModal');
+      modal.classList.toggle('hidden');
+      updateTokenDisplay();
+    }
+
+    // --- NAVIGATION ---
+    function navigateTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-slate-800', 'text-white'));
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.remove('hidden');
+
+      const btn = document.getElementById(`nav-${tabId}`);
+      if (btn) btn.classList.add('bg-slate-800', 'text-white');
+
+      // Auto-trigger tab data loading
+      if (tabId === 'tab-patient-tests') loadPatientExams();
+      if (tabId === 'tab-clinician-tests') loadClinicianPatientExams();
+      if (tabId === 'tab-score') loadLabScore();
+      if (tabId === 'tab-catalog') loadCatalog();
+    }
+
+    // --- HEALTH CHECK ---
+    async function checkApiHealth() {
+      const statusText = document.getElementById('apiStatusText');
+      try {
+        const rootUrl = STATE.apiBaseUrl.replace('/api/v1', '');
+        const res = await fetch(`${rootUrl}/health`);
+        if (res.ok) {
+          statusText.innerText = 'API: En línea';
+        } else {
+          statusText.innerText = `API: Error ${res.status}`;
+        }
+      } catch (e) {
+        statusText.innerText = 'API: Desconectada';
+      }
+    }
+
+    // --- TAB 1: UPLOAD & EXTRACTION FLOW ---
+    async function executeUploadFlow() {
+      const title = document.getElementById('upTitle').value || 'Examen de Laboratorio';
+      const testType = document.getElementById('upTestType').value;
+      const testDate = document.getElementById('upTestDate').value || '2026-10-15';
+      const fileInput = document.getElementById('upFileInput');
+
+      const statusBox = document.getElementById('uploadStatusBox');
+      const progressBar = document.getElementById('uploadProgressBar');
+      const percentText = document.getElementById('uploadPercentText');
+      const stepText = document.getElementById('uploadStepText');
+      const detailText = document.getElementById('uploadDetailText');
+
+      statusBox.classList.remove('hidden');
+      progressBar.style.width = '10%';
+      percentText.innerText = '10%';
+      stepText.innerText = 'Iniciando subida (Endpoint #1)...';
+
+      // 1. Initiate upload
+      const clientUploadId = 'upl_' + Math.random().toString(36).substring(2, 10);
+      const sha256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+      const sizeBytes = fileInput.files[0] ? fileInput.files[0].size : 1024000;
+      const fileName = fileInput.files[0] ? fileInput.files[0].name : 'analitica_clinica.pdf';
+
+      try {
+        const initRes = await fetch(`${STATE.apiBaseUrl}/clinical-tests/uploads/initiate`, {
+          method: 'POST',
+          headers: getAuthHeaders({
+            'Content-Type': 'application/json',
+            'Idempotency-Key': 'idem_' + Math.random().toString(36).substring(2, 10)
+          }),
+          body: JSON.stringify({
+            client_upload_id: clientUploadId,
+            file_name: fileName,
+            mime_type: 'application/pdf',
+            size_bytes: sizeBytes,
+            sha256: sha256,
+            test_type: testType,
+            title: title,
+            test_date: testDate
+          })
+        });
+
+        if (!initRes.ok) throw new Error(`Fallo initiate: ${initRes.statusText}`);
+        const initData = await initRes.json();
+        STATE.activeUploadId = initData.upload_id;
+        STATE.activeClinicalTestId = initData.clinical_test_id;
+
+        progressBar.style.width = '35%';
+        percentText.innerText = '35%';
+        stepText.innerText = 'Completando subida (Endpoint #3)...';
+        detailText.innerText = `clinical_test_id: ${STATE.activeClinicalTestId}`;
+
+        // 2. Complete upload
+        const compRes = await fetch(`${STATE.apiBaseUrl}/clinical-tests/uploads/${STATE.activeUploadId}/complete`, {
+          method: 'POST',
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({
+            client_upload_id: clientUploadId,
+            sha256: sha256,
+            size_bytes: sizeBytes
+          })
+        });
+
+        if (!compRes.ok) throw new Error(`Fallo complete: ${compRes.statusText}`);
+
+        progressBar.style.width = '60%';
+        percentText.innerText = '60%';
+        stepText.innerText = 'Extracción LLM en proceso (Polling #4)...';
+
+        // 3. Polling for extraction
+        let attempts = 0;
+        const interval = setInterval(async () => {
+          attempts++;
+          const extRes = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${STATE.activeClinicalTestId}/extraction`, {
+            headers: getAuthHeaders()
+          });
+
+          if (extRes.status === 200) {
+            clearInterval(interval);
+            progressBar.style.width = '100%';
+            percentText.innerText = '100%';
+            stepText.innerText = '¡Extracción completada con éxito!';
+            detailText.innerText = 'Propuesta de marcadores lista para revisión.';
+            const extData = await extRes.json();
+            renderExtraction(extData);
+            showToast('Extracción Exitosa', `Se procesó el examen ${STATE.activeClinicalTestId}`);
+          } else if (attempts > 30) {
+            clearInterval(interval);
+            stepText.innerText = 'Extracción demorando más de lo habitual...';
+          }
+        }, 1000);
+
+      } catch (err) {
+        showToast('Error en Carga', err.message, true);
+        stepText.innerText = 'Error en el proceso';
+      }
+    }
+
+    function renderExtraction(data) {
+      STATE.activeExtractionId = data.extraction_id;
+      STATE.activeExtractionData = data;
+
+      document.getElementById('currentExamIdBadge').innerText = STATE.activeClinicalTestId;
+      document.getElementById('currentExamIdBadge').classList.remove('hidden');
+      document.getElementById('btnConfirmExtraction').classList.remove('hidden');
+      document.getElementById('btnReprocess').classList.remove('hidden');
+
+      const container = document.getElementById('extractionContainer');
+      let html = `
+        <div class="w-full text-left space-y-4 font-sans">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div>
+              <span class="text-xs text-slate-400">Extracción ID:</span>
+              <span class="font-mono text-xs text-emerald-400 font-semibold ml-1">${data.extraction_id}</span>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Estado: ${data.status}</span>
+          </div>
+      `;
+
+      (data.panels || []).forEach(panel => {
+        html += `
+          <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="bg-slate-900/80 px-3 py-2 text-xs font-semibold text-slate-300 flex justify-between">
+              <span>Panel: ${panel.panel_code || 'General'}</span>
+              <span class="text-slate-500 font-normal">Muestra: ${panel.specimen || 'suero'}</span>
+            </div>
+            <table class="w-full text-xs text-left">
+              <thead class="text-slate-400 bg-slate-950 border-b border-slate-800/80 font-mono">
+                <tr>
+                  <th class="p-2.5">Marcador</th>
+                  <th class="p-2.5">Valor Extraído</th>
+                  <th class="p-2.5">Unidad</th>
+                  <th class="p-2.5">Confianza</th>
+                  <th class="p-2.5">Estado</th>
+                  <th class="p-2.5 text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/40 font-mono">
+        `;
+
+        (panel.markers || []).forEach(m => {
+          const conf = Math.round((m.confidence || 0.95) * 100);
+          const badgeClass = m.status === 'normal' ? 'badge-normal' : (m.status === 'high' ? 'badge-high' : 'badge-critical');
+          html += `
+            <tr id="row-marker-${m.marker_code}">
+              <td class="p-2.5">
+                <div class="font-semibold text-slate-200">${m.marker_code}</div>
+                <div class="text-[10px] text-slate-500">${m.raw_name || ''}</div>
+              </td>
+              <td class="p-2.5">
+                <input type="number" step="any" value="${m.value_canonical}" id="input-val-${m.marker_code}" class="w-20 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-white">
+              </td>
+              <td class="p-2.5 text-slate-400">${m.unit_canonical}</td>
+              <td class="p-2.5">
+                <span class="text-[11px] font-semibold ${conf > 90 ? 'text-emerald-400' : 'text-amber-400'}">${conf}%</span>
+              </td>
+              <td class="p-2.5">
+                <span class="text-[10px] px-1.5 py-0.5 rounded ${badgeClass}">${m.status}</span>
+              </td>
+              <td class="p-2.5 text-right">
+                <button onclick="removeMarkerPreview('${m.marker_code}')" class="text-rose-400 hover:text-rose-300 p-1 rounded" title="Descartar marcador">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `</tbody></table></div>`;
+      });
+
+      html += `</div>`;
+      container.innerHTML = html;
+      container.className = "w-full text-left";
+      lucide.createIcons();
+    }
+
+    function removeMarkerPreview(code) {
+      const row = document.getElementById(`row-marker-${code}`);
+      if (row) row.remove();
+      showToast('Marcador Excluido', `Se descartó ${code} de la confirmación`);
+    }
+
+    async function confirmCurrentExtraction() {
+      if (!STATE.activeClinicalTestId || !STATE.activeExtractionId) return;
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${STATE.activeClinicalTestId}/extraction`, {
+          method: 'PATCH',
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({
+            action: 'confirm',
+            extraction_id: STATE.activeExtractionId,
+            marker_edits: []
+          })
+        });
+
+        if (!res.ok) throw new Error(await res.text());
+        showToast('¡Confirmación Exitosa!', 'Marcadores persistidos en el activo longitudinal y nuevo score generado (§8.8)');
+        navigateTab('tab-score');
+      } catch (e) {
+        showToast('Error al confirmar', e.message, true);
+      }
+    }
+
+    async function reprocessCurrentExtraction() {
+      if (!STATE.activeClinicalTestId) return;
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${STATE.activeClinicalTestId}/extraction/reprocess`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error(await res.text());
+        showToast('Reprocesamiento iniciado', 'Se archivó la extracción previa');
+      } catch (e) {
+        showToast('Error al reprocesar', e.message, true);
+      }
+    }
+
+    // --- TAB 2: PATIENT EXAMS ---
+    async function loadPatientExams() {
+      const grid = document.getElementById('patientExamsGrid');
+      grid.innerHTML = '<div class="text-slate-500 text-xs">Cargando exámenes...</div>';
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests`, { headers: getAuthHeaders() });
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        const items = data.items || [];
+
+        if (items.length === 0) {
+          grid.innerHTML = '<div class="text-slate-500 text-xs col-span-3 py-8 text-center">No hay exámenes cargados aún para este paciente.</div>';
+          return;
+        }
+
+        grid.innerHTML = items.map(ex => `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="font-mono text-emerald-400">${ex.clinical_test_id}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">${ex.upload?.status || 'registrado'}</span>
+              </div>
+              <h3 class="font-semibold text-white text-sm mt-1.5">${ex.title || 'Examen Clínico'}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Fecha: ${ex.test_date || '-'} | Tipo: ${ex.test_type}</p>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-800/80 pt-2 text-xs">
+              <button onclick="downloadOriginalExam('${ex.clinical_test_id}')" class="text-slate-400 hover:text-white flex items-center space-x-1">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Descargar</span>
+              </button>
+              <button onclick="deleteExam('${ex.clinical_test_id}')" class="text-rose-400 hover:text-rose-300 flex items-center space-x-1">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>Borrar</span>
+              </button>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      } catch (e) {
+        grid.innerHTML = `<div class="text-rose-400 text-xs col-span-3">Error al cargar exámenes: ${e.message}</div>`;
+      }
+    }
+
+    function triggerClientPdfDownload(fileName, testId) {
+      const content = `%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]/Parent 2 0 R/Resources<<>>/Contents 4 0 R>>endobj\n4 0 obj<</Length 110>>stream\nBT\n/F1 16 Tf\n50 780 Td\n(WellQ Clinical Tests - Examen: ${testId}) Tj\n0 -25 Td\n(Documento Clinico Original descargado en entorno local de pruebas) Tj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \n0000000218 00000 n \ntrailer<</Size 5/Root 1 0 R>>\nstartxref\n380\n%%EOF`;
+      const blob = new Blob([content], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName || `${testId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function downloadOriginalExam(id) {
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${id}/download-url`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (data.url) {
+          if (data.url.includes('mock_download_signature') || data.url.includes('storage.googleapis.com')) {
+            showToast('Modo Desarrollo GCS', `En producción se descarga del bucket privado de GCS. Descargando archivo local para ${data.file_name}...`, false);
+            triggerClientPdfDownload(data.file_name, id);
+            return;
+          }
+          window.open(data.url, '_blank');
+        }
+      } catch (e) {
+        showToast('Error de descarga', e.message, true);
+      }
+    }
+
+    async function deleteExam(id) {
+      if (!confirm(`¿Eliminar examen ${id}?`)) return;
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${id}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          showToast('Examen Eliminado', `Soft delete realizado para ${id}`);
+          loadPatientExams();
+        }
+      } catch (e) {
+        showToast('Error', e.message, true);
+      }
+    }
+
+    // --- TAB 3: CLINICIAN PORTAL ---
+    async function loadClinicianPatientExams() {
+      const pid = document.getElementById('clinicianTargetPatientInput').value.trim() || 'P-1001';
+      const container = document.getElementById('clinicianExamsContainer');
+      container.innerHTML = '<div class="text-slate-500 text-xs">Consultando exámenes asignados...</div>';
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/patients/${pid}/clinical-tests`, { headers: getAuthHeaders() });
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        const items = data.items || [];
+
+        if (items.length === 0) {
+          container.innerHTML = `<div class="text-slate-500 text-xs py-6 text-center">No hay exámenes registrados para el paciente ${pid}.</div>`;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Examen ID</th>
+                  <th class="p-3">Título</th>
+                  <th class="p-3">Fecha</th>
+                  <th class="p-3">Estado Revisión</th>
+                  <th class="p-3 text-right">Acciones Clínicas</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+                ${items.map(ex => `
+                  <tr>
+                    <td class="p-3 font-semibold text-sky-400">${ex.clinical_test_id}</td>
+                    <td class="p-3 font-sans text-white">${ex.title || '-'}</td>
+                    <td class="p-3 text-slate-400">${ex.test_date || '-'}</td>
+                    <td class="p-3">
+                      <span class="text-[10px] px-2 py-0.5 rounded ${ex.review?.status === 'reviewed' ? 'badge-normal' : 'badge-high'}">
+                        ${ex.review?.status || 'not_reviewed'}
+                      </span>
+                    </td>
+                    <td class="p-3 text-right space-x-2">
+                      <button onclick="promptClinicianReview('${ex.clinical_test_id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">Revisión (#11)</button>
+                      <button onclick="promptClinicianValidation('${ex.clinical_test_id}')" class="px-2.5 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium">Validación (#15)</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (e) {
+        container.innerHTML = `<div class="text-rose-400 text-xs">Error: ${e.message}</div>`;
+      }
+    }
+
+    async function promptClinicianReview(id) {
+      const note = prompt(`Ingrese nota médica confidencial para el examen ${id}:`, 'Examen revisado y validado clínicamente sin objeciones.');
+      if (!note) return;
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${id}/review`, {
+          method: 'PATCH',
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ notes: note })
+        });
+        if (res.ok) {
+          showToast('Revisión Registrada', `Examen ${id} marcado como reviewed`);
+          loadClinicianPatientExams();
+        }
+      } catch (e) {
+        showToast('Error', e.message, true);
+      }
+    }
+
+    async function promptClinicianValidation(id) {
+      if (!confirm(`¿Validar extracción del examen ${id} con firma médica oficial?`)) return;
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/clinical-tests/${id}/extraction/validate`, {
+          method: 'POST',
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ corrections: [] })
+        });
+        if (res.ok) {
+          showToast('Validación Médica Exitosa', `Extracción del examen ${id} validada clínicamente`);
+          loadClinicianPatientExams();
+        }
+      } catch (e) {
+        showToast('Error', e.message, true);
+      }
+    }
+
+    // --- TAB 4: WELLQ HEALTH SCORE ---
+    async function loadLabScore() {
+      const pid = STATE.patientId;
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/patients/${pid}/lab-score?history=true`, {
+          headers: getAuthHeaders()
+        });
+
+        if (res.status === 404) {
+          document.getElementById('scoreGlobalValue').innerText = '--';
+          document.getElementById('scoreBaseValue').innerText = 'Sin exámenes';
+          return;
+        }
+
+        const data = await res.json();
+        const snap = data.current_snapshot || {};
+
+        document.getElementById('scoreGlobalValue').innerText = snap.lab_index ?? '--';
+        document.getElementById('scoreBaseValue').innerText = snap.base_score ?? '--';
+        document.getElementById('scorePenaltyValue').innerText = `-${snap.penalty_applied || 0} pts`;
+
+        const pillars = snap.pillars || {};
+        const pCardio = pillars.cardio || {};
+        const pMuscle = pillars.muscle || {};
+        const pBone = pillars.bone || {};
+        const pJoint = pillars.joint || {};
+
+        document.getElementById('scorePillarCardioVal').innerText = pCardio.score != null ? `${pCardio.score} pts` : '--';
+        document.getElementById('scorePillarCardioBar').style.width = `${pCardio.score || 0}%`;
+        document.getElementById('scorePillarCardioStatus').innerText = pCardio.status || 'sin datos';
+
+        document.getElementById('scorePillarMuscleVal').innerText = pMuscle.score != null ? `${pMuscle.score} pts` : '--';
+        document.getElementById('scorePillarMuscleBar').style.width = `${pMuscle.score || 0}%`;
+        document.getElementById('scorePillarMuscleStatus').innerText = pMuscle.status || 'sin datos';
+
+        const avgBJ = Math.round(((pBone.score || 0) + (pJoint.score || 0)) / 2);
+        document.getElementById('scorePillarsBoneJointVal').innerText = `${avgBJ} pts`;
+        document.getElementById('scorePillarsBoneJointBar').style.width = `${avgBJ}%`;
+        document.getElementById('scorePillarsBoneJointStatus').innerText = pBone.status || 'normal';
+
+        // Render Flags
+        const flags = snap.flags || [];
+        document.getElementById('flagsCountBadge').innerText = `${flags.length} activas`;
+        const fBox = document.getElementById('flagsContainer');
+        if (flags.length === 0) {
+          fBox.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">Sin banderas activas registradas.</div>';
+        } else {
+          fBox.innerHTML = flags.map(f => `
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-start space-x-3 text-xs">
+              <span class="mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${f.severity === 'critical' ? 'badge-critical' : 'badge-high'}">${f.severity}</span>
+              <div class="flex-1">
+                <div class="font-semibold text-slate-200">${f.marker_code}: ${f.value} ${f.unit || ''}</div>
+                <div class="text-slate-400 text-[11px] mt-0.5">${f.message}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // Render Snapshots History
+        const hist = data.history || [];
+        document.getElementById('historyCountBadge').innerText = `${hist.length} anteriores`;
+        const hBox = document.getElementById('historySnapshotsContainer');
+        if (hist.length === 0) {
+          hBox.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">Primer snapshot vigente (sin histórico previo).</div>';
+        } else {
+          hBox.innerHTML = hist.map(h => `
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs font-mono">
+              <div>
+                <span class="text-emerald-400 font-semibold">${h.lab_index ?? '-'} pts</span>
+                <span class="text-slate-500 text-[10px] ml-2">v: ${h.scoring_version}</span>
+              </div>
+              <div class="text-right text-[10px] text-slate-400">
+                <div>${h.trigger}</div>
+                <div class="text-slate-500">${h.computed_at}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+      } catch (e) {
+        showToast('Error cargando score', e.message, true);
+      }
+    }
+
+    // --- TAB 5: LONGITUDINAL SERIES ---
+    async function loadLongitudinalSeries() {
+      const selectedCodes = Array.from(document.querySelectorAll('#seriesMarkerPills input:checked')).map(cb => cb.value);
+      if (selectedCodes.length === 0) return showToast('Atención', 'Selecciona al menos un marcador', true);
+
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/patients/${STATE.patientId}/markers?marker_codes=${selectedCodes.join(',')}`, {
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        const series = data.series || [];
+
+        const ctx = document.getElementById('longitudinalChart').getContext('2d');
+        if (STATE.longitudinalChartInstance) STATE.longitudinalChartInstance.destroy();
+
+        const colors = ['#10b981', '#0284c7', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+        const datasets = series.map((s, idx) => {
+          const color = colors[idx % colors.length];
+          return {
+            label: `${s.marker_code} (${s.unit || ''})`,
+            data: (s.points || []).map(p => ({ x: p.measured_on, y: p.value })),
+            borderColor: color,
+            backgroundColor: color,
+            tension: 0.2,
+            pointRadius: 4,
+          };
+        });
+
+        STATE.longitudinalChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: { datasets: datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+              y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+            },
+            plugins: {
+              legend: { labels: { color: '#f1f5f9' } }
+            }
+          }
+        });
+        showToast('Series cargadas', `Visualizando ${series.length} marcadores`);
+      } catch (e) {
+        showToast('Error en series', e.message, true);
+      }
+    }
+
+    // --- TAB 6: REPORT & PDF EXPORT ---
+    async function loadLabReportPayload() {
+      const viewer = document.getElementById('reportPayloadViewer');
+      viewer.innerHTML = '<span class="text-slate-500">Cargando payload...</span>';
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/patients/${STATE.patientId}/lab-report`, {
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        viewer.innerHTML = `<pre class="text-slate-200">${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (e) {
+        viewer.innerText = `Error: ${e.message}`;
+      }
+    }
+
+    async function exportLabReportPdf() {
+      const btn = document.getElementById('btnExportPdf');
+      btn.innerText = 'Generando PDF en Servidor...';
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/patients/${STATE.patientId}/lab-report/export`, {
+          method: 'POST',
+          headers: getAuthHeaders({
+            'Content-Type': 'application/json',
+            'Idempotency-Key': 'lrx_' + Math.random().toString(36).substring(2, 10)
+          }),
+          body: JSON.stringify({ window_months: 12, include_series: true })
+        });
+        const data = await res.json();
+        // En entorno local de pruebas, abrir el archivo generado físicamente por ReportLab en /exports
+        if (data.storage === 'local' || (data.download_url && data.download_url.includes('storage.googleapis.com'))) {
+          const localUrl = `/exports/${data.export_id}.pdf`;
+          window.open(localUrl, '_blank');
+          showToast('PDF Oficial Generado', `Descargando reporte generado por ReportLab: ${data.file_name}`);
+        } else if (data.download_url) {
+          window.open(data.download_url, '_blank');
+          showToast('PDF Generado', `Reporte emitido: ${data.file_name}`);
+        } else {
+          showToast('PDF generado', 'Listo pero sin URL de descarga directa', false);
+        }
+      } catch (e) {
+        showToast('Error exportando PDF', e.message, true);
+      } finally {
+        btn.innerHTML = '<i data-lucide="file-down" class="w-4 h-4"></i><span>Generar y Descargar PDF Oficial</span>';
+        lucide.createIcons();
+      }
+    }
+
+    // --- TAB 7: CANONICAL CATALOG ---
+    let CATALOG_CACHE = [];
+    async function loadCatalog() {
+      const tbody = document.getElementById('catalogTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">Cargando catálogo...</td></tr>';
+      try {
+        const res = await fetch(`${STATE.apiBaseUrl}/marker-catalog`, { headers: getAuthHeaders() });
+        const data = await res.json();
+        CATALOG_CACHE = data;
+        renderCatalogRows(data);
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400">Error: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderCatalogRows(items) {
+      const tbody = document.getElementById('catalogTableBody');
+      tbody.innerHTML = items.map(m => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="p-3 font-bold text-purple-400">${m.marker_code}</td>
+          <td class="p-3 font-sans text-slate-200">${m.name}</td>
+          <td class="p-3 text-slate-400">${m.panel_code}</td>
+          <td class="p-3 text-emerald-400">${m.canonical_unit}</td>
+          <td class="p-3 text-slate-400 text-[11px]">${(m.supported_units || []).join(', ')}</td>
+          <td class="p-3">
+            ${(m.pillars || []).map(p => `<span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 mr-1">${p}</span>`).join('')}
+          </td>
+          <td class="p-3 text-slate-400">${m.typical_range?.low ?? '-'} a ${m.typical_range?.high ?? '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterCatalogTable() {
+      const term = document.getElementById('catalogSearchInput').value.toLowerCase();
+      const filtered = CATALOG_CACHE.filter(m => 
+        m.marker_code.toLowerCase().includes(term) ||
+        m.name.toLowerCase().includes(term) ||
+        (m.pillars || []).some(p => p.toLowerCase().includes(term))
+      );
+      renderCatalogRows(filtered);
+    }
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      checkApiHealth();
+      navigateTab('tab-upload');
+      updateTokenDisplay();
+    });
+  </script>
+</body>
+</html>
