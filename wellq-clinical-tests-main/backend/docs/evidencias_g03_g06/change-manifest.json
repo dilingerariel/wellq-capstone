@@ -1,0 +1,58 @@
+{
+  "changed_existing": [
+    "wellq-clinical-tests-main/backend/app/services/audit.py",
+    "wellq-clinical-tests-main/backend/docs/openapi.json",
+    "wellq-clinical-tests-main/backend/integration/adapters.py",
+    "wellq-clinical-tests-main/backend/integration/bootstrap.py",
+    "wellq-clinical-tests-main/backend/app/models/schemas.py",
+    "wellq-clinical-tests-main/backend/app/routes/clinical_tests.py"
+  ],
+  "new_files": [
+    "checks/test_edit_review.py",
+    "integration/edit_review.py",
+    "integration/Review.ps1",
+    "docs/23_CIERRE_EDICION_REVISION_CLINICA.md"
+  ],
+  "files": [
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\services\\audit.py",
+      "sha256": "b7e4e120a97e3a7ce5af129aecfbb0653f9313caf8664c67936d5a5b86b52c11"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\docs\\openapi.json",
+      "sha256": "0a13a147316e35b213dc59bf7cca26aaac883f7e45041e3acd3307180bb67a25"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\adapters.py",
+      "sha256": "e1e1c1365f4fc551fbf5153d67881edcbf82db9b0bb56e2f302c35c230546e55"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\bootstrap.py",
+      "sha256": "be5801d8dd00ca07a256223bfcace28f88f16bda61ca7068e48630d0c09936d0"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\models\\schemas.py",
+      "sha256": "74f2b50600afeed2fd1d8a5abdc19015b158f8b5ed201ad84359f8ccb2f349cb"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\routes\\clinical_tests.py",
+      "sha256": "1319db0250923f203d144653ba15298799d754dfc3f08198974b018fd522b587"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\checks\\test_edit_review.py",
+      "sha256": "c336e1054008062189672e6bf1eed0008de67ae1dab22850119f9d8d320281fd"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\edit_review.py",
+      "sha256": "663ab54a562ae3c0dab56bc73bcfe0ce18dd90353db3f4a828f943ed3d32dd06"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\Review.ps1",
+      "sha256": "a4381f5ba1006c23b9f0468acc69a57b38b4af0c3a8aef17ac1aeff6e6d9d9e6"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\docs\\23_CIERRE_EDICION_REVISION_CLINICA.md",
+      "sha256": "7c51dd920377422fd8d8105e4e02983970264193ea1bd9d28f8fe4d05cf6ec42"
+    }
+  ]
+}

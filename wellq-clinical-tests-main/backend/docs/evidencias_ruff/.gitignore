@@ -1,0 +1,4 @@
+# Raw phase-4B JUnit IDs include invented authenticated URLs.
+/gate-and-publication.xml
+/full-and-publication.xml
+/full-final.xml

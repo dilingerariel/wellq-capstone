@@ -1,0 +1,51 @@
+[
+  {
+    "scenario": "suficiente",
+    "page": 1,
+    "pdf_sha256": "3663bbf93490cc0ae76d2fb3751c5ad8f319ceff629f24a32479ea01a7965aba",
+    "png_sha256": "6ff100952db6ef157f218d28a8aef11b1a442c636e3ce5b59e220d07e92d54fb",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\suficiente-3663bbf9-pagina-01.png"
+  },
+  {
+    "scenario": "suficiente",
+    "page": 2,
+    "pdf_sha256": "3663bbf93490cc0ae76d2fb3751c5ad8f319ceff629f24a32479ea01a7965aba",
+    "png_sha256": "e0a060c7a8de5ac7aa0ef9db39d45f70c238380a8e26b90abbb23c24b9002c86",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\suficiente-3663bbf9-pagina-02.png"
+  },
+  {
+    "scenario": "suficiente",
+    "page": 3,
+    "pdf_sha256": "3663bbf93490cc0ae76d2fb3751c5ad8f319ceff629f24a32479ea01a7965aba",
+    "png_sha256": "5f08d5eee1fbf542f1e693e3e0b31dd90e00277e6e326bcec97909e04b06ed0a",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\suficiente-3663bbf9-pagina-03.png"
+  },
+  {
+    "scenario": "suficiente",
+    "page": 4,
+    "pdf_sha256": "3663bbf93490cc0ae76d2fb3751c5ad8f319ceff629f24a32479ea01a7965aba",
+    "png_sha256": "873f8162e68a02e5a34b2dd9808fbacc054b324cca1e76f361e31f40c8b98cd1",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\suficiente-3663bbf9-pagina-04.png"
+  },
+  {
+    "scenario": "incompleto",
+    "page": 1,
+    "pdf_sha256": "b5b9a0cd8babc0655adff26b4258f8bd8ffead7f21cb24384ce1c61b3d7636c4",
+    "png_sha256": "ef5eefe6e8c73464b3144dd335bb02f7e1a293eecd86cdaf976850327c177219",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\incompleto-b5b9a0cd-pagina-01.png"
+  },
+  {
+    "scenario": "incompleto",
+    "page": 2,
+    "pdf_sha256": "b5b9a0cd8babc0655adff26b4258f8bd8ffead7f21cb24384ce1c61b3d7636c4",
+    "png_sha256": "a6df3c25e818e8eaeef1388153a8d5bf01e0c6ae6217b4e9f19af74d0453e2bd",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\incompleto-b5b9a0cd-pagina-02.png"
+  },
+  {
+    "scenario": "incompleto",
+    "page": 3,
+    "pdf_sha256": "b5b9a0cd8babc0655adff26b4258f8bd8ffead7f21cb24384ce1c61b3d7636c4",
+    "png_sha256": "a1a1267f9fb55d4cbb182194f65b89644737bb6aaf35c559f175538fe89e76d2",
+    "path": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\demo-output\\revision-visual-entrega\\incompleto-b5b9a0cd-pagina-03.png"
+  }
+]

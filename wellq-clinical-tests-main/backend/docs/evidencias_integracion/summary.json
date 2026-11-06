@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-11-05T15:37:11.910805+00:00",
+  "suites": {
+    "integration-first": {
+      "failed": 2,
+      "errors": 0,
+      "skipped": 0,
+      "collected": 57,
+      "passed": 55
+    },
+    "integration-after-fixes": {
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "collected": 57,
+      "passed": 57
+    },
+    "integration": {
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "collected": 59,
+      "passed": 59
+    },
+    "application-regressions": {
+      "failed": 0,
+      "errors": 0,
+      "skipped": 209,
+      "collected": 487,
+      "passed": 278
+    },
+    "clamav-first": {
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0,
+      "collected": 6,
+      "passed": 5
+    },
+    "clamav-second": {
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0,
+      "collected": 6,
+      "passed": 5
+    },
+    "clamav": {
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "collected": 6,
+      "passed": 6
+    }
+  },
+  "historical_cases": 30,
+  "historical_real_mongo_with_doubles": 28,
+  "historical_pure": 2,
+  "restart_probe": {
+    "project": "wellq-int-39706292db88",
+    "run": "39706292db88",
+    "tenant": "integration-1448d26c18634afea8a855576c466c19",
+    "patient": "patient-f2e200b38d4e45fb8734ad261eca5a41",
+    "clinical_test_id": "ct_8cea668b2c1d43a0a9070fec0239dbb0",
+    "upload_id": "ctu_8cea668b2c1d43a0a9070fec0239dbb0",
+    "before": "pending",
+    "after": "done",
+    "real_process_restart_verified": true
+  },
+  "synthetic_http_examples": 8
+}

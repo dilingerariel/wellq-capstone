@@ -1,0 +1,79 @@
+{
+  "originals": [
+    {
+      "private_original": "docs/evidencias_integracion/compose-resolved-redacted.json",
+      "original_sha256": "f1abbe4946bfcd28a5335d789539708a87f2660c6c4958be740318931c2b09d2",
+      "unchanged": true,
+      "ignored": true,
+      "public_copy": "docs/evidencias_integracion/compose-resolved-public.json",
+      "json_valid": true,
+      "same_structure": true,
+      "effective_secret_findings": 0
+    },
+    {
+      "private_original": "docs/evidencias_s01_s02/compose-resolved-redacted.json",
+      "original_sha256": "323e86934a0db641069e6e8e17816fa4f798582fd058e160b0db26a187e2ef74",
+      "unchanged": true,
+      "ignored": true,
+      "public_copy": "docs/evidencias_s01_s02/compose-resolved-public.json",
+      "json_valid": true,
+      "same_structure": true,
+      "effective_secret_findings": 0
+    },
+    {
+      "private_original": "docs/evidencias_s01_s02/compose-at-stop-redacted.json",
+      "original_sha256": "323e86934a0db641069e6e8e17816fa4f798582fd058e160b0db26a187e2ef74",
+      "unchanged": true,
+      "ignored": true,
+      "public_copy": "docs/evidencias_s01_s02/compose-at-stop-public.json",
+      "json_valid": true,
+      "same_structure": true,
+      "effective_secret_findings": 0
+    },
+    {
+      "private_original": "docs/evidencias_g03_g06/compose-resolved-redacted.json",
+      "original_sha256": "323e86934a0db641069e6e8e17816fa4f798582fd058e160b0db26a187e2ef74",
+      "unchanged": true,
+      "ignored": true,
+      "public_copy": "docs/evidencias_g03_g06/compose-resolved-public.json",
+      "json_valid": true,
+      "same_structure": true,
+      "effective_secret_findings": 0
+    },
+    {
+      "private_original": "docs/evidencias_g03_g06/compose-at-stop-redacted.json",
+      "original_sha256": "323e86934a0db641069e6e8e17816fa4f798582fd058e160b0db26a187e2ef74",
+      "unchanged": true,
+      "ignored": true,
+      "public_copy": "docs/evidencias_g03_g06/compose-at-stop-public.json",
+      "json_valid": true,
+      "same_structure": true,
+      "effective_secret_findings": 0
+    }
+  ],
+  "docker_context_validation": "Static root docs/ exclusion; not a build or daemon mutation",
+  "excluded_evidence_directories": [
+    "docs/evidencias_g03_g06",
+    "docs/evidencias_integracion",
+    "docs/evidencias_s01_s02"
+  ],
+  "required_build_inputs_exist": [
+    "requirements.txt",
+    "requirements-dev.txt",
+    "app/main.py",
+    "app/config.py",
+    "integration/bootstrap.py",
+    "integration/publication.py",
+    "integration/compose.yaml"
+  ],
+  "product_and_dependency_hashes_checked": 38,
+  "product_and_dependencies_unchanged": true,
+  "historical_guard_ast_unchanged": true,
+  "historical_reference_only_edits": 6,
+  "local_links_redirected": 22,
+  "private_json_links_redirected": 1,
+  "legacy_uri_present_in_head": true,
+  "legacy_file_unchanged": true,
+  "legacy_validity": "unknown; no connection attempted",
+  "compose_config_resolved": true
+}

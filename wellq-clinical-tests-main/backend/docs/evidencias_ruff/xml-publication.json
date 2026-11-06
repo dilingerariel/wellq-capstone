@@ -1,0 +1,29 @@
+[
+  {
+    "private_raw": "gate-and-publication.xml",
+    "public_copy": "gate-and-publication-public.xml",
+    "raw_sha256": "4fc94e50c59b388389f65b40a48a1e5d54de557264664b06f9ef9936c559589c",
+    "public_sha256": "26d70b10c3d0be11f1ee4eb43c83078da77b13e6cfb16d4e4ff28ff00b975be4",
+    "parameter_ids_sanitized": 6,
+    "suite_attributes_unchanged": true,
+    "outcomes_unchanged": true
+  },
+  {
+    "private_raw": "full-and-publication.xml",
+    "public_copy": "full-and-publication-public.xml",
+    "raw_sha256": "fc507e5d737a52da4bc98e2bf1b383fdb1b72822e8b2acbec65ed462de2d0ee9",
+    "public_sha256": "32872d473cd0b1921e2a47659ed5cabb85fa8960f74282a82d25bcb0c8fe43a4",
+    "parameter_ids_sanitized": 6,
+    "suite_attributes_unchanged": true,
+    "outcomes_unchanged": true
+  },
+  {
+    "private_raw": "full-final.xml",
+    "public_copy": "full-final-public.xml",
+    "raw_sha256": "2f5e3fe998e95599495b8887aef4cb082c42a8ec05eedb37c4e717c1dcdac149",
+    "public_sha256": "68c15faa6430570d514bf57459eabb27f704f643ed902c11a91a197aee5ba0db",
+    "parameter_ids_sanitized": 6,
+    "suite_attributes_unchanged": true,
+    "outcomes_unchanged": true
+  }
+]

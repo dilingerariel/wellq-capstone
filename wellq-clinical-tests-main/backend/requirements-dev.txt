@@ -1,0 +1,7 @@
+-r requirements.txt
+pytest==9.2.0
+pytest-asyncio==1.4.1.post1
+httpx==0.28.1
+mongomock==4.3.0
+pip-audit==2.10.1
+ruff==0.17.3

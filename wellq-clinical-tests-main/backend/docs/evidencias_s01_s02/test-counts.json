@@ -1,0 +1,38 @@
+{
+  "before.xml": {
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "focused-after.xml": {
+    "tests": 69,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "full-after.xml": {
+    "tests": 565,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 209
+  },
+  "integration-after.xml": {
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "integration-attempt1.xml": {
+    "tests": 29,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0
+  },
+  "related-after.xml": {
+    "tests": 137,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

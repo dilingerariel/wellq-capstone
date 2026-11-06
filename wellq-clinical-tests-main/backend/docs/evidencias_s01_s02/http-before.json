@@ -1,0 +1,40 @@
+[
+  {
+    "finding": "S01",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_a49d2ef5681d47c395089a5e4da6ecc7",
+      "clinical_test_id": "ct_a49d2ef5681d47c395089a5e4da6ecc7",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-05T22:25:36.938289+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "finding": "S02",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_aa9e56f502a8406096dcbd5e29bfaadf",
+      "clinical_test_id": "ct_aa9e56f502a8406096dcbd5e29bfaadf",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-05T22:25:37.292465+00:00"
+      }
+    },
+    "persisted_records": 1
+  }
+]

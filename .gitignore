@@ -27,3 +27,13 @@ htmlcov/
 Thumbs.db
 *.log
 exports/
+
+# Private historical evidence: retained locally, public copies use distinct names.
+/wellq-clinical-tests-main/backend/docs/evidencias_integracion/compose-resolved-redacted.json
+/wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-resolved-redacted.json
+/wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-at-stop-redacted.json
+/wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-resolved-redacted.json
+/wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-at-stop-redacted.json
+*.private.pem
+*.private.key
+*.public.tmp

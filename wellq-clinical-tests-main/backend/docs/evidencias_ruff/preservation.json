@@ -1,0 +1,18 @@
+{
+  "branch": "fix/wellq-backend-hardening",
+  "head": "fb8746cd42fe107bbda82dd92d3a4d11d545fd3e",
+  "baseline_files": 335,
+  "missing": [],
+  "changed_existing": [
+    "wellq-clinical-tests-main/backend/integration/edit_review.py",
+    "wellq-clinical-tests-main/backend/integration/security_s01_s02.py"
+  ],
+  "production_files_imported": 32,
+  "openapi_unchanged": true,
+  "clinical_operations": 20,
+  "private_evidence_originals_preserved": 5,
+  "publication_sanitizer_and_ignores_unchanged": true,
+  "frontend_unchanged": true,
+  "production_sources_unchanged": true,
+  "pdf_generator_unchanged": true
+}

@@ -1,0 +1,125 @@
+name: ${WELLQ_INTEGRATION_PROJECT:?run Prepare.ps1 first}
+x-image: &image
+  image: ${WELLQ_INTEGRATION_PROJECT}-backend
+x-env: &env
+  ENVIRONMENT: test
+  WELLQ_INTEGRATION_PROJECT: ${WELLQ_INTEGRATION_PROJECT}
+  WELLQ_INTEGRATION_RUN: ${WELLQ_INTEGRATION_RUN}
+  MONGODB_URI: mongodb://integration_app:${WELLQ_APP_PASSWORD}@mongo-int:27017/${WELLQ_INTEGRATION_DB}?authSource=${WELLQ_INTEGRATION_DB}&replicaSet=wellqIntRs
+  MONGODB_DB: ${WELLQ_INTEGRATION_DB}
+  JWT_ISSUER: https://identity.wellq-integration.invalid
+  JWT_AUDIENCE: wellq-integration-only
+  JWT_PUBLIC_KEY_FILE: /identity/public.pem
+  INTEGRATION_STORE: /synthetic-store
+  INTEGRATION_SIGNING_KEY: /identity/gateway.key
+  WELLQ_INTEGRATION_SCAN_MODE: explicit-test-double
+  WELLQ_INTEGRATION_ASSOCIATION_MODE: explicit-test-double
+  AI_PROVIDER_APPROVED: "true"
+  CATALOG_CLINICALLY_APPROVED: "false"
+  MAX_REQUESTS_PER_MINUTE: "10000"
+  JOB_LEASE_SECONDS: "8"
+  JOB_MAX_ATTEMPTS: "3"
+  CLAMAV_HOST: clamav-int
+  MALWARE_SCAN_TIMEOUT_SECONDS: "10"
+x-app: &app
+  <<: *image
+  environment: *env
+  networks: [integration-net]
+  read_only: true
+  mem_limit: 256m
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  volumes:
+    - synthetic-store:/synthetic-store
+    - ./.runtime/public.pem:/identity/public.pem:ro
+    - ./.runtime/gateway.key:/identity/gateway.key:ro
+services:
+  setup-int:
+    <<: *image
+    user: "0:0"
+    mem_limit: 128m
+    entrypoint: ["python", "-B", "-m", "integration.provision", "files"]
+    environment:
+      WELLQ_INTEGRATION_PROJECT: ${WELLQ_INTEGRATION_PROJECT}
+    volumes:
+      - mongo-key:/mongo-key
+      - synthetic-store:/synthetic-store
+    networks: [integration-net]
+  mongo-int:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "wellqIntRs", "--keyFile", "/mongo-key/keyfile", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    mem_limit: 512m
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: integration_root
+      MONGO_INITDB_ROOT_PASSWORD: ${WELLQ_ROOT_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+      - mongo-key:/mongo-key:ro
+    depends_on:
+      setup-int: {condition: service_completed_successfully}
+    networks: [integration-net]
+  provision-int:
+    <<: *app
+    entrypoint: ["python", "-B", "-m", "integration.provision", "database"]
+    environment:
+      <<: *env
+      WELLQ_ROOT_PASSWORD: ${WELLQ_ROOT_PASSWORD}
+      WELLQ_APP_PASSWORD: ${WELLQ_APP_PASSWORD}
+    depends_on: [mongo-int]
+  objects-int:
+    <<: *app
+    mem_limit: 128m
+    command: ["objects"]
+    depends_on:
+      provision-int: {condition: service_completed_successfully}
+  api-int:
+    <<: *app
+    build:
+      context: ..
+      dockerfile: integration/Dockerfile
+    command: ["api"]
+    depends_on:
+      provision-int: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=3)"]
+      interval: 3s
+      timeout: 4s
+      retries: 30
+  worker-int:
+    <<: *app
+    command: ["worker"]
+    depends_on:
+      provision-int: {condition: service_completed_successfully}
+    deploy: {replicas: 2}
+  runner-int:
+    <<: *app
+    mem_limit: 512m
+    command: ["test"]
+    volumes:
+      - synthetic-store:/synthetic-store
+      - ./.runtime/public.pem:/identity/public.pem:ro
+      - ./.runtime/private.pem:/identity/private.pem:ro
+      - ./.runtime/historical-reference.py:/historical-reference.py:ro
+      - ./.runtime/gateway.key:/identity/gateway.key:ro
+      - ../docs/evidencias_integracion:/evidence
+      - ./demo-output:/demo-output
+    depends_on:
+      api-int: {condition: service_healthy}
+  clamav-int:
+    image: clamav/clamav:stable
+    profiles: [antivirus]
+    mem_limit: 1800m
+    environment:
+      CLAMAV_NO_FRESHCLAMD: "true"
+    volumes:
+      - clam-signatures:/var/lib/clamav
+    networks: [integration-net]
+networks:
+  integration-net:
+    name: ${WELLQ_INTEGRATION_PROJECT}-net
+volumes:
+  mongo-data: {name: "${WELLQ_INTEGRATION_PROJECT}-mongo-data"}
+  mongo-key: {name: "${WELLQ_INTEGRATION_PROJECT}-mongo-key"}
+  synthetic-store: {name: "${WELLQ_INTEGRATION_PROJECT}-synthetic-store"}
+  clam-signatures: {name: "${WELLQ_INTEGRATION_PROJECT}-clam-signatures"}

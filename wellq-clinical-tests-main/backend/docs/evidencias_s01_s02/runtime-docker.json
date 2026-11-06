@@ -1,0 +1,332 @@
+﻿{
+    "association_provider":  "explicit-test-double; no platform source of truth",
+    "mongo":  [
+                  "db version v7.0.43",
+                  "Build Info: {",
+                  "    \"version\": \"7.0.43\",",
+                  "    \"gitVersion\": \"ef5a7d3480b59feae13d564376129fc4ceee6177\",",
+                  "    \"openSSLVersion\": \"OpenSSL 3.0.2 15 Mar 2022\",",
+                  "    \"modules\": [],",
+                  "    \"allocator\": \"tcmalloc\",",
+                  "    \"environment\": {",
+                  "        \"distmod\": \"ubuntu2204\",",
+                  "        \"distarch\": \"x86_64\",",
+                  "        \"target_arch\": \"x86_64\"",
+                  "    }",
+                  "}"
+              ],
+    "packages":  {
+                     "value":  [
+                                   {
+                                       "name":  "annotated-doc",
+                                       "version":  "0.0.5"
+                                   },
+                                   {
+                                       "name":  "annotated-types",
+                                       "version":  "0.8.0"
+                                   },
+                                   {
+                                       "name":  "anyio",
+                                       "version":  "4.16.0"
+                                   },
+                                   {
+                                       "name":  "boolean.py",
+                                       "version":  "5.0"
+                                   },
+                                   {
+                                       "name":  "CacheControl",
+                                       "version":  "0.14.4"
+                                   },
+                                   {
+                                       "name":  "certifi",
+                                       "version":  "2026.10.23"
+                                   },
+                                   {
+                                       "name":  "cffi",
+                                       "version":  "2.1.1"
+                                   },
+                                   {
+                                       "name":  "charset-normalizer",
+                                       "version":  "3.5.2"
+                                   },
+                                   {
+                                       "name":  "click",
+                                       "version":  "8.5.0"
+                                   },
+                                   {
+                                       "name":  "cryptography",
+                                       "version":  "50.0.2"
+                                   },
+                                   {
+                                       "name":  "cyclonedx-python-lib",
+                                       "version":  "11.12.0"
+                                   },
+                                   {
+                                       "name":  "defusedxml",
+                                       "version":  "0.7.1"
+                                   },
+                                   {
+                                       "name":  "dnspython",
+                                       "version":  "2.9.2"
+                                   },
+                                   {
+                                       "name":  "fastapi",
+                                       "version":  "0.162.0"
+                                   },
+                                   {
+                                       "name":  "filelock",
+                                       "version":  "4.2.9"
+                                   },
+                                   {
+                                       "name":  "google-api-core",
+                                       "version":  "2.44.0"
+                                   },
+                                   {
+                                       "name":  "google-auth",
+                                       "version":  "2.62.1"
+                                   },
+                                   {
+                                       "name":  "google-cloud-core",
+                                       "version":  "2.8.0"
+                                   },
+                                   {
+                                       "name":  "google-cloud-storage",
+                                       "version":  "3.17.1"
+                                   },
+                                   {
+                                       "name":  "google-crc32c",
+                                       "version":  "1.9.0"
+                                   },
+                                   {
+                                       "name":  "google-resumable-media",
+                                       "version":  "2.11.0"
+                                   },
+                                   {
+                                       "name":  "googleapis-common-protos",
+                                       "version":  "1.76.0"
+                                   },
+                                   {
+                                       "name":  "h11",
+                                       "version":  "0.16.0"
+                                   },
+                                   {
+                                       "name":  "httpcore",
+                                       "version":  "1.0.9"
+                                   },
+                                   {
+                                       "name":  "httpx",
+                                       "version":  "0.28.1"
+                                   },
+                                   {
+                                       "name":  "idna",
+                                       "version":  "3.20"
+                                   },
+                                   {
+                                       "name":  "iniconfig",
+                                       "version":  "2.3.1"
+                                   },
+                                   {
+                                       "name":  "license-expression",
+                                       "version":  "30.4.4"
+                                   },
+                                   {
+                                       "name":  "markdown-it-py",
+                                       "version":  "4.2.0"
+                                   },
+                                   {
+                                       "name":  "mdurl",
+                                       "version":  "0.1.2"
+                                   },
+                                   {
+                                       "name":  "mongomock",
+                                       "version":  "4.3.0"
+                                   },
+                                   {
+                                       "name":  "msgpack",
+                                       "version":  "1.2.4"
+                                   },
+                                   {
+                                       "name":  "opentelemetry-api",
+                                       "version":  "1.45.2"
+                                   },
+                                   {
+                                       "name":  "packageurl-python",
+                                       "version":  "0.17.6"
+                                   },
+                                   {
+                                       "name":  "packaging",
+                                       "version":  "26.3"
+                                   },
+                                   {
+                                       "name":  "pillow",
+                                       "version":  "13.0.0"
+                                   },
+                                   {
+                                       "name":  "pillow_heif",
+                                       "version":  "1.8.1"
+                                   },
+                                   {
+                                       "name":  "pip",
+                                       "version":  "24.0"
+                                   },
+                                   {
+                                       "name":  "pip_api",
+                                       "version":  "0.0.35"
+                                   },
+                                   {
+                                       "name":  "pip_audit",
+                                       "version":  "2.10.1"
+                                   },
+                                   {
+                                       "name":  "pip-requirements-parser",
+                                       "version":  "32.0.1"
+                                   },
+                                   {
+                                       "name":  "platformdirs",
+                                       "version":  "4.14.5"
+                                   },
+                                   {
+                                       "name":  "pluggy",
+                                       "version":  "1.7.0"
+                                   },
+                                   {
+                                       "name":  "proto-plus",
+                                       "version":  "1.29.0"
+                                   },
+                                   {
+                                       "name":  "protobuf",
+                                       "version":  "7.36.2"
+                                   },
+                                   {
+                                       "name":  "py-serializable",
+                                       "version":  "2.1.0"
+                                   },
+                                   {
+                                       "name":  "pyasn1",
+                                       "version":  "0.6.5"
+                                   },
+                                   {
+                                       "name":  "pyasn1_modules",
+                                       "version":  "0.4.2"
+                                   },
+                                   {
+                                       "name":  "pycparser",
+                                       "version":  "3.12"
+                                   },
+                                   {
+                                       "name":  "pydantic",
+                                       "version":  "2.14.2"
+                                   },
+                                   {
+                                       "name":  "pydantic_core",
+                                       "version":  "2.50.2"
+                                   },
+                                   {
+                                       "name":  "pydantic-settings",
+                                       "version":  "2.16.2"
+                                   },
+                                   {
+                                       "name":  "Pygments",
+                                       "version":  "2.21.0"
+                                   },
+                                   {
+                                       "name":  "PyJWT",
+                                       "version":  "2.15.1"
+                                   },
+                                   {
+                                       "name":  "pymongo",
+                                       "version":  "4.19.0"
+                                   },
+                                   {
+                                       "name":  "pyparsing",
+                                       "version":  "3.3.3"
+                                   },
+                                   {
+                                       "name":  "pypdf",
+                                       "version":  "6.21.4"
+                                   },
+                                   {
+                                       "name":  "pytest",
+                                       "version":  "9.2.0"
+                                   },
+                                   {
+                                       "name":  "pytest-asyncio",
+                                       "version":  "1.4.1.post1"
+                                   },
+                                   {
+                                       "name":  "python-dotenv",
+                                       "version":  "1.2.4"
+                                   },
+                                   {
+                                       "name":  "python-multipart",
+                                       "version":  "0.0.33"
+                                   },
+                                   {
+                                       "name":  "pytz",
+                                       "version":  "2026.6"
+                                   },
+                                   {
+                                       "name":  "reportlab",
+                                       "version":  "5.1.0"
+                                   },
+                                   {
+                                       "name":  "requests",
+                                       "version":  "2.34.2"
+                                   },
+                                   {
+                                       "name":  "rich",
+                                       "version":  "15.0.0"
+                                   },
+                                   {
+                                       "name":  "ruff",
+                                       "version":  "0.17.3"
+                                   },
+                                   {
+                                       "name":  "sentinels",
+                                       "version":  "1.1.1"
+                                   },
+                                   {
+                                       "name":  "setuptools",
+                                       "version":  "79.0.1"
+                                   },
+                                   {
+                                       "name":  "sortedcontainers",
+                                       "version":  "2.4.0"
+                                   },
+                                   {
+                                       "name":  "starlette",
+                                       "version":  "1.10.0"
+                                   },
+                                   {
+                                       "name":  "tomli",
+                                       "version":  "2.5.0"
+                                   },
+                                   {
+                                       "name":  "tomli_w",
+                                       "version":  "1.2.0"
+                                   },
+                                   {
+                                       "name":  "typing_extensions",
+                                       "version":  "4.16.0"
+                                   },
+                                   {
+                                       "name":  "typing-inspection",
+                                       "version":  "0.4.5"
+                                   },
+                                   {
+                                       "name":  "urllib3",
+                                       "version":  "2.8.0"
+                                   },
+                                   {
+                                       "name":  "uvicorn",
+                                       "version":  "0.54.0"
+                                   },
+                                   {
+                                       "name":  "wheel",
+                                       "version":  "0.46.3"
+                                   }
+                               ],
+                     "Count":  77
+                 },
+    "python":  "Python 3.11.18"
+}

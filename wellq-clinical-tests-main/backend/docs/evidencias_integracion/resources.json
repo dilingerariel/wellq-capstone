@@ -1,0 +1,264 @@
+{
+  "project": "wellq-int-39706292db88",
+  "containers": [
+    {
+      "name": "wellq-int-39706292db88-api-int-1",
+      "image": "wellq-int-39706292db88-backend",
+      "image_id": "sha256:a029b636e380d1eadd9b6d17958737e2684c53fc01fc92945cca5b47aad01427",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 268435456,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-synthetic-store/_data",
+          "Destination": "/synthetic-store",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/gateway.key",
+          "Destination": "/identity/gateway.key",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/public.pem",
+          "Destination": "/identity/public.pem",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-worker-int-1",
+      "image": "wellq-int-39706292db88-backend",
+      "image_id": "sha256:a029b636e380d1eadd9b6d17958737e2684c53fc01fc92945cca5b47aad01427",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 268435456,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-synthetic-store/_data",
+          "Destination": "/synthetic-store",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/gateway.key",
+          "Destination": "/identity/gateway.key",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/public.pem",
+          "Destination": "/identity/public.pem",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-objects-int-1",
+      "image": "wellq-int-39706292db88-backend",
+      "image_id": "sha256:a029b636e380d1eadd9b6d17958737e2684c53fc01fc92945cca5b47aad01427",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 134217728,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-synthetic-store/_data",
+          "Destination": "/synthetic-store",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/gateway.key",
+          "Destination": "/identity/gateway.key",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/public.pem",
+          "Destination": "/identity/public.pem",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-worker-int-2",
+      "image": "wellq-int-39706292db88-backend",
+      "image_id": "sha256:a029b636e380d1eadd9b6d17958737e2684c53fc01fc92945cca5b47aad01427",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 268435456,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-synthetic-store/_data",
+          "Destination": "/synthetic-store",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/gateway.key",
+          "Destination": "/identity/gateway.key",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "/run/desktop/mnt/host/c/Dev/wellq-capstone/wellq-clinical-tests-main/backend/integration/.runtime/public.pem",
+          "Destination": "/identity/public.pem",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-provision-int-1",
+      "image": "wellq-int-39706292db88-backend",
+      "image_id": "sha256:a029b636e380d1eadd9b6d17958737e2684c53fc01fc92945cca5b47aad01427",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 268435456,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-synthetic-store/_data",
+          "Destination": "/synthetic-store",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\gateway.key",
+          "Destination": "/identity/gateway.key",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\public.pem",
+          "Destination": "/identity/public.pem",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-setup-int-1",
+      "image": "wellq-int-39706292db88-backend",
+      "image_id": "sha256:a029b636e380d1eadd9b6d17958737e2684c53fc01fc92945cca5b47aad01427",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 134217728,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-key",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-mongo-key/_data",
+          "Destination": "/mongo-key",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-synthetic-store/_data",
+          "Destination": "/synthetic-store",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-clamav-int-1",
+      "image": "clamav/clamav:stable",
+      "image_id": "sha256:6d87c712e3391e13c1ba6e05dfb074d4b1ddb5a6834b23bb9da990d2a4ef042a",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 1887436800,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-clam-signatures",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-clam-signatures/_data",
+          "Destination": "/var/lib/clamav",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "wellq-int-39706292db88-mongo-int-1",
+      "image": "mongo:7.0",
+      "image_id": "sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b",
+      "state": "exited",
+      "oom_killed": false,
+      "ports": {},
+      "memory_limit": 536870912,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-key",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-mongo-key/_data",
+          "Destination": "/mongo-key",
+          "RW": false
+        },
+        {
+          "Type": "volume",
+          "Name": "8c742a378c34b7b8d385fbc689d4422de3e073a1bef03403c1884bdb7c37b679",
+          "Source": "/var/lib/docker/volumes/8c742a378c34b7b8d385fbc689d4422de3e073a1bef03403c1884bdb7c37b679/_data",
+          "Destination": "/data/configdb",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-data",
+          "Source": "/var/lib/docker/volumes/wellq-int-39706292db88-mongo-data/_data",
+          "Destination": "/data/db",
+          "RW": true
+        }
+      ]
+    }
+  ],
+  "volumes": [
+    "wellq-int-39706292db88-clam-signatures",
+    "wellq-int-39706292db88-mongo-data",
+    "wellq-int-39706292db88-mongo-key",
+    "wellq-int-39706292db88-synthetic-store"
+  ],
+  "networks": [
+    "wellq-int-39706292db88-net"
+  ],
+  "host_ports_published": false,
+  "docker": {
+    "engine": "29.8.2",
+    "context": "desktop-linux",
+    "compose": "5.5.1",
+    "memory_bytes": 3021676544
+  },
+  "external_images": {
+    "mongo:7.0": [
+      "mongo@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b"
+    ],
+    "clamav/clamav:stable": [
+      "clamav/clamav@sha256:6d87c712e3391e13c1ba6e05dfb074d4b1ddb5a6834b23bb9da990d2a4ef042a"
+    ]
+  }
+}

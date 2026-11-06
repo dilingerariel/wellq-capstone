@@ -1,0 +1,11 @@
+{
+  "project": "wellq-int-39706292db88",
+  "run": "39706292db88",
+  "tenant": "integration-1448d26c18634afea8a855576c466c19",
+  "patient": "patient-f2e200b38d4e45fb8734ad261eca5a41",
+  "clinical_test_id": "ct_8cea668b2c1d43a0a9070fec0239dbb0",
+  "upload_id": "ctu_8cea668b2c1d43a0a9070fec0239dbb0",
+  "before": "pending",
+  "after": "done",
+  "real_process_restart_verified": true
+}

@@ -1,0 +1,588 @@
+[
+  {
+    "case": "metadata-cleared-idempotent",
+    "http_status": 200,
+    "error": null,
+    "review": {
+      "status": "not_reviewed",
+      "reviewed_at": null,
+      "reviewed_by": null
+    },
+    "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+    "tenant": "integration-bd78d0ad7142430d84f66f6a17835efa",
+    "audit_events": [
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.273+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "title",
+            "before_present": true,
+            "after_present": true
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      },
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.396+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "notes",
+            "before_present": true,
+            "after_present": false
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      }
+    ]
+  },
+  {
+    "case": "invalid-patch",
+    "http_status": 422,
+    "error": {
+      "code": "INVALID_INPUT",
+      "message": "Invalid request",
+      "errors": [
+        {
+          "loc": [
+            "body"
+          ],
+          "type": "value_error"
+        }
+      ]
+    },
+    "review": null,
+    "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+    "tenant": "integration-bd78d0ad7142430d84f66f6a17835efa",
+    "audit_events": [
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.273+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "title",
+            "before_present": true,
+            "after_present": true
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      },
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.396+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "notes",
+            "before_present": true,
+            "after_present": false
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      }
+    ]
+  },
+  {
+    "case": "invalid-patch",
+    "http_status": 422,
+    "error": {
+      "code": "INVALID_INPUT",
+      "message": "Invalid request",
+      "errors": [
+        {
+          "loc": [
+            "body",
+            "unknown"
+          ],
+          "type": "extra_forbidden"
+        }
+      ]
+    },
+    "review": null,
+    "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+    "tenant": "integration-bd78d0ad7142430d84f66f6a17835efa",
+    "audit_events": [
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.273+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "title",
+            "before_present": true,
+            "after_present": true
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      },
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.396+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "notes",
+            "before_present": true,
+            "after_present": false
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      }
+    ]
+  },
+  {
+    "case": "invalid-patch",
+    "http_status": 422,
+    "error": {
+      "code": "INVALID_INPUT",
+      "message": "Invalid request",
+      "errors": [
+        {
+          "loc": [
+            "body",
+            "title"
+          ],
+          "type": "string_type"
+        }
+      ]
+    },
+    "review": null,
+    "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+    "tenant": "integration-bd78d0ad7142430d84f66f6a17835efa",
+    "audit_events": [
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.273+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "title",
+            "before_present": true,
+            "after_present": true
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      },
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.396+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "notes",
+            "before_present": true,
+            "after_present": false
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      }
+    ]
+  },
+  {
+    "case": "invalid-patch",
+    "http_status": 422,
+    "error": {
+      "code": "INVALID_INPUT",
+      "message": "Invalid request",
+      "errors": [
+        {
+          "loc": [
+            "body",
+            "file_name"
+          ],
+          "type": "extra_forbidden"
+        }
+      ]
+    },
+    "review": null,
+    "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+    "tenant": "integration-bd78d0ad7142430d84f66f6a17835efa",
+    "audit_events": [
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.273+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "title",
+            "before_present": true,
+            "after_present": true
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      },
+      {
+        "event": "clinical_test_metadata_updated",
+        "resource": "clinical_test",
+        "resource_id": "ct_16752770c6dc4a87a73f3e4894a20cbc",
+        "actor_id": "account:patient-a3f71939a2c04fc2b0b80ea7b1ed161a",
+        "actor_role": "patient",
+        "occurred_at": "2026-11-05T23:08:57.396+00:00",
+        "source": "api",
+        "result": "success",
+        "metadata_changes": [
+          {
+            "field": "notes",
+            "before_present": true,
+            "after_present": false
+          }
+        ],
+        "client_id": "integration-bd78d0ad7142430d84f66f6a17835efa"
+      }
+    ]
+  },
+  {
+    "case": "initiated",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_3745e37aac5a40d28b1ea641a0a43724",
+    "tenant": "integration-beee156ded0546a28b90f33254244634",
+    "audit_events": []
+  },
+  {
+    "case": "object_uploaded",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_07299645245f478d92368cfa5635fa21",
+    "tenant": "integration-cb80b66c94844d4990cf8d3fa589d2ce",
+    "audit_events": []
+  },
+  {
+    "case": "processing",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_14a8abdc21d94a74b2a7b99e6ee7b7be",
+    "tenant": "integration-5cd2ccc4eba74fbca97da306f4e90af3",
+    "audit_events": []
+  },
+  {
+    "case": "rejected",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_853a8feb7dfa497d8bed03ec5f535f91",
+    "tenant": "integration-b0c99a1704424b12993272ebe708a13e",
+    "audit_events": []
+  },
+  {
+    "case": "failed",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_ab90475217a844aeb98b314340c296f9",
+    "tenant": "integration-b8062322a939438ca98f27aa5e547cd8",
+    "audit_events": []
+  },
+  {
+    "case": "deleted",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_1324f29e984c4ebbbdca21954a5e1ae9",
+    "tenant": "integration-93052afb1df7411f9073649a40f55f47",
+    "audit_events": []
+  },
+  {
+    "case": "reviewed",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Document not ready for review"
+    },
+    "review": null,
+    "resource_id": "ct_6e877d8e917841f4af730afbdcdd4e3d",
+    "tenant": "integration-5e7f2e3c099e4870ae6a85de83f051e9",
+    "audit_events": []
+  },
+  {
+    "case": "first-and-replay",
+    "http_status": 200,
+    "error": null,
+    "review": {
+      "status": "reviewed",
+      "reviewed_at": "2026-11-05T23:09:01Z",
+      "reviewed_by": "doctor-c4a3051641c94d618bb8709b50922550"
+    },
+    "resource_id": "ct_de2662533aaa4813b9c232f02bb7faf7",
+    "tenant": "integration-bd975e46864f4314b70006005897f1f9",
+    "audit_events": [
+      {
+        "event": "clinical_test_reviewed",
+        "resource": "clinical_test",
+        "resource_id": "ct_de2662533aaa4813b9c232f02bb7faf7",
+        "actor_id": "account:doctor-c4a3051641c94d618bb8709b50922550",
+        "actor_role": "clinician",
+        "occurred_at": "2026-11-05T23:09:01.596+00:00",
+        "source": "api",
+        "result": "success",
+        "previous_status": "not_reviewed",
+        "client_id": "integration-bd975e46864f4314b70006005897f1f9"
+      }
+    ]
+  },
+  {
+    "case": "concurrent:doctor-1ed50f10374840a29ffa4e3c5c6b6e58",
+    "http_status": 409,
+    "error": {
+      "code": "DOCUMENT_NOT_READY",
+      "message": "Review is immutable"
+    },
+    "review": null,
+    "resource_id": "ct_d5591aaebf93470fb4301fe86d7e63c2",
+    "tenant": "integration-98a17100619941bab4c5d4a5c062d5e3",
+    "audit_events": [
+      {
+        "event": "clinical_test_reviewed",
+        "resource": "clinical_test",
+        "resource_id": "ct_d5591aaebf93470fb4301fe86d7e63c2",
+        "actor_id": "account:synthetic-second-doctor",
+        "actor_role": "clinician",
+        "occurred_at": "2026-11-05T23:09:03.337+00:00",
+        "source": "api",
+        "result": "success",
+        "previous_status": "not_reviewed",
+        "client_id": "integration-98a17100619941bab4c5d4a5c062d5e3"
+      }
+    ]
+  },
+  {
+    "case": "concurrent:synthetic-second-doctor",
+    "http_status": 200,
+    "error": null,
+    "review": {
+      "status": "reviewed",
+      "reviewed_at": "2026-11-05T23:09:03Z",
+      "reviewed_by": "synthetic-second-doctor"
+    },
+    "resource_id": "ct_d5591aaebf93470fb4301fe86d7e63c2",
+    "tenant": "integration-98a17100619941bab4c5d4a5c062d5e3",
+    "audit_events": [
+      {
+        "event": "clinical_test_reviewed",
+        "resource": "clinical_test",
+        "resource_id": "ct_d5591aaebf93470fb4301fe86d7e63c2",
+        "actor_id": "account:synthetic-second-doctor",
+        "actor_role": "clinician",
+        "occurred_at": "2026-11-05T23:09:03.337+00:00",
+        "source": "api",
+        "result": "success",
+        "previous_status": "not_reviewed",
+        "client_id": "integration-98a17100619941bab4c5d4a5c062d5e3"
+      }
+    ]
+  },
+  {
+    "case": "rollback:patch:before",
+    "http_status": 503,
+    "error": {
+      "code": "RETRYABLE_CONFLICT",
+      "message": "Retry with the same idempotency key"
+    },
+    "review": null,
+    "resource_id": "ct_474444e94a2b4ed8b38c58d2b38a1511",
+    "tenant": "integration-bf43e1b63fc4474cbf5e81274e0de620",
+    "audit_events": []
+  },
+  {
+    "case": "rollback:review:before",
+    "http_status": 503,
+    "error": {
+      "code": "RETRYABLE_CONFLICT",
+      "message": "Retry with the same idempotency key"
+    },
+    "review": null,
+    "resource_id": "ct_a891932445ab401587040d4360b71162",
+    "tenant": "integration-b6c01084adf64d72836354e29cf6b879",
+    "audit_events": []
+  },
+  {
+    "case": "rollback:patch:after",
+    "http_status": 503,
+    "error": {
+      "code": "RETRYABLE_CONFLICT",
+      "message": "Retry with the same idempotency key"
+    },
+    "review": null,
+    "resource_id": "ct_347afeed5429428d817a07eeb7e2a0d4",
+    "tenant": "integration-c8dab231ef5b43829e10729210e4a378",
+    "audit_events": []
+  },
+  {
+    "case": "rollback:review:after",
+    "http_status": 503,
+    "error": {
+      "code": "RETRYABLE_CONFLICT",
+      "message": "Retry with the same idempotency key"
+    },
+    "review": null,
+    "resource_id": "ct_5388612a4315415eb1a6920a8f6f56dd",
+    "tenant": "integration-9b22e898c3874d0e9a3e7bc70d517d8a",
+    "audit_events": []
+  },
+  {
+    "case": "denied:patch:missing",
+    "http_status": 401,
+    "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Invalid authentication"
+    },
+    "review": null,
+    "resource_id": "ct_4e51ed300f5a46d1a6305ace3f2de214",
+    "tenant": "integration-bd50d2f9396549f8a9a12a0badebc692",
+    "audit_events": []
+  },
+  {
+    "case": "denied:review:missing",
+    "http_status": 401,
+    "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Invalid authentication"
+    },
+    "review": null,
+    "resource_id": "ct_3f35791862994b699f6af6b57cedcc3d",
+    "tenant": "integration-75dfcf3a18564eee937e1c4acbb4108a",
+    "audit_events": []
+  },
+  {
+    "case": "denied:patch:wrong-tenant",
+    "http_status": 404,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "Examen m\u00e9dico no encontrado"
+    },
+    "review": null,
+    "resource_id": "ct_64b798f4d7b54628a87c7d95015d9121",
+    "tenant": "integration-f534391355ea48ab92f5f20875c521e1",
+    "audit_events": []
+  },
+  {
+    "case": "denied:review:wrong-tenant",
+    "http_status": 404,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "Examen m\u00e9dico no encontrado"
+    },
+    "review": null,
+    "resource_id": "ct_5ab299df487943f5bb3de93f2ffab296",
+    "tenant": "integration-4d79bf5b76d940f28fad6b43936adac0",
+    "audit_events": []
+  },
+  {
+    "case": "denied:patch:unrelated",
+    "http_status": 404,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "Examen m\u00e9dico no encontrado"
+    },
+    "review": null,
+    "resource_id": "ct_1491af99c41c48459b86826f1135954b",
+    "tenant": "integration-225bc6b070da4cb9b9f691d1b00cc0d3",
+    "audit_events": []
+  },
+  {
+    "case": "denied:review:unrelated",
+    "http_status": 403,
+    "error": {
+      "code": "NO_PATIENT_ACCESS",
+      "message": "El cl\u00ednico no tiene acceso a este paciente"
+    },
+    "review": null,
+    "resource_id": "ct_792121b2a6cd4e78b2043d702d140a05",
+    "tenant": "integration-b925c3e0eec04d428a6c000f2ba0ae3a",
+    "audit_events": []
+  },
+  {
+    "case": "denied:patch:wrong-role",
+    "http_status": 403,
+    "error": {
+      "code": "FORBIDDEN",
+      "message": "Patient role required"
+    },
+    "review": null,
+    "resource_id": "ct_8f8b33ab3ba4444abc06fb670b9d4c76",
+    "tenant": "integration-68580c34979c433f848101080fdba4e7",
+    "audit_events": []
+  },
+  {
+    "case": "denied:review:wrong-role",
+    "http_status": 403,
+    "error": {
+      "code": "FORBIDDEN",
+      "message": "Clinician role required"
+    },
+    "review": null,
+    "resource_id": "ct_40563a9b2d9b4fb7bb7fe82a44dfa798",
+    "tenant": "integration-d8f745e78fe4438793f57d2ef592d774",
+    "audit_events": []
+  }
+]

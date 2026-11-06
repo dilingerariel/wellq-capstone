@@ -1,0 +1,2642 @@
+[
+  {
+    "path": "app/config.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 13,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 14,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 15,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 19,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 20,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 21,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "UP045",
+    "line": 30,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/config.py",
+    "code": "I001",
+    "line": 45,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/database.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/dependencies/access.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/dependencies/access.py",
+    "code": "UP045",
+    "line": 25,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/dependencies/access.py",
+    "code": "UP045",
+    "line": 42,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/dependencies/auth.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/dependencies/auth.py",
+    "code": "UP045",
+    "line": 18,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/dependencies/auth.py",
+    "code": "UP045",
+    "line": 19,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/dependencies/auth.py",
+    "code": "UP045",
+    "line": 60,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/dependencies/auth.py",
+    "code": "I001",
+    "line": 83,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/dependencies/auth.py",
+    "code": "DTZ003",
+    "line": 87,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/main.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/main.py",
+    "code": "BLE001",
+    "line": 69,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/main.py",
+    "code": "I001",
+    "line": 77,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/enums.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/errors.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP035",
+    "line": 2,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP035",
+    "line": 2,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "F401",
+    "line": 2,
+    "message": "`typing.Union` imported but unused"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "TRY004",
+    "line": 47,
+    "message": "Prefer `TypeError` exception for invalid type"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 56,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 57,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 58,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 60,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 80,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 86,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 87,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 89,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 90,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 91,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 94,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 95,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 96,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 98,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 99,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 100,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 101,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 107,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 108,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 109,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 116,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 117,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 125,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 126,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 126,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 127,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 128,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 136,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 137,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 138,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 139,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 149,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 150,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 151,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 152,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 158,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 159,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 160,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 160,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 167,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 172,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 172,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP045",
+    "line": 173,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 183,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 184,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/extraction.py",
+    "code": "UP006",
+    "line": 185,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/mongodb.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/mongodb.py",
+    "code": "UP045",
+    "line": 19,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/mongodb.py",
+    "code": "UP045",
+    "line": 20,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/mongodb.py",
+    "code": "UP045",
+    "line": 21,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/mongodb.py",
+    "code": "DTZ003",
+    "line": 60,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/models/mongodb.py",
+    "code": "DTZ003",
+    "line": 61,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 8,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 9,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 10,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 11,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 12,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 13,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 15,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 21,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 27,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 28,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 36,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 39,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 50,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 51,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/reporting.py",
+    "code": "UP045",
+    "line": 57,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP035",
+    "line": 2,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "F401",
+    "line": 3,
+    "message": "`datetime.datetime` imported but unused"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 34,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 35,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 36,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 90,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 91,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 92,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 96,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 134,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 135,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 144,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 145,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 153,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 154,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 155,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP006",
+    "line": 163,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/schemas.py",
+    "code": "UP045",
+    "line": 164,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "F401",
+    "line": 1,
+    "message": "`pydantic.Field` imported but unused"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP035",
+    "line": 2,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP035",
+    "line": 2,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "F401",
+    "line": 3,
+    "message": "`datetime.datetime` imported but unused"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 29,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 30,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 33,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 37,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 44,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 48,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 49,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 53,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 54,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 55,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 63,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 64,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 65,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 67,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 68,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 69,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP045",
+    "line": 73,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/models/scoring.py",
+    "code": "UP006",
+    "line": 73,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "I001",
+    "line": 5,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP035",
+    "line": 11,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 11,
+    "message": "`typing.List` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 14,
+    "message": "`time` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 26,
+    "message": "`app.models.schemas.SignedUrlResponse` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 26,
+    "message": "`app.models.schemas.ProcessingStatus` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 30,
+    "message": "`app.models.enums.ScanStatus` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 32,
+    "message": "`app.dependencies.access.require_patient_access` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 146,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 147,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 149,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 175,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 301,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 336,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "I001",
+    "line": 406,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F401",
+    "line": 407,
+    "message": "`pymongo.ReturnDocument` imported but unused"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 408,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 434,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 435,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 437,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 464,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 524,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 557,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 559,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F841",
+    "line": 559,
+    "message": "Local variable `e` is assigned to but never used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 636,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 636,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 653,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 654,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 766,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 792,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 825,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 854,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 976,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 1060,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 1084,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "I001",
+    "line": 1099,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 1310,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F841",
+    "line": 1310,
+    "message": "Local variable `e` is assigned to but never used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "UP045",
+    "line": 1332,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 1392,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F841",
+    "line": 1392,
+    "message": "Local variable `e` is assigned to but never used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "DTZ003",
+    "line": 1399,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "BLE001",
+    "line": 1436,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/routes/clinical_tests.py",
+    "code": "F841",
+    "line": 1436,
+    "message": "Local variable `e` is assigned to but never used"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "F401",
+    "line": 3,
+    "message": "`uuid` imported but unused"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP035",
+    "line": 5,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP035",
+    "line": 5,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "F401",
+    "line": 15,
+    "message": "`app.services.extractor.extraction_engine` imported but unused"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "F401",
+    "line": 20,
+    "message": "`app.models.extraction.DocumentType` imported but unused"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "F401",
+    "line": 20,
+    "message": "`app.models.extraction.MarkerStatus` imported but unused"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 30,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 30,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 37,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 62,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "DTZ003",
+    "line": 261,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP045",
+    "line": 566,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "DTZ003",
+    "line": 630,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "DTZ003",
+    "line": 712,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 713,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 713,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 757,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "UP006",
+    "line": 757,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/routes/extractions.py",
+    "code": "PIE804",
+    "line": 911,
+    "message": "Unnecessary `dict` kwargs"
+  },
+  {
+    "path": "app/services/associations.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/associations.py",
+    "code": "BLE001",
+    "line": 59,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/audit.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/audit.py",
+    "code": "UP017",
+    "line": 13,
+    "message": "Use `datetime.UTC` alias"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "UP035",
+    "line": 7,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "UP035",
+    "line": 7,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "F401",
+    "line": 7,
+    "message": "`typing.List` imported but unused"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "UP006",
+    "line": 194,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "UP045",
+    "line": 213,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/catalog.py",
+    "code": "UP006",
+    "line": 214,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/services/clinical_dates.py",
+    "code": "UP017",
+    "line": 10,
+    "message": "Use `datetime.UTC` alias"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP035",
+    "line": 5,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "F401",
+    "line": 9,
+    "message": "`app.models.extraction.ConfidenceScores` imported but unused"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP045",
+    "line": 32,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP045",
+    "line": 41,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP045",
+    "line": 50,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP045",
+    "line": 51,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP045",
+    "line": 61,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP045",
+    "line": 67,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "UP006",
+    "line": 67,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "I001",
+    "line": 145,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/extractor.py",
+    "code": "DTZ003",
+    "line": 191,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/file_validation.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/file_validation.py",
+    "code": "BLE001",
+    "line": 41,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "F401",
+    "line": 7,
+    "message": "`copy.deepcopy` imported but unused"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "F401",
+    "line": 8,
+    "message": "`datetime.timedelta` imported but unused"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP035",
+    "line": 9,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP035",
+    "line": 9,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP035",
+    "line": 9,
+    "message": "`typing.Tuple` is deprecated, use `tuple` instead"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "F401",
+    "line": 9,
+    "message": "`typing.Any` imported but unused"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "F401",
+    "line": 16,
+    "message": "`app.models.scoring.ExcludedMarker` imported but unused"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "F401",
+    "line": 16,
+    "message": "`app.models.scoring.ScoreSnapshotModel` imported but unused"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 112,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 113,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 114,
+    "message": "Use `tuple` instead of `Tuple` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 114,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 114,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 174,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 214,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 214,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 215,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 217,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 218,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "DTZ003",
+    "line": 229,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 244,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 245,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 294,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 295,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP006",
+    "line": 299,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 349,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "UP045",
+    "line": 350,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "F401",
+    "line": 434,
+    "message": "`app.config.settings` imported but unused"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "DTZ003",
+    "line": 437,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/scoring.py",
+    "code": "DTZ003",
+    "line": 441,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 29,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "DTZ003",
+    "line": 41,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 42,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "DTZ003",
+    "line": 52,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 53,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 69,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 86,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 95,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/storage.py",
+    "code": "BLE001",
+    "line": 101,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "app/services/transactions.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/transactions.py",
+    "code": "F401",
+    "line": 3,
+    "message": "`datetime.datetime` imported but unused"
+  },
+  {
+    "path": "app/services/upload_metadata.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/uploads.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/services/uploads.py",
+    "code": "DTZ003",
+    "line": 43,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/services/uploads.py",
+    "code": "DTZ003",
+    "line": 87,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/tenancy.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/tenancy.py",
+    "code": "SIM117",
+    "line": 101,
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements"
+  },
+  {
+    "path": "app/workers/processing.py",
+    "code": "I001",
+    "line": 6,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "app/workers/processing.py",
+    "code": "DTZ003",
+    "line": 20,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/workers/processing.py",
+    "code": "DTZ003",
+    "line": 40,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/workers/processing.py",
+    "code": "DTZ003",
+    "line": 54,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/workers/processing.py",
+    "code": "DTZ003",
+    "line": 72,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "app/workers/processing.py",
+    "code": "BLE001",
+    "line": 77,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "checks/conftest.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/conftest.py",
+    "code": "I001",
+    "line": 16,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/conftest.py",
+    "code": "I001",
+    "line": 63,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_edit_review.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_edit_review.py",
+    "code": "DTZ003",
+    "line": 14,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "checks/test_edit_review.py",
+    "code": "I001",
+    "line": 157,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_final_defects.py",
+    "code": "I001",
+    "line": 6,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_final_defects.py",
+    "code": "RUF059",
+    "line": 483,
+    "message": "Unpacked variable `ext` is never used"
+  },
+  {
+    "path": "checks/test_lifecycle.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_lifecycle.py",
+    "code": "DTZ003",
+    "line": 11,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "checks/test_lifecycle.py",
+    "code": "SIM117",
+    "line": 91,
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements"
+  },
+  {
+    "path": "checks/test_pdf_presentation.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "F401",
+    "line": 1,
+    "message": "`copy` imported but unused"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "DTZ003",
+    "line": 17,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "DTZ003",
+    "line": 94,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "I001",
+    "line": 132,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "DTZ003",
+    "line": 154,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "checks/test_processing.py",
+    "code": "I001",
+    "line": 174,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_scoring.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_security.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "checks/test_security_s01_s02.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/adapters.py",
+    "code": "I001",
+    "line": 6,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/adapters.py",
+    "code": "UP017",
+    "line": 63,
+    "message": "Use `datetime.UTC` alias"
+  },
+  {
+    "path": "integration/adapters.py",
+    "code": "UP017",
+    "line": 71,
+    "message": "Use `datetime.UTC` alias"
+  },
+  {
+    "path": "integration/adapters.py",
+    "code": "RUF059",
+    "line": 83,
+    "message": "Unpacked variable `actual` is never used"
+  },
+  {
+    "path": "integration/adapters.py",
+    "code": "I001",
+    "line": 123,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/adapters.py",
+    "code": "I001",
+    "line": 147,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/av_checks.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/av_checks.py",
+    "code": "F401",
+    "line": 8,
+    "message": "`app.services.file_validation.validate_document` imported but unused"
+  },
+  {
+    "path": "integration/av_checks.py",
+    "code": "I001",
+    "line": 52,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/av_checks.py",
+    "code": "I001",
+    "line": 56,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/av_checks.py",
+    "code": "DTZ003",
+    "line": 66,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/bootstrap.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/demo.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F401",
+    "line": 2,
+    "message": "`copy` imported but unused"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F401",
+    "line": 8,
+    "message": "`integration.tests.conftest.ctx` imported but unused"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F401",
+    "line": 8,
+    "message": "`integration.tests.conftest.raw` imported but unused"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 18,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 26,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 39,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 43,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 47,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 64,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 72,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 87,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 105,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/edit_review.py",
+    "code": "F811",
+    "line": 122,
+    "message": "Redefinition of unused `ctx` from line 8: `ctx` redefined here"
+  },
+  {
+    "path": "integration/examples.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/examples.py",
+    "code": "RUF059",
+    "line": 18,
+    "message": "Unpacked variable `ext` is never used"
+  },
+  {
+    "path": "integration/functional_probes.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/guard.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/objects.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/prepare.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/provision.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "FURB167",
+    "line": 12,
+    "message": "Use of regular expression alias `re.I`"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "FURB167",
+    "line": 15,
+    "message": "Use of regular expression alias `re.I`"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "FURB167",
+    "line": 16,
+    "message": "Use of regular expression alias `re.I`"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "FURB167",
+    "line": 17,
+    "message": "Use of regular expression alias `re.I`"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "FURB167",
+    "line": 20,
+    "message": "Use of regular expression alias `re.I`"
+  },
+  {
+    "path": "integration/publication.py",
+    "code": "BLE001",
+    "line": 189,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "integration/render_demo.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/report.py",
+    "code": "UP017",
+    "line": 84,
+    "message": "Use `datetime.UTC` alias"
+  },
+  {
+    "path": "integration/restart_probe.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/restart_probe.py",
+    "code": "F401",
+    "line": 2,
+    "message": "`time` imported but unused"
+  },
+  {
+    "path": "integration/scan_publication.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/scan_publication.py",
+    "code": "BLE001",
+    "line": 128,
+    "message": "Do not catch blind exception: `Exception`"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 20,
+    "message": "Redefinition of unused `raw` from line 34: `raw` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 22,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "I001",
+    "line": 32,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F401",
+    "line": 34,
+    "message": "`integration.tests.conftest.raw` imported but unused"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F401",
+    "line": 34,
+    "message": "`integration.tests.conftest.ctx` imported but unused"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 43,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 47,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 55,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 80,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 90,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/security_s01_s02.py",
+    "code": "F811",
+    "line": 106,
+    "message": "Redefinition of unused `ctx` from line 34: `ctx` redefined here"
+  },
+  {
+    "path": "integration/test_publication.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/test_publication.py",
+    "code": "PLW1510",
+    "line": 96,
+    "message": "`subprocess.run` without explicit `check` argument"
+  },
+  {
+    "path": "integration/test_publication.py",
+    "code": "PLW1510",
+    "line": 99,
+    "message": "`subprocess.run` without explicit `check` argument"
+  },
+  {
+    "path": "integration/test_publication.py",
+    "code": "PLW1510",
+    "line": 131,
+    "message": "`subprocess.run` without explicit `check` argument"
+  },
+  {
+    "path": "integration/tests/conftest.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/tests/conftest.py",
+    "code": "F401",
+    "line": 3,
+    "message": "`copy` imported but unused"
+  },
+  {
+    "path": "integration/tests/test_f01_f07_real_db.py",
+    "code": "I001",
+    "line": 2,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/tests/test_f01_f07_real_db.py",
+    "code": "F401",
+    "line": 10,
+    "message": "`app.tenancy.TenantDatabase` imported but unused"
+  },
+  {
+    "path": "integration/tests/test_f01_f07_real_db.py",
+    "code": "RUF059",
+    "line": 15,
+    "message": "Unpacked variable `init` is never used"
+  },
+  {
+    "path": "integration/tests/test_f01_f07_real_db.py",
+    "code": "RUF059",
+    "line": 47,
+    "message": "Unpacked variable `init` is never used"
+  },
+  {
+    "path": "integration/tests/test_historical_ports.py",
+    "code": "I001",
+    "line": 5,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/tests/test_historical_ports.py",
+    "code": "F401",
+    "line": 5,
+    "message": "`copy` imported but unused"
+  },
+  {
+    "path": "integration/tests/test_historical_ports.py",
+    "code": "F401",
+    "line": 14,
+    "message": "`app.services.scoring.scoring_engine` imported but unused"
+  },
+  {
+    "path": "integration/tests/test_historical_ports.py",
+    "code": "F841",
+    "line": 321,
+    "message": "Local variable `before` is assigned to but never used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "F401",
+    "line": 1,
+    "message": "`copy` imported but unused"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "I001",
+    "line": 22,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "SIM117",
+    "line": 65,
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "DTZ003",
+    "line": 91,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "DTZ003",
+    "line": 117,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "DTZ003",
+    "line": 136,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "DTZ003",
+    "line": 147,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "DTZ003",
+    "line": 166,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "DTZ003",
+    "line": 170,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "integration/tests/test_mongo_api.py",
+    "code": "RUF059",
+    "line": 177,
+    "message": "Unpacked variable `init` is never used"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "I001",
+    "line": 15,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP035",
+    "line": 20,
+    "message": "`typing.List` is deprecated, use `list` instead"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP035",
+    "line": 20,
+    "message": "`typing.Dict` is deprecated, use `dict` instead"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "I001",
+    "line": 25,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 31,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 31,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "TRY004",
+    "line": 75,
+    "message": "Prefer `TypeError` exception for invalid type"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP045",
+    "line": 86,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP045",
+    "line": 87,
+    "message": "Use `X | None` for type annotations"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 88,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "TRY004",
+    "line": 93,
+    "message": "Prefer `TypeError` exception for invalid type"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 105,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 106,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 108,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 108,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 109,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 109,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 111,
+    "message": "Use `list` instead of `List` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "DTZ003",
+    "line": 169,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "DTZ003",
+    "line": 197,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "UP006",
+    "line": 214,
+    "message": "Use `dict` instead of `Dict` for type annotation"
+  },
+  {
+    "path": "scripts/recompute_scoring.py",
+    "code": "DTZ003",
+    "line": 292,
+    "message": "`datetime.datetime.utcnow()` used"
+  },
+  {
+    "path": "tests/conftest.py",
+    "code": "F401",
+    "line": 7,
+    "message": "`uuid` imported but unused"
+  },
+  {
+    "path": "tests/conftest.py",
+    "code": "F401",
+    "line": 9,
+    "message": "`httpx` imported but unused"
+  },
+  {
+    "path": "tests/conftest.py",
+    "code": "F401",
+    "line": 10,
+    "message": "`jwt` imported but unused"
+  },
+  {
+    "path": "tests/test_clinician_access.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_clinician_correction.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_clinician_validation.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_extraction_flow.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_extraction_proposal.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_extraction_rules.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_extractor_rules.py",
+    "code": "RUF100",
+    "line": 10,
+    "message": "Unused `noqa` directive (non-enabled: `E402`)"
+  },
+  {
+    "path": "tests/test_full_lifecycle.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_lab_report.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_lab_report_export.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_lab_report_export.py",
+    "code": "SIM115",
+    "line": 103,
+    "message": "Use a context manager for opening files"
+  },
+  {
+    "path": "tests/test_markers_series.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_normalizer_units.py",
+    "code": "RUF100",
+    "line": 17,
+    "message": "Unused `noqa` directive (non-enabled: `E402`)"
+  },
+  {
+    "path": "tests/test_recompute_batch.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_recompute_batch.py",
+    "code": "F401",
+    "line": 7,
+    "message": "`pytest` imported but unused"
+  },
+  {
+    "path": "tests/test_recompute_batch.py",
+    "code": "F401",
+    "line": 8,
+    "message": "`pymongo.MongoClient` imported but unused"
+  },
+  {
+    "path": "tests/test_recompute_batch.py",
+    "code": "F401",
+    "line": 12,
+    "message": "`app.config.settings` imported but unused"
+  },
+  {
+    "path": "tests/test_scoring_flow.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  },
+  {
+    "path": "tests/test_scoring_flow.py",
+    "code": "RUF059",
+    "line": 64,
+    "message": "Unpacked variable `f_norm` is never used"
+  },
+  {
+    "path": "tests/test_scoring_flow.py",
+    "code": "RUF059",
+    "line": 68,
+    "message": "Unpacked variable `f_high` is never used"
+  },
+  {
+    "path": "tests/test_scoring_reproducibility.py",
+    "code": "RUF100",
+    "line": 20,
+    "message": "Unused `noqa` directive (non-enabled: `E402`)"
+  },
+  {
+    "path": "tests/test_scoring_reproducibility.py",
+    "code": "RUF100",
+    "line": 21,
+    "message": "Unused `noqa` directive (non-enabled: `E402`)"
+  },
+  {
+    "path": "tests/test_upload_flow.py",
+    "code": "I001",
+    "line": 1,
+    "message": "Import block is un-sorted or un-formatted"
+  }
+]

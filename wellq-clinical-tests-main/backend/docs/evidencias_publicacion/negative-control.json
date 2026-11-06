@@ -1,0 +1,90 @@
+{
+  "scope": "changed tracked and relevant untracked files; not a full-history clearance",
+  "files_scanned": 206,
+  "effective_secret_findings": 10,
+  "blocking_findings": [
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-at-stop-redacted.json",
+      "category": "effective_secret",
+      "count": 2
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-at-stop-redacted.json",
+      "category": "authenticated_or_signed_uri",
+      "count": 1
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-resolved-redacted.json",
+      "category": "effective_secret",
+      "count": 2
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-resolved-redacted.json",
+      "category": "authenticated_or_signed_uri",
+      "count": 1
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/compose-resolved-redacted.json",
+      "category": "effective_secret",
+      "count": 2
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/compose-resolved-redacted.json",
+      "category": "authenticated_or_signed_uri",
+      "count": 1
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-at-stop-redacted.json",
+      "category": "effective_secret",
+      "count": 2
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-at-stop-redacted.json",
+      "category": "authenticated_or_signed_uri",
+      "count": 1
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-resolved-redacted.json",
+      "category": "effective_secret",
+      "count": 2
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-resolved-redacted.json",
+      "category": "authenticated_or_signed_uri",
+      "count": 1
+    }
+  ],
+  "reviewed_public_examples": [
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/dependencies-before.json",
+      "category": "public_advisory_jwt_literal",
+      "count": 1
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/dependencies-before.json",
+      "category": "public_advisory_sensitive_assignment",
+      "count": 1
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/sanitizer-attempt1.xml",
+      "category": "invented_fixture_reserved_invalid_domain",
+      "count": 3
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/sanitizer-attempt2.xml",
+      "category": "invented_fixture_reserved_invalid_domain",
+      "count": 3
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/sanitizer-tests.xml",
+      "category": "invented_fixture_reserved_invalid_domain",
+      "count": 3
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/test_publication.py",
+      "category": "invented_fixture_reserved_invalid_domain",
+      "count": 4
+    }
+  ],
+  "passed": false
+}

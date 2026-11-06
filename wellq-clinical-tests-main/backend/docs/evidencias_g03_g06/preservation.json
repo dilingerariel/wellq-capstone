@@ -1,0 +1,34 @@
+{
+  "branch": "fix/wellq-backend-hardening",
+  "head": "fb8746cd42fe107bbda82dd92d3a4d11d545fd3e",
+  "baseline_files": 294,
+  "missing": [],
+  "changed_existing": [
+    "wellq-clinical-tests-main/backend/app/services/audit.py",
+    "wellq-clinical-tests-main/backend/docs/openapi.json",
+    "wellq-clinical-tests-main/backend/integration/adapters.py",
+    "wellq-clinical-tests-main/backend/integration/bootstrap.py",
+    "wellq-clinical-tests-main/backend/app/models/schemas.py",
+    "wellq-clinical-tests-main/backend/app/routes/clinical_tests.py"
+  ],
+  "changed_route_functions": [
+    "edit_clinical_test",
+    "review_clinical_test"
+  ],
+  "demo_mismatches": [],
+  "openapi_paths_unchanged": true,
+  "openapi_snapshot_matches": true,
+  "openapi_diff": [
+    "/components/schemas/EditClinicalTestRequest/minProperties",
+    "/components/schemas/EditClinicalTestRequest/properties/test_date/anyOf",
+    "/components/schemas/EditClinicalTestRequest/properties/test_date/type",
+    "/components/schemas/EditClinicalTestRequest/properties/test_type/$ref",
+    "/components/schemas/EditClinicalTestRequest/properties/test_type/anyOf",
+    "/components/schemas/EditClinicalTestRequest/properties/title/anyOf",
+    "/components/schemas/EditClinicalTestRequest/properties/title/maxLength",
+    "/components/schemas/EditClinicalTestRequest/properties/title/minLength",
+    "/components/schemas/EditClinicalTestRequest/properties/title/type"
+  ],
+  "clinical_operations": 20,
+  "http_openapi_matches_snapshot": true
+}

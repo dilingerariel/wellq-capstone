@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="5.320" timestamp="2026-11-05T11:03:53.100219-03:00" hostname="pablo"><testcase classname="test_audit_findings" name="test_invalid_field_confidence_must_be_zero" time="0.006"><failure message="AssertionError: Master P419-420/P466-468 requires forced zero; actual {'value': 0.99, 'unit': 0.99, 'reference': 0.99, 'name': 0.99}&#10;assert 0.99 == 0">C:\Dev\wellq-auditoria-final\evidencias\test_audit_findings.py:33: in test_invalid_field_confidence_must_be_zero
+    assert marker['confidence']['value']==0, 'Master P419-420/P466-468 requires forced zero; actual '+str(marker['confidence'])
+E   AssertionError: Master P419-420/P466-468 requires forced zero; actual {'value': 0.99, 'unit': 0.99, 'reference': 0.99, 'name': 0.99}
+E   assert 0.99 == 0</failure></testcase><testcase classname="test_audit_findings" name="test_document_reference_must_drive_display_status" time="0.004"><failure message="AssertionError: 90 below document range 100..150; actual normal&#10;assert 'normal' == 'low'&#10;  &#10;  - low&#10;  + normal">C:\Dev\wellq-auditoria-final\evidencias\test_audit_findings.py:40: in test_document_reference_must_drive_display_status
+    assert marker['status']=='low', '90 below document range 100..150; actual '+marker['status']
+E   AssertionError: 90 below document range 100..150; actual normal
+E   assert 'normal' == 'low'
+E     
+E     - low
+E     + normal</failure></testcase><testcase classname="test_audit_findings" name="test_future_date_must_not_pass_deterministic_validation" time="0.005"><failure message="AssertionError: Master P399 rejects future dates; accepted 2999-01-01&#10;assert 'awaiting_confirmation' != 'awaiting_confirmation'">C:\Dev\wellq-auditoria-final\evidencias\test_audit_findings.py:46: in test_future_date_must_not_pass_deterministic_validation
+    assert result['status']!='awaiting_confirmation', 'Master P399 rejects future dates; accepted '+result['document']['collection_date']
+E   AssertionError: Master P399 rejects future dates; accepted 2999-01-01
+E   assert 'awaiting_confirmation' != 'awaiting_confirmation'</failure></testcase><testcase classname="test_audit_findings" name="test_nullable_reference_must_not_crash_scoring" time="0.002"><failure message="TypeError: float() argument must be a string or a real number, not 'NoneType'">C:\Dev\wellq-auditoria-final\evidencias\test_audit_findings.py:50: in test_nullable_reference_must_not_crash_scoring
+    score,flag=scoring_engine.calculate_subscore('glucose',90,ref)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Dev\wellq-capstone\wellq-clinical-tests-main\backend\app\services\scoring.py:48: in calculate_subscore
+    L = float(ref.get("low", catalog_item.get("default_reference", {}).get("low", 0.0)))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: float() argument must be a string or a real number, not 'NoneType'</failure></testcase><testcase classname="test_audit_findings" name="test_signer_failure_must_not_report_ready" time="0.003"><failure message="AssertionError: Ready without download URL after signing error&#10;assert ('ready' != 'ready' or None)">C:\Dev\wellq-auditoria-final\evidencias\test_audit_findings.py:58: in test_signer_failure_must_not_report_ready
+    assert result['status']!='ready' or result['download_url'], 'Ready without download URL after signing error'
+E   AssertionError: Ready without download URL after signing error
+E   assert ('ready' != 'ready' or None)</failure></testcase><testcase classname="test_audit_http_findings" name="test_discard_replay_must_be_idempotent" time="1.259"><failure message="AssertionError: {&quot;detail&quot;:{&quot;code&quot;:&quot;IDEMPOTENCY_CONFLICT&quot;,&quot;message&quot;:&quot;Request changed&quot;}}&#10;assert 409 == 200&#10; +  where 409 = &lt;Response [409 Conflict]&gt;.status_code">C:\Dev\wellq-auditoria-final\evidencias\test_audit_http_findings.py:21: in test_discard_replay_must_be_idempotent
+    assert replay.status_code==200,replay.text
+E   AssertionError: {"detail":{"code":"IDEMPOTENCY_CONFLICT","message":"Request changed"}}
+E   assert 409 == 200
+E    +  where 409 = &lt;Response [409 Conflict]&gt;.status_code</failure></testcase><testcase classname="test_audit_http_findings" name="test_unapproved_catalog_must_not_publish_subscores" time="0.215"><failure message="AssertionError: {&quot;patient_id&quot;:&quot;patient-test&quot;,&quot;from&quot;:null,&quot;to&quot;:null,&quot;only_confirmed&quot;:true,&quot;series&quot;:[{&quot;marker_code&quot;:&quot;glucose&quot;,&quot;unit&quot;:&quot;mg/dL&quot;,&quot;points&quot;:[{&quot;measured_on&quot;:&quot;2026-11-05&quot;,&quot;value&quot;:90.0,&quot;unit&quot;:&quot;mg/dL&quot;,&quot;reference&quot;:{&quot;low&quot;:70.0,&quot;high&quot;:100.0,&quot;unit&quot;:&quot;mg/dL&quot;,&quot;source&quot;:&quot;catalog&quot;},&quot;status&quot;:&quot;normal&quot;,&quot;subscore&quot;:100.0,&quot;clinical_test_id&quot;:&quot;ct_3a1de7494ac74a6996d505df10933f12&quot;,&quot;confirmation_level&quot;:&quot;patient&quot;,&quot;edited&quot;:false}]}]}&#10;assert 100.0 is None">C:\Dev\wellq-auditoria-final\evidencias\test_audit_http_findings.py:33: in test_unapproved_catalog_must_not_publish_subscores
+    assert result.json()['series'][0]['points'][0]['subscore'] is None,result.text
+E   AssertionError: {"patient_id":"patient-test","from":null,"to":null,"only_confirmed":true,"series":[{"marker_code":"glucose","unit":"mg/dL","points":[{"measured_on":"2026-11-05","value":90.0,"unit":"mg/dL","reference":{"low":70.0,"high":100.0,"unit":"mg/dL","source":"catalog"},"status":"normal","subscore":100.0,"clinical_test_id":"ct_3a1de7494ac74a6996d505df10933f12","confirmation_level":"patient","edited":false}]}]}
+E   assert 100.0 is None</failure></testcase></testsuite></testsuites>

@@ -1,6 +1,12 @@
+from app.models.reporting import MarkerSeriesResponse, LabReportResponse, LabReportExportResponse
+from app.services import uploads
+import logging
+logger = logging.getLogger(__name__)
+from app.services.scoring import scoring_engine
+from app.services.transactions import atomic_write
 from fastapi import APIRouter, Depends, HTTPException, status, Header, BackgroundTasks, Query
 from pymongo.database import Database
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from bson import ObjectId
 from typing import Optional, List
 from xml.sax.saxutils import escape as _xml_escape
@@ -32,32 +38,6 @@ from app.models.scoring import LabScoreResponse
 
 router = APIRouter()
 
-def process_upload_validation(upload_id: str):
-    """Tarea en segundo plano: escaneo de seguridad y ejecución del pipeline de extracción (Componente B)"""
-    time.sleep(2)  # Simula tiempo de escaneo
-    try:
-        db = get_database()
-        test_doc = db.clinical_tests.find_one({"upload.upload_id": upload_id})
-        if test_doc:
-            db.clinical_tests.update_one(
-                {"_id": test_doc["_id"]},
-                {
-                    "$set": {
-                        "upload.status": UploadStatus.READY_FOR_REVIEW.value,
-                        "upload.validated_at": datetime.utcnow(),
-                        "upload.processing_status": {
-                            "malware_scan": ScanStatus.PASSED.value,
-                            "mime_validation": ScanStatus.PASSED.value,
-                        },
-                        "updated_at": datetime.utcnow(),
-                    }
-                }
-            )
-            # Ejecutar el motor de extracción automáticamente (Componente B)
-            from app.services.extractor import extraction_engine
-            extraction_engine.run_extraction_pipeline(test_doc["clinical_test_id"], db)
-    except Exception as e:
-        print(f"Error procesando validación para {upload_id}: {e}")
 
 # ============ ENDPOINT 1: INITIATE UPLOAD ============
 
@@ -66,144 +46,14 @@ def process_upload_validation(upload_id: str):
     response_model=InitiateUploadResponse,
     status_code=201,
 )
+@atomic_write
 async def initiate_upload(
     request: InitiateUploadRequest,
-    idempotency_key: str = Header(...),
+    idempotency_key: str = Header(..., min_length=8, max_length=200),
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
-    """
-    POST /api/v1/clinical-tests/uploads/initiate
-    Crear sesión de subida e obtener URL firmada de GCS
-    """
-    # 1. Validación de MIME Type en lista blanca
-    if request.mime_type not in settings.ALLOWED_MIME_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail={
-                "code": ErrorCode.INVALID_METADATA.value,
-                "message": f"MIME type no permitido: '{request.mime_type}'. Permitidos: {settings.ALLOWED_MIME_TYPES}"
-            }
-        )
-
-    # 2. Validación de tamaño máximo
-    if request.size_bytes > settings.MAX_CLINICAL_FILE_BYTES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={
-                "code": ErrorCode.INVALID_METADATA.value,
-                "message": f"Tamaño de archivo excede el máximo permitido ({settings.MAX_CLINICAL_FILE_BYTES // (1024 * 1024)}MB)"
-            }
-        )
-
-    # 3. Límite de subidas pendientes simultáneas por paciente
-    pending_count = db.clinical_tests.count_documents({
-        "patient_id": current_patient,
-        "upload.status": UploadStatus.INITIATED.value,
-        "deleted_at": None,
-    })
-    if pending_count >= settings.MAX_PENDING_UPLOADS:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail={
-                "code": ErrorCode.RATE_LIMITED.value,
-                "message": f"Límite de subidas pendientes alcanzado ({settings.MAX_PENDING_UPLOADS})"
-            }
-        )
-
-    # 4. Idempotencia: Verificar client_upload_id existente para este paciente
-    existing = db.clinical_tests.find_one({
-        "patient_id": current_patient,
-        "upload.client_upload_id": request.client_upload_id,
-        "deleted_at": None,
-    })
-    if existing:
-        if existing.get("file", {}).get("sha256") == request.sha256:
-            # Reintento idempotente: Devolver sesión existente
-            upload_info = storage_service.generate_upload_url(
-                object_key=existing["file"]["gcs_object_key"],
-                content_type=request.mime_type,
-                expiration_minutes=settings.SIGNED_URL_EXPIRATION_MINUTES,
-            )
-            return InitiateUploadResponse(
-                upload_id=existing["upload"]["upload_id"],
-                clinical_test_id=existing["clinical_test_id"],
-                status=UploadStatus(existing["upload"]["status"]),
-                upload=SignedUrlResponse(**upload_info),
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail={
-                    "code": ErrorCode.UPLOAD_CONFLICT.value,
-                    "message": "El client_upload_id ya existe con datos o checksum diferentes"
-                }
-            )
-
-    # 5. Generar identificadores y clave de almacenamiento en GCS
-    unique_id = uuid.uuid4().hex[:12]
-    clinical_test_id = f"ct_{unique_id}"
-    upload_id = f"ctu_{unique_id}"
-    object_key = f"private/clinical-tests/{current_patient}/{clinical_test_id}/original"
-
-    # 6. Generar URL firmada V4
-    upload_info = storage_service.generate_upload_url(
-        object_key=object_key,
-        content_type=request.mime_type,
-        expiration_minutes=settings.SIGNED_URL_EXPIRATION_MINUTES,
-    )
-
-    # 7. Persistir documento en MongoDB
-    doc = {
-        "clinical_test_id": clinical_test_id,
-        "patient_id": current_patient,
-        "title": request.title,
-        "test_type": request.test_type.value,
-        "test_date": request.test_date,
-        "patient_notes": request.notes,
-        "case_id": request.case_id,
-        "appointment_id": request.appointment_id,
-        "file": {
-            "original_name": request.file_name,
-            "mime_type": request.mime_type,
-            "size_bytes": request.size_bytes,
-            "sha256": request.sha256,
-            "gcs_object_key": object_key,
-            "media_id": None,
-        },
-        "upload": {
-            "upload_id": upload_id,
-            "client_upload_id": request.client_upload_id,
-            "idempotency_key": idempotency_key,
-            "status": UploadStatus.INITIATED.value,
-            "refresh_count": 0,
-            "expires_at": upload_info["expires_at"],
-            "validated_at": None,
-            "rejection": None,
-            "processing_status": {
-                "malware_scan": ScanStatus.PENDING.value,
-                "mime_validation": ScanStatus.PENDING.value,
-            }
-        },
-        "review": {
-            "status": ReviewStatus.NOT_REVIEWED.value,
-            "reviewed_at": None,
-            "reviewed_by": None,
-            "private_note": None,
-        },
-        "created_at": datetime.utcnow(),
-        "updated_at": datetime.utcnow(),
-        "deleted_at": None,
-    }
-
-    db.clinical_tests.insert_one(doc)
-
-    return InitiateUploadResponse(
-        upload_id=upload_id,
-        clinical_test_id=clinical_test_id,
-        status=UploadStatus.INITIATED,
-        upload=SignedUrlResponse(**upload_info),
-    )
+    return uploads.initiate(request, idempotency_key, current_patient, db)
 
 # ============ ENDPOINT 2: REFRESH URL ============
 
@@ -211,87 +61,15 @@ async def initiate_upload(
     "/clinical-tests/uploads/{upload_id}/refresh-url",
     response_model=RefreshUrlResponse,
 )
+@atomic_write
 async def refresh_url(
     upload_id: str,
     request: RefreshUrlRequest,
-    idempotency_key: str = Header(...),
+    idempotency_key: str = Header(..., min_length=8, max_length=200),
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
-    """
-    POST /api/v1/clinical-tests/uploads/{upload_id}/refresh-url
-    Reemplazar URL firmada expirada sin duplicar registro
-    """
-    doc = db.clinical_tests.find_one({
-        "upload.upload_id": upload_id,
-        "patient_id": current_patient,
-        "deleted_at": None,
-    })
-
-    if not doc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                "code": ErrorCode.UPLOAD_NOT_FOUND.value,
-                "message": "Sesión de subida no encontrada"
-            }
-        )
-
-    # Validar que la sesión siga en estado initiated
-    if doc["upload"]["status"] != UploadStatus.INITIATED.value:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={
-                "code": ErrorCode.UPLOAD_NOT_REFRESHABLE.value,
-                "message": f"La sesión no puede refrescarse en estado '{doc['upload']['status']}'"
-            }
-        )
-
-    # Validar integridad: SHA-256 y client_upload_id coinciden
-    if doc["file"]["sha256"] != request.sha256 or doc["upload"]["client_upload_id"] != request.client_upload_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={
-                "code": ErrorCode.OBJECT_MISMATCH.value,
-                "message": "El SHA-256 o client_upload_id no coinciden con la sesión original"
-            }
-        )
-
-    # Rate limiting: máximo 10 refrescos por sesión
-    refresh_count = doc["upload"].get("refresh_count", 0)
-    if refresh_count >= settings.MAX_URL_REFRESHES_PER_UPLOAD:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail={
-                "code": ErrorCode.RATE_LIMITED.value,
-                "message": f"Límite de refrescos alcanzado (máximo {settings.MAX_URL_REFRESHES_PER_UPLOAD})"
-            }
-        )
-
-    # Generar nueva URL firmada
-    upload_info = storage_service.generate_upload_url(
-        object_key=doc["file"]["gcs_object_key"],
-        content_type=doc["file"]["mime_type"],
-        expiration_minutes=settings.SIGNED_URL_EXPIRATION_MINUTES,
-    )
-
-    # Actualizar contador y expiración en MongoDB
-    db.clinical_tests.update_one(
-        {"_id": doc["_id"]},
-        {
-            "$inc": {"upload.refresh_count": 1},
-            "$set": {
-                "upload.expires_at": upload_info["expires_at"],
-                "updated_at": datetime.utcnow(),
-            }
-        }
-    )
-
-    return RefreshUrlResponse(
-        upload_id=upload_id,
-        status=UploadStatus.INITIATED,
-        upload=SignedUrlResponse(**upload_info),
-    )
+    return uploads.refresh(upload_id, request, idempotency_key, current_patient, db)
 
 # ============ ENDPOINT 3: COMPLETE UPLOAD ============
 
@@ -299,85 +77,16 @@ async def refresh_url(
     "/clinical-tests/uploads/{upload_id}/complete",
     response_model=CompleteUploadResponse,
 )
+@atomic_write
 async def complete_upload(
     upload_id: str,
     request: CompleteUploadRequest,
     background_tasks: BackgroundTasks,
-    idempotency_key: str = Header(...),
+    idempotency_key: str = Header(..., min_length=8, max_length=200),
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
-    """
-    POST /api/v1/clinical-tests/uploads/{upload_id}/complete
-    Señalar que transferencia terminó. Verificar y encolar validación.
-    REGLA: local_file_can_be_deleted = false SIEMPRE en esta etapa.
-    """
-    doc = db.clinical_tests.find_one({
-        "upload.upload_id": upload_id,
-        "patient_id": current_patient,
-        "deleted_at": None,
-    })
-
-    if not doc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                "code": ErrorCode.UPLOAD_NOT_FOUND.value,
-                "message": "Sesión de subida no encontrada"
-            }
-        )
-
-    # Idempotencia: Si ya está en processing o ready_for_review, devolver respuesta exitosa
-    if doc["upload"]["status"] in [UploadStatus.PROCESSING.value, UploadStatus.READY_FOR_REVIEW.value]:
-        return CompleteUploadResponse(
-            clinical_test_id=doc["clinical_test_id"],
-            upload_id=upload_id,
-            status=UploadStatus(doc["upload"]["status"]),
-            local_file_can_be_deleted=False,  # REGLA CRÍTICA
-            status_url=f"/api/v1/clinical-tests/uploads/{upload_id}/status",
-        )
-
-    # Validar que esté en initiated
-    if doc["upload"]["status"] != UploadStatus.INITIATED.value:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={
-                "code": ErrorCode.UPLOAD_CONFLICT.value,
-                "message": f"No se puede completar una subida en estado '{doc['upload']['status']}'"
-            }
-        )
-
-    # Validar tamaño y SHA-256
-    if doc["file"]["sha256"] != request.sha256 or doc["file"]["size_bytes"] != request.size_bytes:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={
-                "code": ErrorCode.OBJECT_MISMATCH.value,
-                "message": "El tamaño o SHA-256 no coinciden con la sesión iniciada"
-            }
-        )
-
-    # Actualizar estado a processing
-    db.clinical_tests.update_one(
-        {"_id": doc["_id"]},
-        {
-            "$set": {
-                "upload.status": UploadStatus.PROCESSING.value,
-                "updated_at": datetime.utcnow(),
-            }
-        }
-    )
-
-    # Encolar validación en segundo plano
-    background_tasks.add_task(process_upload_validation, upload_id)
-
-    return CompleteUploadResponse(
-        clinical_test_id=doc["clinical_test_id"],
-        upload_id=upload_id,
-        status=UploadStatus.PROCESSING,
-        local_file_can_be_deleted=False,  # REGLA CRÍTICA: SIEMPRE FALSE
-        status_url=f"/api/v1/clinical-tests/uploads/{upload_id}/status",
-    )
+    return uploads.complete(upload_id, request, idempotency_key, current_patient, db)
 
 # ============ ENDPOINT 4: UPLOAD STATUS ============
 
@@ -390,59 +99,7 @@ async def get_upload_status(
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
-    """
-    GET /api/v1/clinical-tests/uploads/{upload_id}/status
-    Consultar resultado del procesamiento.
-    REGLA: local_file_can_be_deleted = true SOLO si status = ready_for_review
-    """
-    doc = db.clinical_tests.find_one({
-        "upload.upload_id": upload_id,
-        "patient_id": current_patient,
-        "deleted_at": None,
-    })
-
-    if not doc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                "code": ErrorCode.UPLOAD_NOT_FOUND.value,
-                "message": "Sesión de subida no encontrada"
-            }
-        )
-
-    current_status = UploadStatus(doc["upload"]["status"])
-    proc_info = doc["upload"].get("processing_status", {})
-
-    # Regla: local_file_can_be_deleted es True SOLO en ready_for_review
-    if current_status == UploadStatus.READY_FOR_REVIEW:
-        can_delete = True
-        malware_scan = ScanStatus.PASSED
-        mime_validation = ScanStatus.PASSED
-    elif current_status in [UploadStatus.REJECTED, UploadStatus.FAILED]:
-        can_delete = False
-        malware_scan = ScanStatus.FAILED
-        mime_validation = ScanStatus.FAILED
-    else:  # INITIATED o PROCESSING
-        can_delete = False
-        malware_scan = ScanStatus(proc_info.get("malware_scan", ScanStatus.PENDING.value))
-        mime_validation = ScanStatus(proc_info.get("mime_validation", ScanStatus.PENDING.value))
-
-    completed_at = None
-    if doc["upload"].get("validated_at"):
-        completed_at = doc["upload"]["validated_at"].strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    return UploadStatusResponse(
-        clinical_test_id=doc["clinical_test_id"],
-        upload_id=upload_id,
-        status=current_status,
-        processing=ProcessingStatus(
-            malware_scan=malware_scan,
-            mime_validation=mime_validation,
-        ),
-        local_file_can_be_deleted=can_delete,
-        error=doc["upload"].get("rejection"),
-        completed_at=completed_at,
-    )
+    return uploads.upload_status(upload_id, current_patient, db)
 
 # ============ ENDPOINTS 5-11 TODO ============
 
@@ -510,14 +167,17 @@ async def list_clinical_tests(
     if cursor:
         try:
             decoded = base64.b64decode(cursor.encode("utf-8")).decode("utf-8")
-            cursor_dt = datetime.fromisoformat(decoded)
-            query["created_at"] = {"$lt": cursor_dt}
+            parts = json.loads(decoded)
+            day, created, identity = parts["test_date"], datetime.fromisoformat(parts["created_at"]), parts["id"]
+            query["$or"] = [{"test_date": {"$lt": day}},
+                {"test_date": day, "created_at": {"$lt": created}},
+                {"test_date": day, "created_at": created, "clinical_test_id": {"$lt": identity}}]
         except Exception:
-            pass
+            raise HTTPException(422, detail={"code": "INVALID_CURSOR", "message": "Invalid pagination cursor"})
 
     docs = list(
         db.clinical_tests.find(query)
-        .sort([("test_date", -1), ("created_at", -1)])
+        .sort([("test_date", -1), ("created_at", -1), ("clinical_test_id", -1)])
         .limit(limit + 1)
     )
 
@@ -525,8 +185,9 @@ async def list_clinical_tests(
     results = docs[:limit]
     next_cursor = None
     if has_more and results:
-        last_dt = results[-1]["created_at"]
-        next_cursor = base64.b64encode(last_dt.isoformat().encode("utf-8")).decode("utf-8")
+        last = results[-1]
+        payload = {"test_date": last["test_date"], "created_at": last["created_at"].isoformat(), "id": last["clinical_test_id"]}
+        next_cursor = base64.b64encode(json.dumps(payload).encode()).decode()
 
     items = [format_clinical_test_response(d).dict() for d in results]
     return ListClinicalTestsResponse(items=items, next_cursor=next_cursor)
@@ -578,6 +239,7 @@ async def get_clinical_test(
     "/clinical-tests/{clinical_test_id}",
     response_model=ClinicalTestResponse,
 )
+@atomic_write
 async def edit_clinical_test(
     clinical_test_id: str,
     request: EditClinicalTestRequest,
@@ -599,6 +261,9 @@ async def edit_clinical_test(
             detail={"code": ErrorCode.NOT_FOUND.value, "message": "Examen médico no encontrado"}
         )
 
+    if request.test_date is not None and (doc.get("extraction") or {}).get("status") in ("confirmed", "clinically_validated"):
+        raise HTTPException(409, detail={"code": "CONFIRMED_DATE_LOCKED", "message": "Use a traced clinical correction"})
+
     if doc.get("review", {}).get("status") == ReviewStatus.REVIEWED.value:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -608,6 +273,11 @@ async def edit_clinical_test(
             }
         )
 
+    from app.services.associations import verify_associations
+    verify_associations(
+        request.case_id if "case_id" in request.model_fields_set else doc.get("case_id"),
+        request.appointment_id if "appointment_id" in request.model_fields_set else doc.get("appointment_id"),
+        current_patient, db)
     update_fields = {}
     if request.title is not None:
         update_fields["title"] = request.title
@@ -615,16 +285,24 @@ async def edit_clinical_test(
         update_fields["test_type"] = request.test_type.value
     if request.test_date is not None:
         update_fields["test_date"] = request.test_date
-    if request.notes is not None:
+    if "notes" in request.model_fields_set:
         update_fields["patient_notes"] = request.notes
-    if request.case_id is not None:
+    if "case_id" in request.model_fields_set:
         update_fields["case_id"] = request.case_id
-    if request.appointment_id is not None:
+    if "appointment_id" in request.model_fields_set:
         update_fields["appointment_id"] = request.appointment_id
 
+    update_fields = {key: value for key, value in update_fields.items() if doc.get(key) != value}
     if update_fields:
+        # Field names and presence transitions only: never copy clinical text to audit.
+        changes = [{"field": "notes" if key == "patient_notes" else key,
+                    "before_present": doc.get(key) is not None, "after_present": value is not None}
+                   for key, value in sorted(update_fields.items())]
         update_fields["updated_at"] = datetime.utcnow()
         db.clinical_tests.update_one({"_id": doc["_id"]}, {"$set": update_fields})
+        from app.services.audit import audit
+        audit(db, "clinical_test_metadata_updated", "clinical_test", clinical_test_id,
+              metadata_changes=changes)
         doc = db.clinical_tests.find_one({"_id": doc["_id"]})
 
     return format_clinical_test_response(doc)
@@ -635,6 +313,7 @@ async def edit_clinical_test(
     "/clinical-tests/{clinical_test_id}",
     status_code=status.HTTP_200_OK,
 )
+@atomic_write
 async def delete_clinical_test(
     clinical_test_id: str,
     current_patient: str = Depends(get_current_patient),
@@ -665,6 +344,10 @@ async def delete_clinical_test(
             }
         }
     )
+    db.clinical_markers.update_many({"clinical_test_id": clinical_test_id}, {"$set": {"invalidated_at": now}})
+    scoring_engine.compute_patient_score(current_patient, db, trigger="clinical_test_deleted")
+    from app.services.audit import audit
+    audit(db, "clinical_test_deleted", "clinical_test", clinical_test_id)
     return {
         "clinical_test_id": clinical_test_id,
         "status": "deleted",
@@ -677,6 +360,7 @@ async def delete_clinical_test(
     "/clinical-tests/{clinical_test_id}/download-url",
     response_model=DownloadUrlResponse,
 )
+@atomic_write
 async def create_download_url(
     clinical_test_id: str,
     user: TokenPayload = Depends(get_current_user),
@@ -710,7 +394,7 @@ async def create_download_url(
             detail={"code": ErrorCode.FORBIDDEN.value, "message": "Rol no autorizado"}
         )
 
-    if doc["upload"]["status"] not in [UploadStatus.READY_FOR_REVIEW.value, UploadStatus.PROCESSING.value]:
+    if doc["upload"]["status"] != "ready_for_review" or not doc["file"].get("verified_at") or not doc["file"].get("generation"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
@@ -719,8 +403,17 @@ async def create_download_url(
             }
         )
 
+    from app.services.audit import audit
+    from pymongo import ReturnDocument
+    bucket_key = "download:" + user.sub + ":" + datetime.utcnow().strftime("%Y%m%d%H")
+    counter = db.request_limits.find_one({"key": bucket_key})
+    if counter and counter.get("count", 0) >= settings.MAX_DOWNLOADS_PER_HOUR:
+        raise HTTPException(429, detail={"code": "RATE_LIMITED", "message": "Download limit"}, headers={"Retry-After": "3600"})
+    db.request_limits.update_one({"key": bucket_key}, {"$inc": {"count": 1}}, upsert=True)
+    audit(db, "download_link_issued", "clinical_test", clinical_test_id)
     download_info = storage_service.generate_download_url(
         object_key=doc["file"]["gcs_object_key"],
+        generation=doc["file"].get("generation"),
         expiration_minutes=settings.DOWNLOAD_URL_EXPIRATION_MINUTES,
     )
 
@@ -763,14 +456,17 @@ async def list_patient_clinical_tests(
     if cursor:
         try:
             decoded = base64.b64decode(cursor.encode("utf-8")).decode("utf-8")
-            cursor_dt = datetime.fromisoformat(decoded)
-            query["created_at"] = {"$lt": cursor_dt}
+            parts = json.loads(decoded)
+            day, created, identity = parts["test_date"], datetime.fromisoformat(parts["created_at"]), parts["id"]
+            query["$or"] = [{"test_date": {"$lt": day}},
+                {"test_date": day, "created_at": {"$lt": created}},
+                {"test_date": day, "created_at": created, "clinical_test_id": {"$lt": identity}}]
         except Exception:
-            pass
+            raise HTTPException(422, detail={"code": "INVALID_CURSOR", "message": "Invalid pagination cursor"})
 
     docs = list(
         db.clinical_tests.find(query)
-        .sort([("test_date", -1), ("created_at", -1)])
+        .sort([("test_date", -1), ("created_at", -1), ("clinical_test_id", -1)])
         .limit(limit + 1)
     )
 
@@ -778,8 +474,9 @@ async def list_patient_clinical_tests(
     results = docs[:limit]
     next_cursor = None
     if has_more and results:
-        last_dt = results[-1]["created_at"]
-        next_cursor = base64.b64encode(last_dt.isoformat().encode("utf-8")).decode("utf-8")
+        last = results[-1]
+        payload = {"test_date": last["test_date"], "created_at": last["created_at"].isoformat(), "id": last["clinical_test_id"]}
+        next_cursor = base64.b64encode(json.dumps(payload).encode()).decode()
 
     items = [format_clinical_test_response(d).dict() for d in results]
     return ListClinicalTestsResponse(items=items, next_cursor=next_cursor)
@@ -790,6 +487,7 @@ async def list_patient_clinical_tests(
     "/clinical-tests/{clinical_test_id}/review",
     response_model=ClinicalTestResponse,
 )
+@atomic_write
 async def review_clinical_test(
     clinical_test_id: str,
     request: ReviewRequest,
@@ -801,7 +499,6 @@ async def review_clinical_test(
     """
     doc = db.clinical_tests.find_one({
         "clinical_test_id": clinical_test_id,
-        "deleted_at": None,
     })
     if not doc:
         raise HTTPException(
@@ -811,9 +508,22 @@ async def review_clinical_test(
 
     await require_clinician_access(doc["patient_id"], current_clinician)
 
+    proc = doc.get("upload", {}).get("processing_status", {})
+    if (doc.get("deleted_at") is not None or doc.get("upload", {}).get("status") != "ready_for_review"
+            or not doc.get("file", {}).get("verified_at") or not doc.get("file", {}).get("generation")
+            or proc != {"malware_scan": "passed", "mime_validation": "passed"}):
+        raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Document not ready for review"})
+    previous = doc.get("review", {})
+    if previous.get("status") == "reviewed":
+        if previous.get("reviewed_by") == current_clinician and previous.get("private_note") == request.review_note:
+            return format_clinical_test_response(doc)
+        raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Review is immutable"})
+    if previous.get("status") != "not_reviewed":
+        raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Invalid review state"})
+
     now = datetime.utcnow()
-    db.clinical_tests.update_one(
-        {"_id": doc["_id"]},
+    written = db.clinical_tests.update_one(
+        {"_id": doc["_id"], "review.status": "not_reviewed", "upload.status": "ready_for_review", "deleted_at": None},
         {
             "$set": {
                 "review.status": ReviewStatus.REVIEWED.value,
@@ -824,6 +534,11 @@ async def review_clinical_test(
             }
         }
     )
+    if written.matched_count != 1:
+        raise HTTPException(409, detail={"code": "RETRYABLE_CONFLICT", "message": "Retry the same review"})
+    from app.services.audit import audit
+    audit(db, "clinical_test_reviewed", "clinical_test", clinical_test_id,
+          previous_status=previous.get("status"))
     updated_doc = db.clinical_tests.find_one({"_id": doc["_id"]})
     return format_clinical_test_response(updated_doc)
 
@@ -842,7 +557,7 @@ def _audit_denied_access(db: Database, resource: str, patient_id: str, user: Tok
             "occurred_at": datetime.utcnow(),
         })
     except Exception as e:
-        print(f"No se pudo registrar auditoría de acceso denegado: {e}")
+        logger.warning("Clinical dependency error; details withheld")
 
 
 @router.get(
@@ -882,7 +597,7 @@ async def get_lab_score(
         sort=[("computed_at", -1), ("_id", -1)]
     )
 
-    if not current_snapshot:
+    if not current_snapshot or not scoring_engine.snapshot_current(current_snapshot, patient_id, db):
         # Motivo: sin exámenes confirmados vs. datos insuficientes
         has_markers = db.clinical_markers.count_documents({"patient_id": patient_id}) > 0
         reason = "insufficient_coverage" if has_markers else "no_confirmed_exams"
@@ -907,6 +622,7 @@ async def get_lab_score(
         )
         for snap in history_snapshots:
             snap.pop("_id", None)
+        history_snapshots = [s for s in history_snapshots if scoring_engine.snapshot_publishable(s)]
 
     return LabScoreResponse(
         current_snapshot=current_snapshot,
@@ -930,7 +646,7 @@ def _parse_iso_date(value: Optional[str], field: str) -> Optional[str]:
         )
 
 
-@router.get("/patients/{patient_id}/markers")
+@router.get("/patients/{patient_id}/markers", response_model=MarkerSeriesResponse)
 async def get_marker_series(
     patient_id: str,
     marker_codes: str = Query(..., description="Lista separada por comas, máximo 20"),
@@ -996,6 +712,8 @@ async def get_marker_series(
 
     series = {code: {"marker_code": code, "unit": None, "points": []} for code in codes}
     for d in docs:
+        if not db.clinical_tests.find_one({"clinical_test_id": d["clinical_test_id"], "patient_id": patient_id, "deleted_at": None}):
+            continue
         s = series[d["marker_code"]]
         if s["unit"] is None:
             s["unit"] = d.get("unit_canonical")
@@ -1004,8 +722,9 @@ async def get_marker_series(
             "value": d.get("value_canonical"),
             "unit": d.get("unit_canonical"),
             "reference": d.get("reference"),
-            "status": d.get("status"),
-            "subscore": d.get("subscore"),
+            "status": scoring_engine.display_status(d),
+            "subscore": scoring_engine.published_subscore(d),
+            "subscore_blank_reason": _subscore_blank_reason(d),
             "clinical_test_id": d.get("clinical_test_id"),
             "confirmation_level": d.get("confirmation_level"),
             "edited": d.get("edited", False),
@@ -1061,12 +780,19 @@ def _delta_vs_previous(cur: dict, prev: Optional[dict]):
     }
 
 
+def _subscore_blank_reason(marker):
+    if not scoring_engine.publication_allowed():
+        return "CATALOG_NOT_APPROVED"
+    reason = scoring_engine.exclusion_reason(marker.get("marker_code"), marker.get("reference"))
+    if reason:
+        return reason
+    return "UNVERIFIED_SCORE_PROVENANCE" if scoring_engine.published_subscore(marker) is None else None
+
+
 def _result_row(m: dict, prev: Optional[dict], info: dict) -> dict:
     ref = m.get("reference") or {}
-    subscore = m.get("subscore")
-    blank_reason = None
-    if subscore is None:
-        blank_reason = "no_reference_range" if (ref.get("low") is None and ref.get("high") is None) else "not_scored"
+    subscore = scoring_engine.published_subscore(m)
+    blank_reason = _subscore_blank_reason(m)
     return {
         "marker_code": m.get("marker_code"),
         "name": info.get("canonical_name") or info.get("raw_name") or m.get("marker_code"),
@@ -1080,7 +806,7 @@ def _result_row(m: dict, prev: Optional[dict], info: dict) -> dict:
             "low": ref.get("low"), "high": ref.get("high"),
             "unit": ref.get("unit"), "source": ref.get("source"),  # document | catalog
         },
-        "status": m.get("status"),
+        "status": scoring_engine.display_status(m),
         "delta": _delta_vs_previous(m, prev),
         "subscore": subscore,
         "subscore_blank_reason": blank_reason,
@@ -1093,7 +819,7 @@ def _result_row(m: dict, prev: Optional[dict], info: dict) -> dict:
     }
 
 
-@router.get("/patients/{patient_id}/lab-report")
+@router.get("/patients/{patient_id}/lab-report", response_model=LabReportResponse)
 async def get_lab_report(
     patient_id: str,
     clinical_test_id: Optional[str] = None,
@@ -1150,6 +876,9 @@ async def get_lab_report(
     )
 
     # medición anterior de cada marcador (misma serie, posición previa)
+    all_markers = [m for m in all_markers if db.clinical_tests.find_one({
+        "clinical_test_id": m["clinical_test_id"], "patient_id": patient_id, "deleted_at": None})
+        and m.get("measured_on") and m["measured_on"] <= window_to]
     by_code, prev_of = {}, {}
     for m in all_markers:
         series_list = by_code.setdefault(m["marker_code"], [])
@@ -1170,7 +899,7 @@ async def get_lab_report(
     if clinical_test_id:
         ct_ids.add(clinical_test_id)
 
-    tests = {t["clinical_test_id"]: t for t in db.clinical_tests.find({"clinical_test_id": {"$in": list(ct_ids)}})}
+    tests = {t["clinical_test_id"]: t for t in db.clinical_tests.find({"clinical_test_id": {"$in": list(ct_ids)}, "deleted_at": None})}
     extractions = {}
     for e in db.clinical_test_extractions.find(
         {"clinical_test_id": {"$in": list(ct_ids)}}
@@ -1219,7 +948,7 @@ async def get_lab_report(
     # --- Secciones 2 y 3: puntaje y banderas (último snapshot; nunca se calcula al vuelo) ---
     snap = db.score_snapshots.find_one({"patient_id": patient_id}, sort=[("computed_at", -1), ("_id", -1)])
     score, flags = None, []
-    if snap:
+    if snap and scoring_engine.snapshot_current(snap, patient_id, db):
         pillars = {
             name: {k: v for k, v in p.items() if include_snapshot or k != "contributions"}
             for name, p in (snap.get("pillars") or {}).items()
@@ -1245,7 +974,7 @@ async def get_lab_report(
     try:
         catalog_names = {i["marker_code"]: i["name"] for i in catalog_service.list_catalog(db)}
     except Exception as e:
-        print(f"No se pudo leer el catálogo para los nombres canónicos: {e}")
+        logger.warning("Clinical dependency error; details withheld")
         catalog_names = {}
     panels = {}
     for m in sorted(source, key=lambda x: (x.get("panel_code") or "", x.get("marker_code") or "")):
@@ -1269,13 +998,15 @@ async def get_lab_report(
                 "reference": _json_safe(pts[-1].get("reference")),
                 "points": [{
                     "measured_on": p.get("measured_on"), "value": p.get("value_canonical"),
-                    "status": p.get("status"), "clinical_test_id": p.get("clinical_test_id"),
+                    "status": scoring_engine.display_status(p), "clinical_test_id": p.get("clinical_test_id"),
                 } for p in pts],
             })
         pillar_points, version_changes, last_version = [], [], None
         for s in db.score_snapshots.find({"patient_id": patient_id}).sort(
             [("computed_at", 1), ("_id", 1)]
         ).limit(200):
+            if not scoring_engine.snapshot_publishable(s):
+                continue
             pillar_points.append(_json_safe({
                 "computed_at": s.get("computed_at"),
                 "trigger": s.get("trigger"),
@@ -1337,7 +1068,7 @@ async def get_lab_report(
         "actions": actions,
     }
 # ============ ENDPOINT 20: EXPORTAR EL REPORTE A PDF (SOLO CLÍNICO) ============
-# Requiere reportlab==4.2.5 en requirements.txt
+# ReportLab is pinned in requirements.txt.
 
 _STATUS_ES = {
     "low": "Bajo", "normal": "Normal", "high": "Alto",
@@ -1345,10 +1076,11 @@ _STATUS_ES = {
     "indeterminate": "Indeterminado",
 }
 _SEVERITY_ES = {"critical": "CRITICA", "high": "ALTA", "info": "INFO"}
-_PDF_LEGEND = "El puntaje es una medida de resumen y no constituye un diagnostico."
+_PDF_LEGEND = "El puntaje es una medida de resumen y no constituye un diagnóstico."
 
 
 class LabReportExportRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     clinical_test_id: Optional[str] = None
     window_months: int = Field(12, ge=1, le=60)
     include_series: bool = True
@@ -1371,6 +1103,8 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
 
     trace = report.get("traceability") or {}
     page_w, _ = landscape(A4)
+    test_report = settings.ENVIRONMENT == "test" or any(
+        (e.get("extraction_meta") or {}).get("test_only") for e in trace.get("extractions") or [])
     footer_line = (
         f"Paciente: {patient_id} | Generado: {report.get('generated_at')} | Clinico: {clinician_id} | "
         f"Catalogo: {trace.get('catalog_version') or 'n/d'} | Formula: {trace.get('scoring_version') or 'n/d'}"
@@ -1378,11 +1112,20 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
 
     def footer(canvas, doc):  # pie de CADA página
         canvas.saveState()
+        if test_report:
+            canvas.setFont("Helvetica-Bold", 8)
+            canvas.setFillColor(colors.HexColor("#8A3B12"))
+            canvas.drawString(36, landscape(A4)[1] - 22,
+                              "DEMOSTRACIÓN SINTÉTICA — NO USO CLÍNICO — RESULTADOS DE PRUEBA SIN VALIDEZ CLÍNICA")
+        canvas.setFillColor(colors.black)
+        footer_style = ParagraphStyle("footer", fontName="Helvetica", fontSize=7, leading=9)
+        footer_text = Paragraph(_xml_escape(footer_line), footer_style)
+        _, height = footer_text.wrap(page_w - 72, 100)
+        footer_text.drawOn(canvas, 36, 27)
+        canvas.line(36, 30 + height, page_w - 36, 30 + height)
         canvas.setFont("Helvetica", 7)
-        canvas.line(36, 34, page_w - 36, 34)
-        canvas.drawString(36, 24, footer_line)
         canvas.drawString(36, 14, _PDF_LEGEND)
-        canvas.drawRightString(page_w - 36, 14, f"Pagina {doc.page}")
+        canvas.drawRightString(page_w - 36, 14, f"Página {doc.page}")
         canvas.restoreState()
 
     base = getSampleStyleSheet()
@@ -1390,6 +1133,14 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
     h2 = ParagraphStyle("h2k", parent=base["Heading2"], keepWithNext=1)
     h3 = ParagraphStyle("h3k", parent=base["Heading3"], keepWithNext=1)
     title = base["Title"]
+    pillar_names = {"cardio": "Cardio", "joint": "Articulación", "muscle": "Músculo", "bone": "Hueso"}
+    labels = {"high": "Alta", "medium": "Media", "low": "Baja", "insufficient": "Insuficiente",
+              "published": "Disponible", "insufficient_data": "Datos insuficientes"}
+    blank_reasons = {"NO_REFERENCE_RANGE": "Sin rango de referencia",
+                     "INCOMPLETE_REFERENCE_RANGE": "Rango incompleto",
+                     "CATALOG_NOT_CLINICALLY_APPROVED": "Catálogo sin aprobación clínica",
+                     "UNAPPROVED_SUBSCORE_SOURCE": "Origen del subscore sin aprobación",
+                     "NON_NUMERIC_VALUE": "Valor no numérico", "UNCONFIRMED": "Sin confirmar"}
 
     def P(text, style=small):
         return Paragraph(_xml_escape(str(text)), style)
@@ -1412,30 +1163,40 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
         story.append(P(f"Examen {ex.get('clinical_test_id')}: {ex.get('title') or '-'} | fecha {ex.get('test_date') or '-'} | "
                        f"tipo documento {ex.get('document_type') or '-'} | validacion {ex.get('validation_status') or '-'} | "
                        f"revision clinica {ex.get('review_status') or '-'}"))
+        if ex.get("issuer"):
+            story.append(P(f"Laboratorio emisor: {ex['issuer']}"))
+        if ex.get("description"):
+            story.append(P(f"Descripción: {ex['description']}"))
     story.append(Spacer(1, 8))
 
     # --- 2. Puntaje ---
     story.append(P("Puntaje", h2))
     score = report.get("score")
     if score:
-        story.append(P(f"Indice de laboratorio: {_f(score.get('lab_index'))} (base {_f(score.get('base_score'))}, "
+        if score.get("lab_index") is None:
+            story.append(P("Índice de laboratorio no disponible: cobertura insuficiente de pilares. "
+                           "Los valores confirmados se conservan; consulte las exclusiones de trazabilidad."))
+        else:
+            story.append(P(f"Índice de laboratorio: {_f(score.get('lab_index'))} (base {_f(score.get('base_score'))}, "
                        f"penalizacion por banderas {_f(score.get('penalty_applied'))}). "
                        f"Calculado {score.get('computed_at')} - motivo: {score.get('trigger')}."))
-        rows = [["Pilar", "Score", "Cobertura", "Confianza", "Estado"]]
+        rows = [["Pilar", "Puntaje", "Cobertura", "Confianza", "Estado"]]
         for name, p in (score.get("pillars") or {}).items():
-            rows.append([name, _f(p.get("score")), _f(p.get("coverage")), _f(p.get("confidence")), _f(p.get("status"))])
+            rows.append([pillar_names.get(name, name), _f(p.get("score")), _f(p.get("coverage")),
+                         labels.get(p.get("confidence"), _f(p.get("confidence"))), labels.get(p.get("status"), _f(p.get("status")))])
         story += [Spacer(1, 4), table(rows, [150, 80, 80, 100, 100])]
         for name, p in (score.get("pillars") or {}).items():
             contribs = p.get("contributions") or []
             if contribs:
-                story += [P(f"Marcadores del pilar {name}", h3)]
+                story += [P(f"Marcadores del pilar {pillar_names.get(name, name)}", h3)]
                 crow = [["Marcador", "Valor", "Unidad", "Subscore", "Peso"]]
                 for c in contribs:
                     crow.append([c.get("name") or c.get("marker_code"), _f(c.get("value")), _f(c.get("unit")),
                                  _f(c.get("subscore")), _f(c.get("weight"))])
                 story.append(table(crow, [260, 80, 80, 80, 80]))
     else:
-        story.append(P("Sin puntaje calculado: no hay examenes confirmados o la cobertura es insuficiente."))
+        story.append(P("Sin puntaje publicable. El reporte no informa un motivo global; "
+                       "consulte los motivos de cada marcador y la política de aprobación clínica."))
 
     # --- 3. Banderas ---
     story.append(P("Banderas activas", h2))
@@ -1460,14 +1221,21 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
                  "Subscore", "Origen"]]
         for r in panel.get("rows") or []:
             ref = r.get("reference") or {}
-            ref_txt = f"{_f(ref.get('low'))} - {_f(ref.get('high'))} {ref.get('unit') or ''} ({ref.get('source') or 'n/d'})"
+            source_name = {"document": "documento", "catalog": "catálogo", "none": "sin fuente"}.get(ref.get("source"), "n/d")
+            if ref.get("low") is None and ref.get("high") is None:
+                ref_txt = f"Sin rango ({source_name})"
+            else:
+                bounds = (f"Hasta {_f(ref['high'])}" if ref.get("low") is None else
+                          f"Desde {_f(ref['low'])}" if ref.get("high") is None else f"{_f(ref['low'])} - {_f(ref['high'])}")
+                ref_txt = f"{bounds} {ref.get('unit') or ''} ({source_name})"
             d = r.get("delta")
             delta_txt = "-" if not d else (
                 f"{d['absolute']:+g} ({_f(d.get('percent'))}%) vs {d.get('previous_measured_on')}")
             value_txt = _f(r.get("value")) + (" (editado)" if r.get("edited") else "")
             if r.get("censoring"):
                 value_txt = f"{r['censoring']} {value_txt}"
-            sub = _f(r.get("subscore")) if r.get("subscore") is not None else f"- ({r.get('subscore_blank_reason')})"
+            reason = r.get("subscore_blank_reason")
+            sub = _f(r.get("subscore")) if r.get("subscore") is not None else blank_reasons.get(reason, reason or "Sin subscore disponible")
             org = r.get("origin") or {}
             name_txt = r.get("name") or r.get("marker_code")
             if r.get("raw_name") and r["raw_name"] != name_txt:
@@ -1480,19 +1248,23 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
     # --- 5. Evolución longitudinal (resumen) ---
     lon = report.get("longitudinal")
     if lon and lon.get("marker_series"):
-        story.append(P("Evolucion de marcadores con 2 o mas mediciones", h2))
-        rows = [["Marcador", "Mediciones", "Primera", "Ultima", "Variacion absoluta"]]
+        story.append(P("Evolución de marcadores con dos o más mediciones", h2))
+        story.append(P("Resumen numérico de primera y última medición; no implica una interpretación de tendencia clínica."))
+        rows = [["Marcador (unidad)", "Mediciones", "Primera", "Última", "Variación absoluta"]]
         for s in lon["marker_series"]:
             pts = s.get("points") or []
             first, last = pts[0], pts[-1]
             diff = (last["value"] - first["value"]) if first.get("value") is not None and last.get("value") is not None else None
-            rows.append([s.get("marker_code"), len(pts), f"{_f(first.get('value'))} ({first.get('measured_on')})",
+            rows.append([f"{s.get('marker_code')} ({s.get('unit') or 'n/d'})", len(pts), f"{_f(first.get('value'))} ({first.get('measured_on')})",
                          f"{_f(last.get('value'))} ({last.get('measured_on')})", "-" if diff is None else f"{diff:+g}"])
         story.append(table(rows, [180, 80, 170, 170, 120]))
         changes = lon.get("scoring_version_changes") or []
         if changes:
             story.append(P("Cambios de version de formula: " + "; ".join(
                 f"{c['at']}: {c['from']} -> {c['to']}" for c in changes)))
+    elif lon is not None:
+        story.append(P("Evolución longitudinal", h2))
+        story.append(P("Sin serie longitudinal calculable: se requieren al menos dos mediciones por marcador. No se infieren tendencias."))
 
     # --- 6. Imagen ---
     for img in report.get("imaging_findings") or []:
@@ -1515,15 +1287,14 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
 
     buf = io.BytesIO()
     SimpleDocTemplate(
-        buf, pagesize=landscape(A4), leftMargin=36, rightMargin=36, topMargin=36, bottomMargin=48,
+        buf, pagesize=landscape(A4), leftMargin=36, rightMargin=36, topMargin=40, bottomMargin=64,
         title=f"Reporte de laboratorio {patient_id}", author="WellQ", pageCompression=0,
     ).build(story, onFirstPage=footer, onLaterPages=footer)
     return buf.getvalue()
 
 
 def _store_export_pdf(object_key: str, pdf: bytes) -> str:
-    """Guarda el PDF en el prefijo privado de GCS (o en ./exports en modo desarrollo).
-    Devuelve el modo de almacenamiento: "gcs" | "local"."""
+    """Guarda el PDF exclusivamente en el prefijo privado de GCS."""
     return storage_service.upload_bytes(object_key=object_key, data=pdf, content_type="application/pdf")
 
 
@@ -1534,12 +1305,15 @@ def _export_response(rec: dict, replayed: bool) -> dict:
             object_key=rec["object_key"], expiration_minutes=settings.DOWNLOAD_URL_EXPIRATION_MINUTES,
         )
         url, expires_at = info.get("url"), info.get("expires_at")
+        if not url or not expires_at:
+            url, expires_at = None, None
     except Exception as e:
-        print(f"No se pudo firmar la URL del export {rec.get('export_id')}: {e}")
+        logger.warning("Clinical dependency error; details withheld")
     return {
         "export_id": rec["export_id"],
         "patient_id": rec["patient_id"],
-        "status": "ready",
+        "status": "ready" if url else "download_pending",
+        "error_code": None if url else "DOWNLOAD_URL_UNAVAILABLE",
         "file_name": rec["file_name"],
         "download_url": url,
         "expires_at": expires_at,
@@ -1551,11 +1325,12 @@ def _export_response(rec: dict, replayed: bool) -> dict:
     }
 
 
-@router.post("/patients/{patient_id}/lab-report/export")
+@router.post("/patients/{patient_id}/lab-report/export", response_model=LabReportExportResponse)
+@atomic_write
 async def export_lab_report(
     patient_id: str,
     body: Optional[LabReportExportRequest] = None,
-    idempotency_key: str = Header(...),
+    idempotency_key: str = Header(..., min_length=8, max_length=200),
     user: TokenPayload = Depends(get_current_user),
     db: Database = Depends(get_database),
 ):
@@ -1580,6 +1355,11 @@ async def export_lab_report(
     )
     clinician_id = user.clinician_id
 
+    source_hash = hashlib.sha256(json.dumps({k: v for k, v in report.items() if k != "generated_at"},
+                                            sort_keys=True, default=str).encode()).hexdigest()
+    publication = {"allowed": scoring_engine.publication_allowed(),
+                   "catalog_hash": catalog_service.content_hash(),
+                   "scoring_version": scoring_engine.scoring_version}
     # Idempotencia
     existing = db.lab_report_exports.find_one(
         {"patient_id": patient_id, "clinician_id": clinician_id, "idempotency_key": idempotency_key}
@@ -1591,6 +1371,8 @@ async def export_lab_report(
                 detail={"code": "IDEMPOTENCY_CONFLICT",
                         "message": "El Idempotency-Key ya se usó con parámetros distintos"}
             )
+        if existing.get("payload_sha256") != source_hash or existing.get("publication") != publication:
+            raise HTTPException(409, detail={"code": "EXPORT_SOURCE_CHANGED", "message": "Use a new idempotency key for current data"})
         return _export_response(existing, replayed=True)
 
     # Generar PDF
@@ -1604,11 +1386,11 @@ async def export_lab_report(
         )
 
     export_id = f"lrx_{uuid.uuid4().hex[:12]}"
-    object_key = f"private/lab-reports/{patient_id}/{export_id}.pdf"
+    object_key = f"private/lab-reports/{hashlib.sha256(db.client_id.encode()).hexdigest()}/{export_id}.pdf"
     try:
         storage_mode = _store_export_pdf(object_key, pdf)
     except Exception as e:
-        print(f"Error guardando el PDF {export_id} en el almacenamiento: {e}")
+        logger.warning("Clinical dependency error; details withheld")
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail={"code": "STORAGE_ERROR", "message": "No se pudo guardar el PDF en el almacenamiento"}
@@ -1632,6 +1414,7 @@ async def export_lab_report(
             json.dumps(payload_for_hash, sort_keys=True, default=str).encode("utf-8")).hexdigest(),
         "catalog_version": trace.get("catalog_version"),
         "scoring_version": trace.get("scoring_version"),
+        "publication": publication,
         "created_at": now,
     }
     db.lab_report_exports.insert_one(dict(rec))
@@ -1651,6 +1434,6 @@ async def export_lab_report(
             "occurred_at": now,
         })
     except Exception as e:
-        print(f"No se pudo registrar la auditoría de exportación {export_id}: {e}")
+        logger.warning("Clinical dependency error; details withheld")
 
     return _export_response(rec, replayed=False)

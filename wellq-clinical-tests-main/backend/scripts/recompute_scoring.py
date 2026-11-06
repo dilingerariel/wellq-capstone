@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from pymongo import MongoClient
 from pymongo.database import Database
 from app.config import settings
+from app.tenancy import TenantDatabase
 from app.services.scoring import scoring_engine, SCORING_VERSION
 
 def calculate_stats(values: List[float]) -> Dict[str, Any]:
@@ -68,6 +69,16 @@ def calculate_stats(values: List[float]) -> Dict[str, Any]:
         "max": round(sorted_vals[-1], 2),
     }
 
+
+def _compute(db, apply, **kwargs):
+    if not isinstance(db, TenantDatabase):
+        raise RuntimeError("Explicit tenant-scoped database required")
+    if apply:
+        with db.atomic():
+            db.request_limits.update_one({"key": "write:" + kwargs["patient_id"]}, {"$inc": {"revision": 1}}, upsert=True)
+            return scoring_engine.compute_patient_score(db=db, **kwargs)
+    return scoring_engine.compute_patient_score(db=db, **kwargs)
+
 def run_bulk_recompute(
     db: Database,
     scoring_version: str = SCORING_VERSION,
@@ -78,6 +89,8 @@ def run_bulk_recompute(
     """
     Ejecuta el recálculo masivo y compara distribuciones estadísticas.
     """
+    if not isinstance(db, TenantDatabase):
+        raise RuntimeError("Explicit tenant required for batch recompute")
     # 1. Obtener pacientes candidatos
     if target_patient_id:
         patients = [target_patient_id]
@@ -119,9 +132,8 @@ def run_bulk_recompute(
                     before_pillars[pkey].append(float(p_obj["score"]))
 
         # Calcular nuevo snapshot
-        new_snap = scoring_engine.compute_patient_score(
+        new_snap = _compute(db, apply,
             patient_id=pid,
-            db=db,
             trigger="recompute",
             scoring_version_override=scoring_version,
             persist=apply,
@@ -179,16 +191,12 @@ def run_bulk_recompute(
 
     # 3. Auditoría en MongoDB si apply=True
     if apply:
-        db.audit_logs.insert_one({
-            "event_type": "bulk_scoring_recompute",
-            "executed_at": datetime.utcnow(),
-            "scoring_version": scoring_version,
-            "patients_evaluated": total_evaluated,
-            "patients_recalculated": recalculated_count,
-            "mean_delta": mean_delta,
-            "increased": increased,
-            "decreased": decreased,
-        })
+        import getpass
+        db.audit_logs.insert_one({"event": "bulk_scoring_recompute", "source": "cli", "result": "success",
+            "actor_id": getpass.getuser(), "actor_role": "operator",
+            "occurred_at": datetime.utcnow().isoformat(timespec="milliseconds") + "Z",
+            "scoring_version": scoring_version, "patients_evaluated": total_evaluated,
+            "patients_recalculated": recalculated_count})
         print("✅ Evento de auditoría registrado en audit_logs.")
 
     # 4. Formatear reporte en Markdown
@@ -266,13 +274,17 @@ def generate_markdown_report(summary: Dict[str, Any]) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Recálculo Masivo Controlado de Puntuaciones WellQ")
     parser.add_argument("--version", default=SCORING_VERSION, help=f"Versión de algoritmo (def: {SCORING_VERSION})")
+    parser.add_argument("--client-id", required=True, help="Explicit organization authorized for this operation")
+    parser.add_argument("--dry-run", action="store_true", help="Explicit simulation (also the default)")
     parser.add_argument("--apply", action="store_true", help="Persistir los nuevos snapshots (por defecto es dry-run)")
     parser.add_argument("--patient-id", default=None, help="Recalcular un paciente individual (opcional)")
     parser.add_argument("--output", default=None, help="Ruta del archivo Markdown para exportar el informe")
     args = parser.parse_args()
 
     client = MongoClient(settings.MONGODB_URI)
-    db = client[settings.MONGODB_DB]
+    if args.apply and args.dry_run:
+        parser.error("Choose dry-run or apply")
+    db = TenantDatabase(client[settings.MONGODB_DB], args.client_id)
 
     output_file = args.output
     if not output_file:

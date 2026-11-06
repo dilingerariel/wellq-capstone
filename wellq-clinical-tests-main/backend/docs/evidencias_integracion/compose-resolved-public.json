@@ -1,0 +1,554 @@
+{
+  "name": "wellq-int-39706292db88",
+  "networks": {
+    "integration-net": {
+      "name": "wellq-int-39706292db88-net",
+      "ipam": {}
+    }
+  },
+  "services": {
+    "api-int": {
+      "build": {
+        "context": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend",
+        "dockerfile": "integration/Dockerfile"
+      },
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": [
+        "api"
+      ],
+      "depends_on": {
+        "provision-int": {
+          "condition": "service_completed_successfully",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AI_PROVIDER_APPROVED": "true",
+        "CATALOG_CLINICALLY_APPROVED": "false",
+        "CLAMAV_HOST": "clamav-int",
+        "ENVIRONMENT": "test",
+        "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+        "INTEGRATION_STORE": "/synthetic-store",
+        "JOB_LEASE_SECONDS": "8",
+        "JOB_MAX_ATTEMPTS": "3",
+        "JWT_AUDIENCE": "wellq-integration-only",
+        "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+        "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+        "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+        "MAX_REQUESTS_PER_MINUTE": "10000",
+        "MONGODB_DB": "wellq_integration_39706292db88",
+        "MONGODB_URI": "<REDACTED>",
+        "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+        "WELLQ_INTEGRATION_RUN": "39706292db88",
+        "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=3)"
+        ],
+        "timeout": "4s",
+        "interval": "3s",
+        "retries": 30
+      },
+      "image": "wellq-int-39706292db88-backend",
+      "mem_limit": "268435456",
+      "networks": {
+        "integration-net": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "synthetic-store",
+          "target": "/synthetic-store",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\public.pem",
+          "target": "/identity/public.pem",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\gateway.key",
+          "target": "/identity/gateway.key",
+          "read_only": true,
+          "bind": {}
+        }
+      ]
+    },
+    "mongo-int": {
+      "command": [
+        "mongod",
+        "--replSet",
+        "wellqIntRs",
+        "--keyFile",
+        "/mongo-key/keyfile",
+        "--bind_ip_all",
+        "--wiredTigerCacheSizeGB",
+        "0.25"
+      ],
+      "depends_on": {
+        "setup-int": {
+          "condition": "service_completed_successfully",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "MONGO_INITDB_ROOT_PASSWORD": "<REDACTED>",
+        "MONGO_INITDB_ROOT_USERNAME": "integration_root"
+      },
+      "image": "mongo:7.0",
+      "mem_limit": "536870912",
+      "networks": {
+        "integration-net": null
+      },
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "mongo-data",
+          "target": "/data/db",
+          "volume": {}
+        },
+        {
+          "type": "volume",
+          "source": "mongo-key",
+          "target": "/mongo-key",
+          "read_only": true,
+          "volume": {}
+        }
+      ]
+    },
+    "objects-int": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": [
+        "objects"
+      ],
+      "depends_on": {
+        "provision-int": {
+          "condition": "service_completed_successfully",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AI_PROVIDER_APPROVED": "true",
+        "CATALOG_CLINICALLY_APPROVED": "false",
+        "CLAMAV_HOST": "clamav-int",
+        "ENVIRONMENT": "test",
+        "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+        "INTEGRATION_STORE": "/synthetic-store",
+        "JOB_LEASE_SECONDS": "8",
+        "JOB_MAX_ATTEMPTS": "3",
+        "JWT_AUDIENCE": "wellq-integration-only",
+        "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+        "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+        "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+        "MAX_REQUESTS_PER_MINUTE": "10000",
+        "MONGODB_DB": "wellq_integration_39706292db88",
+        "MONGODB_URI": "<REDACTED>",
+        "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+        "WELLQ_INTEGRATION_RUN": "39706292db88",
+        "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double"
+      },
+      "image": "wellq-int-39706292db88-backend",
+      "mem_limit": "134217728",
+      "networks": {
+        "integration-net": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "synthetic-store",
+          "target": "/synthetic-store",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\public.pem",
+          "target": "/identity/public.pem",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\gateway.key",
+          "target": "/identity/gateway.key",
+          "read_only": true,
+          "bind": {}
+        }
+      ]
+    },
+    "provision-int": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": null,
+      "depends_on": {
+        "mongo-int": {
+          "condition": "service_started",
+          "required": true
+        }
+      },
+      "entrypoint": [
+        "python",
+        "-B",
+        "-m",
+        "integration.provision",
+        "database"
+      ],
+      "environment": {
+        "AI_PROVIDER_APPROVED": "true",
+        "CATALOG_CLINICALLY_APPROVED": "false",
+        "CLAMAV_HOST": "clamav-int",
+        "ENVIRONMENT": "test",
+        "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+        "INTEGRATION_STORE": "/synthetic-store",
+        "JOB_LEASE_SECONDS": "8",
+        "JOB_MAX_ATTEMPTS": "3",
+        "JWT_AUDIENCE": "wellq-integration-only",
+        "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+        "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+        "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+        "MAX_REQUESTS_PER_MINUTE": "10000",
+        "MONGODB_DB": "wellq_integration_39706292db88",
+        "MONGODB_URI": "<REDACTED>",
+        "WELLQ_APP_PASSWORD": "<REDACTED>",
+        "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+        "WELLQ_INTEGRATION_RUN": "39706292db88",
+        "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double",
+        "WELLQ_ROOT_PASSWORD": "<REDACTED>"
+      },
+      "image": "wellq-int-39706292db88-backend",
+      "mem_limit": "268435456",
+      "networks": {
+        "integration-net": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "synthetic-store",
+          "target": "/synthetic-store",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\public.pem",
+          "target": "/identity/public.pem",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\gateway.key",
+          "target": "/identity/gateway.key",
+          "read_only": true,
+          "bind": {}
+        }
+      ]
+    },
+    "runner-int": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": [
+        "test"
+      ],
+      "depends_on": {
+        "api-int": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AI_PROVIDER_APPROVED": "true",
+        "CATALOG_CLINICALLY_APPROVED": "false",
+        "CLAMAV_HOST": "clamav-int",
+        "ENVIRONMENT": "test",
+        "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+        "INTEGRATION_STORE": "/synthetic-store",
+        "JOB_LEASE_SECONDS": "8",
+        "JOB_MAX_ATTEMPTS": "3",
+        "JWT_AUDIENCE": "wellq-integration-only",
+        "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+        "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+        "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+        "MAX_REQUESTS_PER_MINUTE": "10000",
+        "MONGODB_DB": "wellq_integration_39706292db88",
+        "MONGODB_URI": "<REDACTED>",
+        "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+        "WELLQ_INTEGRATION_RUN": "39706292db88",
+        "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double"
+      },
+      "image": "wellq-int-39706292db88-backend",
+      "mem_limit": "536870912",
+      "networks": {
+        "integration-net": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "synthetic-store",
+          "target": "/synthetic-store",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\public.pem",
+          "target": "/identity/public.pem",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\private.pem",
+          "target": "/identity/private.pem",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\historical-reference.py",
+          "target": "/historical-reference.py",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\gateway.key",
+          "target": "/identity/gateway.key",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\docs\\evidencias_integracion",
+          "target": "/evidence",
+          "bind": {}
+        }
+      ]
+    },
+    "setup-int": {
+      "command": null,
+      "entrypoint": [
+        "python",
+        "-B",
+        "-m",
+        "integration.provision",
+        "files"
+      ],
+      "environment": {
+        "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88"
+      },
+      "image": "wellq-int-39706292db88-backend",
+      "mem_limit": "134217728",
+      "networks": {
+        "integration-net": null
+      },
+      "user": "0:0",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "mongo-key",
+          "target": "/mongo-key",
+          "volume": {}
+        },
+        {
+          "type": "volume",
+          "source": "synthetic-store",
+          "target": "/synthetic-store",
+          "volume": {}
+        }
+      ]
+    },
+    "worker-int": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": [
+        "worker"
+      ],
+      "depends_on": {
+        "provision-int": {
+          "condition": "service_completed_successfully",
+          "required": true
+        }
+      },
+      "deploy": {
+        "replicas": 2,
+        "resources": {},
+        "placement": {}
+      },
+      "entrypoint": null,
+      "environment": {
+        "AI_PROVIDER_APPROVED": "true",
+        "CATALOG_CLINICALLY_APPROVED": "false",
+        "CLAMAV_HOST": "clamav-int",
+        "ENVIRONMENT": "test",
+        "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+        "INTEGRATION_STORE": "/synthetic-store",
+        "JOB_LEASE_SECONDS": "8",
+        "JOB_MAX_ATTEMPTS": "3",
+        "JWT_AUDIENCE": "wellq-integration-only",
+        "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+        "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+        "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+        "MAX_REQUESTS_PER_MINUTE": "10000",
+        "MONGODB_DB": "wellq_integration_39706292db88",
+        "MONGODB_URI": "<REDACTED>",
+        "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+        "WELLQ_INTEGRATION_RUN": "39706292db88",
+        "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double"
+      },
+      "image": "wellq-int-39706292db88-backend",
+      "mem_limit": "268435456",
+      "networks": {
+        "integration-net": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "synthetic-store",
+          "target": "/synthetic-store",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\public.pem",
+          "target": "/identity/public.pem",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "bind",
+          "source": "C:\\Dev\\wellq-capstone\\wellq-clinical-tests-main\\backend\\integration\\.runtime\\gateway.key",
+          "target": "/identity/gateway.key",
+          "read_only": true,
+          "bind": {}
+        }
+      ]
+    }
+  },
+  "volumes": {
+    "mongo-data": {
+      "name": "wellq-int-39706292db88-mongo-data"
+    },
+    "mongo-key": {
+      "name": "wellq-int-39706292db88-mongo-key"
+    },
+    "synthetic-store": {
+      "name": "wellq-int-39706292db88-synthetic-store"
+    }
+  },
+  "x-app": {
+    "cap_drop": [
+      "ALL"
+    ],
+    "environment": {
+      "AI_PROVIDER_APPROVED": "true",
+      "CATALOG_CLINICALLY_APPROVED": "false",
+      "CLAMAV_HOST": "clamav-int",
+      "ENVIRONMENT": "test",
+      "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+      "INTEGRATION_STORE": "/synthetic-store",
+      "JOB_LEASE_SECONDS": "8",
+      "JOB_MAX_ATTEMPTS": "3",
+      "JWT_AUDIENCE": "wellq-integration-only",
+      "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+      "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+      "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+      "MAX_REQUESTS_PER_MINUTE": "10000",
+      "MONGODB_DB": "wellq_integration_39706292db88",
+      "MONGODB_URI": "<REDACTED>",
+      "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+      "WELLQ_INTEGRATION_RUN": "39706292db88",
+      "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double"
+    },
+    "image": "wellq-int-39706292db88-backend",
+    "mem_limit": "256m",
+    "networks": [
+      "integration-net"
+    ],
+    "read_only": true,
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "tmpfs": [
+      "/tmp"
+    ],
+    "volumes": [
+      "synthetic-store:/synthetic-store",
+      "./.runtime/public.pem:/identity/public.pem:ro",
+      "./.runtime/gateway.key:/identity/gateway.key:ro"
+    ]
+  },
+  "x-env": {
+    "AI_PROVIDER_APPROVED": "true",
+    "CATALOG_CLINICALLY_APPROVED": "false",
+    "CLAMAV_HOST": "clamav-int",
+    "ENVIRONMENT": "test",
+    "INTEGRATION_SIGNING_KEY": "<REDACTED>",
+    "INTEGRATION_STORE": "/synthetic-store",
+    "JOB_LEASE_SECONDS": "8",
+    "JOB_MAX_ATTEMPTS": "3",
+    "JWT_AUDIENCE": "wellq-integration-only",
+    "JWT_ISSUER": "https://identity.wellq-integration.invalid",
+    "JWT_PUBLIC_KEY_FILE": "/identity/public.pem",
+    "MALWARE_SCAN_TIMEOUT_SECONDS": "10",
+    "MAX_REQUESTS_PER_MINUTE": "10000",
+    "MONGODB_DB": "wellq_integration_39706292db88",
+    "MONGODB_URI": "<REDACTED>",
+    "WELLQ_INTEGRATION_PROJECT": "wellq-int-39706292db88",
+    "WELLQ_INTEGRATION_RUN": "39706292db88",
+    "WELLQ_INTEGRATION_SCAN_MODE": "explicit-test-double"
+  },
+  "x-image": {
+    "image": "wellq-int-39706292db88-backend"
+  }
+}

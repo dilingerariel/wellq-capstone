@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="1.962" timestamp="2026-11-05T19:05:36.802767-03:00" hostname="pablo"><testcase classname="checks.test_security_s01_s02" name="test_original_s01_unverified_association_must_not_be_authorized" time="0.877"><failure message="assert 201 == 503&#10; +  where 201 = &lt;Response [201 Created]&gt;.status_code">checks\test_security_s01_s02.py:20: in test_original_s01_unverified_association_must_not_be_authorized
+    assert response.status_code==503
+E   assert 201 == 503
+E    +  where 201 = &lt;Response [201 Created]&gt;.status_code</failure></testcase><testcase classname="checks.test_security_s01_s02" name="test_original_s02_incoherent_extension_must_not_be_authorized" time="0.328"><failure message="assert 201 == 422&#10; +  where 201 = &lt;Response [201 Created]&gt;.status_code">checks\test_security_s01_s02.py:27: in test_original_s02_incoherent_extension_must_not_be_authorized
+    assert response.status_code==422
+E   assert 201 == 422
+E    +  where 201 = &lt;Response [201 Created]&gt;.status_code</failure></testcase></testsuite></testsuites>

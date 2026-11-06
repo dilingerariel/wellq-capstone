@@ -1,0 +1,18 @@
+required-version = "==0.17.3"
+target-version = "py311"
+preview = false
+
+# Correctness plus the explicitly inventoried robustness/style/modernization rules.
+# No global ignores. Remaining low-risk debt is visible to the ratchet, not disabled.
+[lint]
+select = [
+  "E9", "F", "B008", "BLE001", "DTZ003", "I001",
+  "UP006", "UP035", "UP045", "TRY004", "PIE804", "UP017", "SIM117",
+  "RUF059", "FURB167", "PLW1510", "RUF100", "SIM115",
+]
+
+[lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
+
+[lint.isort]
+known-first-party = ["app", "checks", "integration"]

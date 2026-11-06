@@ -1,17 +1,21 @@
+from app.services.transactions import atomic_write
 import logging
 import uuid
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from pymongo.database import Database
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.database import get_database
+from app.config import settings
 from app.dependencies.auth import get_current_patient, get_current_clinician, get_current_user, TokenPayload
 from app.dependencies.access import require_clinician_access
 from app.services.catalog import catalog_service
 from app.services.extractor import extraction_engine
 from app.services.scoring import scoring_engine
+from app.services.references import canonical_document_reference, reference_status
+from app.services.clinical_dates import validate_extraction_dates, validate_clinical_date, ClinicalDateError
 from app.models.extraction import (
     ExtractionStatus, DocumentType, MarkerStatus, ConfirmationLevel,
     ExtractionResponse, PatientConfirmationRequest, ClinicianValidationRequest,
@@ -25,7 +29,9 @@ router = APIRouter()
 
 def _public_confirmation(conf: Dict[str, Any]) -> Dict[str, Any]:
     """Bloque de confirmación sin datos internos (la clave de idempotencia no se expone)."""
-    return {k: v for k, v in (conf or {}).items() if k != "idempotency_key"}
+    return {k: v for k, v in (conf or {}).items() if k in {
+        "status", "confirmed_by", "confirmed_at", "validated_by", "validated_at", "edit_count",
+        "edits_applied", "score_snapshot_id"}}
 
 
 def _response_from_ext_doc(ext: Dict[str, Any]) -> ExtractionResponse:
@@ -46,21 +52,8 @@ def _audit_event(db, event: str, patient_id: str, clinical_test_id: str, extract
                  actor_role: str, actor_id: str, **detail) -> None:
     """Evento de auditoría inmutable (§7.3, §12.8): sujeto, momento, recurso y resultado.
     Nunca debe romper la petición."""
-    try:
-        db.audit_events.insert_one({
-            "event": event,
-            "resource": "extraction",
-            "patient_id": patient_id,
-            "clinical_test_id": clinical_test_id,
-            "extraction_id": extraction_id,
-            "actor_role": actor_role,
-            "actor_id": actor_id,
-            "result": "success",
-            "occurred_at": datetime.utcnow(),
-            **detail,
-        })
-    except Exception as e:
-        logger.warning(f"No se pudo registrar el evento de auditoría '{event}': {e}")
+    from app.services.audit import audit
+    audit(db, event, "extraction", extraction_id, **detail)
 
 # ============ ENDPOINT 16: GET MARKER CATALOG ============
 
@@ -90,6 +83,7 @@ async def get_marker_catalog(
                 supported_units=item.get("supported_units", [item["canonical_unit"]]),
                 pillars=item.get("pillars", []),
                 typical_range=item.get("default_reference", {}),
+                clinically_validated=settings.CATALOG_CLINICALLY_APPROVED,
             )
         )
     return result
@@ -134,12 +128,18 @@ async def get_extraction(
 
     # §7.4.1: GET nunca lanza el extractor; 409 EXTRACTION_NOT_READY si está en cola o procesando
     extraction_info = doc.get("extraction")
+    if (user.role == "patient" and (extraction_info or {}).get("status") == "extraction_failed"
+            and (doc.get("extraction_job") or {}).get("error_code") == "INVALID_CLINICAL_DATE"):
+        raise HTTPException(409, detail={"code": "INVALID_CLINICAL_DATE",
+            "message": "Extraction dates are invalid; correct the document or retry extraction"})
     if not extraction_info or not extraction_info.get("extraction_id"):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail={"code": "EXTRACTION_NOT_READY", "message": "La extracción aún no está lista (en cola o procesando)"}
         )
 
+    if extraction_info.get("status") in ("queued", "extracting"):
+        raise HTTPException(409, detail={"code": "EXTRACTION_NOT_READY", "message": "Extraction queued"})
     extraction_id = extraction_info["extraction_id"]
     ext_doc = db.clinical_test_extractions.find_one({
         "extraction_id": extraction_id,
@@ -178,7 +178,7 @@ async def get_extraction(
         panels=ext_doc["panels"],
         flags=ext_doc.get("flags", []),
         extraction_meta=ext_doc.get("extraction_meta", {}),
-        confirmation=ext_doc.get("confirmation", {}),
+        confirmation=_public_confirmation(ext_doc.get("confirmation", {})),
     )
 
 # ============ ENDPOINT 13: CONFIRM OR CORRECT (PATIENT) ============
@@ -188,10 +188,11 @@ async def get_extraction(
     response_model=ExtractionResponse,
     summary="Confirmar o corregir extracción (Paciente)",
 )
+@atomic_write
 async def confirm_extraction(
     clinical_test_id: str,
     request: PatientConfirmationRequest,
-    idempotency_key: str = Header(...),
+    idempotency_key: str = Header(..., min_length=8, max_length=200),
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
@@ -229,8 +230,20 @@ async def confirm_extraction(
             detail={"code": "NOT_FOUND", "message": "Extracción no encontrada"}
         )
 
+    if request.action == "confirm" and any(f.get("code") in {"identity_unverified", "identity_mismatch"}
+            for f in ext_doc.get("flags", [])) and not (
+            request.document_edits and request.document_edits.identity_confirmed is True):
+        raise HTTPException(422, detail={"code": "IDENTITY_CONFIRMATION_REQUIRED", "message": "Explicit identity verification required"})
+
     # Idempotencia: el reintento con la misma Idempotency-Key devuelve el resultado ya guardado
+    low_confidence = {f.get("marker_code") for f in ext_doc.get("flags", []) if f.get("code") == "low_confidence"}
+    if request.action == "confirm" and not low_confidence.issubset(set(request.acknowledged_marker_codes)):
+        raise HTTPException(422, detail={"code": "LOW_CONFIDENCE_REVIEW_REQUIRED", "message": "Acknowledge low-confidence markers"})
+    from app.services.uploads import fingerprint
+    request_hash = fingerprint(request)
     stored_conf = ext_doc.get("confirmation") or {}
+    if stored_conf.get("idempotency_key") == idempotency_key and stored_conf.get("request_hash") != request_hash:
+        raise HTTPException(409, detail={"code": "IDEMPOTENCY_CONFLICT", "message": "Request changed"})
     if stored_conf.get("idempotency_key") == idempotency_key and ext_doc["status"] in (
         ExtractionStatus.CONFIRMED.value, ExtractionStatus.DISCARDED.value,
         ExtractionStatus.CLINICALLY_VALIDATED.value,
@@ -258,6 +271,7 @@ async def confirm_extraction(
                     "confirmation.confirmed_by": current_patient,
                     "confirmation.confirmed_at": now,
                     "confirmation.idempotency_key": idempotency_key,
+                    "confirmation.request_hash": request_hash,
                     "updated_at": now,
                 }
             }
@@ -266,40 +280,41 @@ async def confirm_extraction(
             {"clinical_test_id": clinical_test_id},
             {"$set": {"extraction.status": ExtractionStatus.DISCARDED.value, "updated_at": now}}
         )
-        ext_doc["status"] = ExtractionStatus.DISCARDED.value
         _audit_event(db, "extraction_discarded", doc["patient_id"], clinical_test_id,
                      request.extraction_id, "patient", current_patient)
-        return ExtractionResponse(
-            schema_version=ext_doc.get("schema_version", "1.0"),
-            clinical_test_id=ext_doc["clinical_test_id"],
-            extraction_id=ext_doc["extraction_id"],
-            status=ExtractionStatus.DISCARDED,
-            document=ext_doc["document"],
-            panels=ext_doc["panels"],
-            flags=ext_doc.get("flags", []),
-            extraction_meta=ext_doc.get("extraction_meta", {}),
-            confirmation={"status": "discarded", "confirmed_at": now.isoformat()},
-        )
+        return _response_from_ext_doc(db.clinical_test_extractions.find_one({"_id": ext_doc["_id"]}))
 
     # Aplicar ediciones de metadatos si vienen
     if request.document_edits:
         if request.document_edits.collection_date:
             ext_doc["document"]["collection_date"] = request.document_edits.collection_date
+        if request.document_edits.report_date:
+            ext_doc["document"]["report_date"] = request.document_edits.report_date
         if request.document_edits.document_type:
             ext_doc["document"]["document_type"] = request.document_edits.document_type.value
 
     # Aplicar ediciones de marcadores
     panels = ext_doc.get("panels", [])
+    try:
+        validate_extraction_dates(ext_doc["document"], panels)
+        if not ext_doc["document"].get("collection_date"):
+            validate_clinical_date(doc.get("test_date"))
+    except ClinicalDateError:
+        raise HTTPException(422, detail={"code": "INVALID_CLINICAL_DATE",
+                            "message": "Correct clinical dates before confirmation"}) from None
     if not panels:
         panels = [{"panel_code": "general", "panel_name_raw": "GENERAL", "specimen": "blood", "markers": []}]
 
-    active_markers_map = {m["marker_code"]: m for m in panels[0].get("markers", [])}
+    active_markers_map = {m["marker_code"]: m for panel in panels for m in panel.get("markers", [])}
+    marker_panels = {m["marker_code"]: panel for panel in panels for m in panel.get("markers", [])}
     edit_count = 0
     applied_edits = []
 
     if request.marker_edits:
         for edit in request.marker_edits:
             m_code = edit.marker_code
+            if (edit.op == "add" and m_code in active_markers_map) or (edit.op != "add" and m_code not in active_markers_map):
+                raise HTTPException(422, detail={"code": "INVALID_MARKER_EDIT", "message": "Marker operation conflicts with proposal"})
             if edit.op == "remove":
                 if m_code in active_markers_map:
                     del active_markers_map[m_code]
@@ -307,7 +322,7 @@ async def confirm_extraction(
                     applied_edits.append({"op": "remove", "marker_code": m_code})
             elif edit.op in ["update", "add"]:
                 if not edit.value_raw or not edit.unit_raw:
-                    continue
+                    raise HTTPException(422, detail={"code": "INCOMPLETE_MARKER_EDIT", "message": "Value and unit required"})
 
                 # Validación determinista contra el catálogo canónico
                 norm = catalog_service.validate_and_convert(m_code, edit.value_raw, edit.unit_raw, db)
@@ -317,7 +332,23 @@ async def confirm_extraction(
                         detail={"code": norm["error_code"], "message": norm["message"]}
                     )
 
-                ref_dict = edit.reference.dict() if edit.reference else norm["reference"]
+                if edit.reference is not None:
+                    try:
+                        ref_dict = canonical_document_reference(edit.reference.model_dump(exclude_none=True),
+                            edit.unit_raw, norm["unit_canonical"], norm["conversion_factor"])
+                    except ValueError:
+                        raise HTTPException(422, detail={"code": "REFERENCE_UNIT_MISMATCH",
+                                            "message": "Supported reference unit required"}) from None
+                else:
+                    ref_dict = active_markers_map.get(m_code, {}).get("reference") or norm["reference"]
+                if m_code not in marker_panels:
+                    definition = catalog_service.get_marker(m_code)
+                    panel = next((p for p in panels if p["panel_code"] == definition["panel_code"]), None)
+                    if panel is None:
+                        panel = {"panel_code": definition["panel_code"], "panel_name_raw": definition["panel_code"],
+                                 "specimen": definition["specimen"], "markers": []}
+                        panels.append(panel)
+                    marker_panels[m_code] = panel
                 marker_data = {
                     "marker_code": m_code,
                     "loinc": None,
@@ -332,7 +363,7 @@ async def confirm_extraction(
                     "censoring": norm.get("censoring"),
                     "value_text": None,
                     "reference": ref_dict,
-                    "status": norm["status"],
+                    "status": reference_status(norm["value_canonical"], catalog_service.get_marker(m_code), ref_dict),
                     "confidence": {"value": 1.0, "unit": 1.0, "reference": 1.0, "name": 1.0},
                     "validation": {"passed": True, "errors": []},
                     "provenance": {"source": "patient_confirmed"},
@@ -348,7 +379,11 @@ async def confirm_extraction(
 
     # Actualizar paneles con la lista final de marcadores
     final_markers = list(active_markers_map.values())
-    panels[0]["markers"] = final_markers
+    for marker in final_markers:
+        marker["status"] = reference_status(marker.get("value_canonical"),
+            catalog_service.get_marker(marker["marker_code"]) or {}, marker.get("reference"))
+    for panel in panels:
+        panel["markers"] = [m for m in final_markers if marker_panels[m["marker_code"]] is panel]
 
     # Persistir en clinical_test_extractions como CONFIRMED
     db.clinical_test_extractions.update_one(
@@ -374,6 +409,7 @@ async def confirm_extraction(
                     "edit_count": edit_count,
                     "edits_applied": applied_edits,
                     "idempotency_key": idempotency_key,
+                    "request_hash": request_hash,
                 },
                 "updated_at": now,
             }
@@ -395,7 +431,7 @@ async def confirm_extraction(
             continue  # §5.5.2: no se convierte ni se puntúa; queda visible en la extracción con su bandera
         val_canon = m.get("value_canonical")
         subscore = None
-        if val_canon is not None:
+        if val_canon is not None and scoring_engine.publication_allowed():
             subscore, _ = scoring_engine.calculate_subscore(
                 marker_code=m["marker_code"],
                 value=float(val_canon),
@@ -407,9 +443,9 @@ async def confirm_extraction(
             "marker_code": m["marker_code"],
             "clinical_test_id": clinical_test_id,
             "extraction_id": request.extraction_id,
-            "panel_code": panels[0]["panel_code"],
-            "specimen": panels[0]["specimen"],
-            "measured_on": measured_date,
+            "panel_code": marker_panels[m["marker_code"]]["panel_code"],
+            "specimen": marker_panels[m["marker_code"]]["specimen"],
+            "measured_on": marker_panels[m["marker_code"]].get("collection_date") or measured_date,
             "value_canonical": m["value_canonical"],
             "unit_canonical": m["unit_canonical"],
             "value_raw": m["value_raw"],
@@ -419,6 +455,9 @@ async def confirm_extraction(
             "status": m.get("status", "normal"),
             "subscore": subscore,
             "scoring_version": scoring_engine.scoring_version if subscore is not None else None,
+            **scoring_engine.publication_stamp(),
+            "subscore_exclusion_reason": ("CATALOG_NOT_APPROVED" if not scoring_engine.publication_allowed()
+                else scoring_engine.exclusion_reason(m["marker_code"], m.get("reference"))),
             "catalog_version": "cat-2026.08",
             "confirmation_level": ConfirmationLevel.PATIENT.value,
             "edited": m.get("edited", False),
@@ -449,7 +488,7 @@ async def confirm_extraction(
         }
     )
 
-    logger.info(f"✅ Extracción {request.extraction_id} confirmada por paciente {current_patient}. {len(markers_to_insert)} marcadores persistidos en clinical_markers.")
+    logger.info("Clinical operation event; details withheld")
 
     # Auditoría: una confirmación y un evento por cada adición, corrección y eliminación (§7.3)
     _audit_event(db, "extraction_confirmed", doc["patient_id"], clinical_test_id,
@@ -460,29 +499,26 @@ async def confirm_extraction(
 
     # Disparar cálculo de score_snapshot (§8.8)
     score_snapshot_id = None
-    try:
-        excluded_info = [
-            {"marker_code": me.marker_code, "reason": me.reason or "removed_by_patient"}
-            for me in (request.marker_edits or []) if me.op == "remove"
-        ]
-        snapshot = scoring_engine.compute_patient_score(
-            patient_id=current_patient,
-            db=db,
-            trigger="extraction_confirmed",
-            excluded_markers_info=excluded_info,
+    excluded_info = [
+        {"marker_code": me.marker_code, "reason": me.reason or "removed_by_patient"}
+        for me in (request.marker_edits or []) if me.op == "remove"
+    ]
+    snapshot = scoring_engine.compute_patient_score(
+        patient_id=current_patient,
+        db=db,
+        trigger="extraction_confirmed",
+        excluded_markers_info=excluded_info,
+    )
+    if snapshot:
+        score_snapshot_id = snapshot.get("snapshot_id")
+        db.clinical_tests.update_one(
+            {"clinical_test_id": clinical_test_id},
+            {"$set": {"extraction.score_snapshot_id": score_snapshot_id}}
         )
-        if snapshot:
-            score_snapshot_id = snapshot.get("snapshot_id")
-            db.clinical_tests.update_one(
-                {"clinical_test_id": clinical_test_id},
-                {"$set": {"extraction.score_snapshot_id": score_snapshot_id}}
-            )
-            db.clinical_test_extractions.update_one(
-                {"_id": ext_doc["_id"]},
-                {"$set": {"confirmation.score_snapshot_id": score_snapshot_id}}
-            )
-    except Exception as e:
-        logger.warning(f"Aviso al calcular snapshot tras confirmación: {e}")
+        db.clinical_test_extractions.update_one(
+            {"_id": ext_doc["_id"]},
+            {"$set": {"confirmation.score_snapshot_id": score_snapshot_id}}
+        )
 
     return ExtractionResponse(
         schema_version="1.0",
@@ -514,6 +550,7 @@ _REPROCESSABLE_STATES = (
 
 
 class ReprocessRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     # Confirmación explícita requerida para reprocesar un examen ya confirmado (§7.4.3)
     confirm_reprocess_confirmed: bool = False
 
@@ -523,10 +560,11 @@ class ReprocessRequest(BaseModel):
     response_model=ExtractionResponse,
     summary="Reprocesar extracción del documento",
 )
+@atomic_write
 async def reprocess_extraction(
     clinical_test_id: str,
     body: Optional[ReprocessRequest] = None,
-    idempotency_key: str = Header(...),
+    idempotency_key: str = Header(..., min_length=8, max_length=200),
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
@@ -555,10 +593,16 @@ async def reprocess_extraction(
     old_ext = db.clinical_test_extractions.find_one({"extraction_id": old_ext_id}) if old_ext_id else None
 
     # Idempotencia: el mismo Idempotency-Key devuelve la extracción ya generada
-    if old_ext and ext_info.get("reprocess_idempotency_key") == idempotency_key:
-        return _response_from_ext_doc(old_ext)
+    if ext_info.get("reprocess_idempotency_key") == idempotency_key:
+        if old_ext and ext_info.get("status") not in ("queued", "extracting"):
+            return _response_from_ext_doc(old_ext)
+        return ExtractionResponse(clinical_test_id=clinical_test_id, extraction_id=old_ext_id or "pending",
+            status=ExtractionStatus(ext_info.get("status", "queued")), document={"document_type": "other"})
 
     current_status = old_ext["status"] if old_ext else None
+    if (old_ext is None and ext_info.get("status") == "extraction_failed"
+            and (doc.get("extraction_job") or {}).get("error_code") == "INVALID_CLINICAL_DATE"):
+        current_status = "extraction_failed"
     if current_status == ExtractionStatus.CONFIRMED.value:
         if not body.confirm_reprocess_confirmed:
             raise HTTPException(
@@ -598,23 +642,16 @@ async def reprocess_extraction(
         {"$set": {"invalidated_at": now}}
     )
 
-    # Ejecutar nueva extracción
-    new_ext_doc = extraction_engine.run_extraction_pipeline(clinical_test_id, db)
-
-    db.clinical_tests.update_one(
-        {"clinical_test_id": clinical_test_id},
-        {"$set": {
-            "extraction.reprocess_count": reprocess_count + 1,
-            "extraction.reprocess_idempotency_key": idempotency_key,
-            "updated_at": now,
-        }}
-    )
-    _audit_event(db, "extraction_reprocessed", doc["patient_id"], clinical_test_id,
-                 new_ext_doc["extraction_id"], "patient", current_patient,
-                 previous_status=current_status, previous_extraction_id=old_ext_id,
-                 reprocess_number=reprocess_count + 1)
-
-    return _response_from_ext_doc(new_ext_doc)
+    # Durable extraction request, independent of upload verification.
+    scoring_engine.compute_patient_score(doc["patient_id"], db, trigger="reprocess_invalidated")
+    db.clinical_tests.update_one({"clinical_test_id": clinical_test_id}, {"$set": {
+        "extraction.status": "queued", "extraction.reprocess_count": reprocess_count + 1,
+        "extraction.reprocess_idempotency_key": idempotency_key,
+        "extraction_job": {"status": "pending", "attempts": 0, "available_at": now}, "updated_at": now}})
+    _audit_event(db, "extraction_reprocessed", doc["patient_id"], clinical_test_id, old_ext_id,
+                 "patient", current_patient)
+    return ExtractionResponse(clinical_test_id=clinical_test_id, extraction_id=old_ext_id or "pending",
+                              status=ExtractionStatus.QUEUED, document={"document_type": "other"})
 
 # ============ ENDPOINT 15: CLINICIAN VALIDATION ============
 
@@ -623,6 +660,7 @@ async def reprocess_extraction(
     response_model=ExtractionResponse,
     summary="Validación clínica de la extracción (Clínico)",
 )
+@atomic_write
 async def validate_extraction_clinician(
     clinical_test_id: str,
     request: ClinicianValidationRequest,
@@ -699,14 +737,11 @@ async def validate_extraction_clinician(
         ext_doc["status"] = ExtractionStatus.REJECTED.value
 
         # Recalcular puntaje sin los marcadores rechazados
-        try:
-            scoring_engine.compute_patient_score(
-                patient_id=doc["patient_id"],
-                db=db,
-                trigger="recompute"
-            )
-        except Exception as e:
-            logger.warning(f"Aviso al recalcular tras rechazo clínico: {e}")
+        scoring_engine.compute_patient_score(
+            patient_id=doc["patient_id"],
+            db=db,
+            trigger="recompute"
+        )
     else:
         panels = ext_doc.get("panels", [])
 
@@ -759,11 +794,16 @@ async def validate_extraction_clinician(
                 marker_code=corr.marker_code,
                 value=new_value,
                 reference=existing.get("reference"),
-            )
+            ) if scoring_engine.publication_allowed() else (None, None)
             original_value = existing.get("original_value_canonical")
             if original_value is None:
                 original_value = existing.get("value_canonical")
 
+            db.clinical_result_history.insert_one({
+                "clinical_test_id": clinical_test_id, "extraction_id": extraction_id,
+                "marker_code": corr.marker_code, "actor_id": current_clinician, "occurred_at": now,
+                "before": existing, "correction": {"value_canonical": norm["value_canonical"],
+                    "unit_canonical": norm["unit_canonical"], "reason": corr.reason}})
             db.clinical_markers.update_one(
                 {"_id": existing["_id"]},
                 {
@@ -773,9 +813,12 @@ async def validate_extraction_clinician(
                         "value_canonical": norm["value_canonical"],
                         "unit_canonical": norm["unit_canonical"],
                         "censoring": norm.get("censoring"),
-                        "status": norm["status"],
+                        "status": reference_status(new_value, catalog_service.get_marker(corr.marker_code), existing.get("reference")),
                         "subscore": subscore,
                         "scoring_version": scoring_engine.scoring_version,
+                        **scoring_engine.publication_stamp(),
+                        "subscore_exclusion_reason": ("CATALOG_NOT_APPROVED" if not scoring_engine.publication_allowed()
+                            else scoring_engine.exclusion_reason(corr.marker_code, existing.get("reference"))),
                         "confirmation_level": ConfirmationLevel.CLINICIAN.value,
                         "edited": True,
                         "edited_by": "clinician",
@@ -799,7 +842,7 @@ async def validate_extraction_clinician(
                             "value_canonical": norm["value_canonical"],
                             "unit_canonical": norm["unit_canonical"],
                             "conversion_factor": norm.get("conversion_factor", mk.get("conversion_factor", 1.0)),
-                            "status": norm["status"],
+                            "status": reference_status(new_value, catalog_service.get_marker(corr.marker_code), existing.get("reference")),
                             "edited": True,
                             "edited_by": "clinician",
                             "edited_by_id": current_clinician,
@@ -845,20 +888,16 @@ async def validate_extraction_clinician(
 
         # Solo las correcciones del clínico disparan un recálculo del puntaje (§7.4.4)
         if applied_corrections:
-            logger.info(f"🔄 Recalculando score para paciente {doc['patient_id']} con trigger=clinician_correction")
-            try:
-                snapshot = scoring_engine.compute_patient_score(
-                    patient_id=doc["patient_id"],
-                    db=db,
-                    trigger="clinician_correction",
-                    window_months=12,
-                    excluded_markers_info=[]
-                )
-                if snapshot:
-                    logger.info(f"✅ Nuevo snapshot creado: {snapshot.get('snapshot_id')} con trigger=clinician_correction")
-            except Exception as e:
-                # La validación ya quedó guardada: no devolver 500 por un fallo de recálculo
-                logger.error(f"❌ Error recalculando score tras la validación: {e}", exc_info=True)
+            logger.info("Clinical operation event; details withheld")
+            snapshot = scoring_engine.compute_patient_score(
+                patient_id=doc["patient_id"],
+                db=db,
+                trigger="clinician_correction",
+                window_months=12,
+                excluded_markers_info=[]
+            )
+            if snapshot:
+                logger.info("Clinical operation event; details withheld")
 
     # Auditoría de la validación / rechazo clínico y de cada corrección (§7.3, §12.8)
     _audit_event(
@@ -869,7 +908,7 @@ async def validate_extraction_clinician(
     )
     for ac in applied_corrections:
         _audit_event(db, "marker_correction", doc["patient_id"], clinical_test_id, extraction_id,
-                     "clinician", current_clinician, **ac)
+                     "clinician", current_clinician, **{"marker_code": ac["marker_code"]})
 
     return ExtractionResponse(
         schema_version="1.0",

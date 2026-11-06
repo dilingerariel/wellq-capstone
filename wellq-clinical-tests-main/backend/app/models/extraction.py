@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any, Union
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+from typing import Literal, Optional, List, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
+from app.services.clinical_dates import validate_clinical_date
 
 class ExtractionStatus(str, Enum):
     QUEUED = "queued"
@@ -37,6 +38,21 @@ class ConfirmationLevel(str, Enum):
 # ============ SCHEMAS DE MARCADORES ============
 
 class ReferenceRange(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+
+    @field_validator("low", "high", mode="before")
+    @classmethod
+    def numeric_bound(cls, value):
+        if isinstance(value, bool):
+            raise ValueError("Reference bounds must be numeric, not boolean")
+        return value
+
+    @model_validator(mode="after")
+    def ordered(self):
+        if self.low is not None and self.high is not None and self.low >= self.high:
+            raise ValueError("Reference low must be below high")
+        return self
+
     low: Optional[float] = None
     high: Optional[float] = None
     unit: Optional[str] = None
@@ -50,6 +66,16 @@ class ConfidenceScores(BaseModel):
     name: float = Field(1.0, ge=0.0, le=1.0)
 
 class MarkerItem(BaseModel):
+    @model_validator(mode="after")
+    def effective_display_status(self):
+        # Every extraction response uses this model, including legacy proposals.
+        from app.services.scoring import scoring_engine
+        self.status = MarkerStatus(scoring_engine.display_status(self.model_dump()))
+        if self.validation.get("passed") is False:
+            self.provider_confidence = self.provider_confidence or self.confidence.model_copy(deep=True)
+            self.confidence = ConfidenceScores(value=0, unit=0, reference=0, name=0)
+        return self
+
     marker_code: str
     loinc: Optional[str] = None
     raw_name: str
@@ -65,6 +91,9 @@ class MarkerItem(BaseModel):
     reference: Optional[ReferenceRange] = None
     status: MarkerStatus = MarkerStatus.NORMAL
     confidence: ConfidenceScores = Field(default_factory=ConfidenceScores)
+    provider_confidence: Optional[ConfidenceScores] = None
+    provenance: Dict[str, Any] = Field(default_factory=dict)
+    validation: Dict[str, Any] = Field(default_factory=dict)
     edited: bool = False
     edited_by: Optional[str] = None  # patient | clinician (§7.3)
     edited_by_id: Optional[str] = None  # identificador de quien editó
@@ -101,7 +130,8 @@ class ExtractionResponse(BaseModel):
 # ============ REQUESTS PARA ENDPOINTS 13, 14, 15 ============
 
 class MarkerEdit(BaseModel):
-    op: str  # update | add | remove
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    op: Literal["add", "update", "remove"]  # update | add | remove
     marker_code: str
     value_raw: Optional[str] = None
     unit_raw: Optional[str] = None
@@ -109,28 +139,42 @@ class MarkerEdit(BaseModel):
     reason: Optional[str] = None
 
 class DocumentEdits(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    @field_validator("collection_date", "report_date")
+    @classmethod
+    def date_format(cls, value):
+        return validate_clinical_date(value)
+
     collection_date: Optional[str] = None
+    report_date: Optional[str] = None
     document_type: Optional[DocumentType] = None
-    identity_confirmed: Optional[bool] = True
+    identity_confirmed: Optional[bool] = None
 
 class PatientConfirmationRequest(BaseModel):
-    action: str = "confirm"  # confirm | discard
+    model_config = ConfigDict(extra="forbid")
+    action: Literal["confirm", "discard"] = "confirm"  # confirm | discard
     extraction_id: str
+    acknowledged_marker_codes: List[str] = Field(default_factory=list, max_length=1000)
     document_edits: Optional[DocumentEdits] = None
-    marker_edits: Optional[List[MarkerEdit]] = []
+    marker_edits: Optional[List[MarkerEdit]] = Field(default_factory=list, max_length=1000)
 
 class MarkerCorrection(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     marker_code: str
     value_raw: str
     unit_raw: str
     reason: Optional[str] = "clinical_correction"
 
 class ClinicianValidationRequest(BaseModel):
-    validation_status: str = "validated"  # validated | rejected
-    marker_corrections: Optional[List[MarkerCorrection]] = []
+    model_config = ConfigDict(extra="forbid")
+    validation_status: Literal["validated", "rejected"] = "validated"  # validated | rejected
+    marker_corrections: Optional[List[MarkerCorrection]] = Field(default_factory=list, max_length=1000)
     clinical_note: Optional[str] = None
 
 class CatalogItemResponse(BaseModel):
+    catalog_version: str = "cat-2026.08"
+    clinically_validated: bool = False
     marker_code: str
     name: str
     panel_code: str

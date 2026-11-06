@@ -1,0 +1,1393 @@
+{
+  "synthetic_only": true,
+  "storage_and_ai": "explicit doubles, not GCS or external model",
+  "samples": [
+    {
+      "label": "patient_document",
+      "status": 200,
+      "response": {
+        "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+        "patient_id": "patient-89ad0e3bffb24e67b2f57419c954a6d1",
+        "title": "SYNTHETIC TEST",
+        "test_type": "blood_test",
+        "test_date": "2026-11-05",
+        "notes": null,
+        "case_id": null,
+        "appointment_id": null,
+        "file": {
+          "name": "synthetic.pdf",
+          "mime_type": "application/pdf",
+          "size_bytes": 2702
+        },
+        "status": "ready_for_review",
+        "review": {
+          "status": "not_reviewed",
+          "reviewed_at": null,
+          "reviewed_by": null
+        },
+        "created_at": "2026-11-05T15:22:44Z",
+        "updated_at": "2026-11-05T15:22:46Z"
+      }
+    },
+    {
+      "label": "patient_extraction",
+      "status": 200,
+      "response": {
+        "schema_version": "1.0",
+        "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+        "extraction_id": "cte_9758337a1e924a62a0f44f8f2caafc6f",
+        "status": "confirmed",
+        "document": {
+          "document_type": "blood_panel",
+          "description": "",
+          "language": "es",
+          "page_count": 1,
+          "collection_date": "2026-11-05",
+          "report_date": null
+        },
+        "panels": [
+          {
+            "panel_code": "lipid_profile",
+            "panel_name_raw": "SYNTHETIC ONLY",
+            "specimen": "blood",
+            "collection_date": "2026-11-05",
+            "fasting": null,
+            "markers": [
+              {
+                "marker_code": "cholesterol_total",
+                "loinc": null,
+                "raw_name": "SYNTHETIC cholesterol_total",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "170",
+                "unit_raw": "mg/dL",
+                "value_canonical": 170.0,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 0.0,
+                  "high": 200.0,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              },
+              {
+                "marker_code": "ldl_cholesterol",
+                "loinc": null,
+                "raw_name": "SYNTHETIC ldl_cholesterol",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "100",
+                "unit_raw": "mg/dL",
+                "value_canonical": 100.0,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 0.0,
+                  "high": 130.0,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              },
+              {
+                "marker_code": "hdl_cholesterol",
+                "loinc": null,
+                "raw_name": "SYNTHETIC hdl_cholesterol",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "55",
+                "unit_raw": "mg/dL",
+                "value_canonical": 55.0,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 40.0,
+                  "high": 100.0,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              },
+              {
+                "marker_code": "triglycerides",
+                "loinc": null,
+                "raw_name": "SYNTHETIC triglycerides",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "96",
+                "unit_raw": "mg/dL",
+                "value_canonical": 96.0,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 0.0,
+                  "high": 150.0,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              }
+            ]
+          },
+          {
+            "panel_code": "metabolic_panel",
+            "panel_name_raw": "SYNTHETIC ONLY",
+            "specimen": "blood",
+            "collection_date": "2026-11-05",
+            "fasting": null,
+            "markers": [
+              {
+                "marker_code": "glucose",
+                "loinc": null,
+                "raw_name": "SYNTHETIC glucose",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "90",
+                "unit_raw": "mg/dL",
+                "value_canonical": 90.0,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 70.0,
+                  "high": 100.0,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              }
+            ]
+          },
+          {
+            "panel_code": "renal_panel",
+            "panel_name_raw": "SYNTHETIC ONLY",
+            "specimen": "blood",
+            "collection_date": "2026-11-05",
+            "fasting": null,
+            "markers": [
+              {
+                "marker_code": "creatinine",
+                "loinc": null,
+                "raw_name": "SYNTHETIC creatinine",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "1",
+                "unit_raw": "mg/dL",
+                "value_canonical": 1.0,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 0.6,
+                  "high": 1.3,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              }
+            ]
+          },
+          {
+            "panel_code": "complete_blood_count",
+            "panel_name_raw": "SYNTHETIC ONLY",
+            "specimen": "blood",
+            "collection_date": "2026-11-05",
+            "fasting": null,
+            "markers": [
+              {
+                "marker_code": "hemoglobin",
+                "loinc": null,
+                "raw_name": "SYNTHETIC hemoglobin",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "14.2",
+                "unit_raw": "g/dL",
+                "value_canonical": 14.2,
+                "unit_canonical": "g/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 12.0,
+                  "high": 17.5,
+                  "unit": "g/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              }
+            ]
+          },
+          {
+            "panel_code": "bone_panel",
+            "panel_name_raw": "SYNTHETIC ONLY",
+            "specimen": "blood",
+            "collection_date": "2026-11-05",
+            "fasting": null,
+            "markers": [
+              {
+                "marker_code": "vitamin_d",
+                "loinc": null,
+                "raw_name": "SYNTHETIC vitamin_d",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "50",
+                "unit_raw": "ng/mL",
+                "value_canonical": 50.0,
+                "unit_canonical": "ng/mL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 30.0,
+                  "high": 100.0,
+                  "unit": "ng/mL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              },
+              {
+                "marker_code": "calcium",
+                "loinc": null,
+                "raw_name": "SYNTHETIC calcium",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "9.5",
+                "unit_raw": "mg/dL",
+                "value_canonical": 9.5,
+                "unit_canonical": "mg/dL",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 8.5,
+                  "high": 10.5,
+                  "unit": "mg/dL",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              }
+            ]
+          },
+          {
+            "panel_code": "inflammation_panel",
+            "panel_name_raw": "SYNTHETIC ONLY",
+            "specimen": "blood",
+            "collection_date": "2026-11-05",
+            "fasting": null,
+            "markers": [
+              {
+                "marker_code": "crp_high_sensitivity",
+                "loinc": null,
+                "raw_name": "SYNTHETIC crp_high_sensitivity",
+                "mapping_status": "mapped",
+                "value_type": "numeric",
+                "value_raw": "1",
+                "unit_raw": "mg/L",
+                "value_canonical": 1.0,
+                "unit_canonical": "mg/L",
+                "conversion_factor": 1.0,
+                "censoring": null,
+                "value_text": null,
+                "reference": {
+                  "low": 0.0,
+                  "high": 3.0,
+                  "unit": "mg/L",
+                  "source": "catalog",
+                  "text_raw": null
+                },
+                "status": "normal",
+                "confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provider_confidence": {
+                  "value": 0.99,
+                  "unit": 0.99,
+                  "reference": 0.99,
+                  "name": 0.99
+                },
+                "provenance": {
+                  "page": 1,
+                  "evidence": "Synthetic integration annotation"
+                },
+                "validation": {
+                  "passed": true,
+                  "errors": []
+                },
+                "edited": false,
+                "edited_by": null,
+                "edited_by_id": null,
+                "edited_at": null,
+                "original_value_canonical": null
+              }
+            ]
+          }
+        ],
+        "flags": [
+          {
+            "code": "identity_unverified"
+          }
+        ],
+        "extraction_meta": {
+          "model_id": "integration-content-fixture",
+          "model_version": "1",
+          "prompt_version": "extract-v2.0",
+          "catalog_version": "cat-2026.08",
+          "extracted_at": "2026-11-05T15:22:46.165000",
+          "source_generation": 1,
+          "test_only": true
+        },
+        "confirmation": {
+          "status": "confirmed",
+          "confirmed_by": "patient-89ad0e3bffb24e67b2f57419c954a6d1",
+          "confirmed_at": "2026-11-05T15:22:46.584000",
+          "validated_by": null,
+          "validated_at": null,
+          "edit_count": 0,
+          "edits_applied": [],
+          "score_snapshot_id": "sc_875021a0a97a4e12"
+        }
+      }
+    },
+    {
+      "label": "clinician_marker_series",
+      "status": 200,
+      "response": {
+        "patient_id": "patient-89ad0e3bffb24e67b2f57419c954a6d1",
+        "from": null,
+        "to": null,
+        "only_confirmed": true,
+        "series": [
+          {
+            "marker_code": "glucose",
+            "unit": "mg/dL",
+            "points": [
+              {
+                "measured_on": "2026-11-05",
+                "value": 90.0,
+                "unit": "mg/dL",
+                "reference": {
+                  "low": 70.0,
+                  "high": 100.0,
+                  "unit": "mg/dL",
+                  "source": "catalog"
+                },
+                "status": "normal",
+                "subscore": 100.0,
+                "subscore_blank_reason": null,
+                "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                "confirmation_level": "patient",
+                "edited": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "clinician_report",
+      "status": 200,
+      "response": {
+        "generated_at": "2026-11-05T15:22:47Z",
+        "header": {
+          "patient_id": "patient-89ad0e3bffb24e67b2f57419c954a6d1",
+          "mode": "aggregate",
+          "window": {
+            "months": 12,
+            "from": "2025-11-05",
+            "to": "2026-11-05"
+          },
+          "exam": null,
+          "exams": [
+            {
+              "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+              "title": "SYNTHETIC TEST",
+              "test_date": "2026-11-05",
+              "test_type": "blood_test",
+              "file_name": "synthetic.pdf",
+              "issuer": null,
+              "document_type": "blood_panel",
+              "description": null,
+              "collection_date": "2026-11-05",
+              "validation_status": "confirmed",
+              "review_status": "not_reviewed",
+              "original_document": {
+                "download_url_endpoint": "/api/v1/clinical-tests/ct_3b85a68e1e4b406c914fbf54adea13c2/download-url"
+              }
+            }
+          ]
+        },
+        "score": {
+          "snapshot_id": "sc_875021a0a97a4e12",
+          "computed_at": "2026-11-05T15:22:46.615002Z",
+          "trigger": "extraction_confirmed",
+          "scoring_version": "score-v1.0",
+          "catalog_version": "cat-2026.08",
+          "window": {
+            "months": 12,
+            "from": "2025-11-05",
+            "to": "2026-11-05"
+          },
+          "lab_index": 100.0,
+          "base_score": 100.0,
+          "penalty_applied": 0.0,
+          "pillars": {
+            "cardio": {
+              "score": 100.0,
+              "coverage": 0.9,
+              "confidence": "high",
+              "status": "published",
+              "contributions": [
+                {
+                  "marker_code": "cholesterol_total",
+                  "name": "Colesterol Total",
+                  "value": 170.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.08,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "creatinine",
+                  "name": "Creatinina Sérica",
+                  "value": 1.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.1,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "crp_high_sensitivity",
+                  "name": "Proteína C Reactiva Ultrasensible (hs-CRP)",
+                  "value": 1.0,
+                  "unit": "mg/L",
+                  "subscore": 100.0,
+                  "weight": 0.1,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "glucose",
+                  "name": "Glucosa en Ayunas",
+                  "value": 90.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.08,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "hdl_cholesterol",
+                  "name": "Colesterol HDL",
+                  "value": 55.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.12,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "hemoglobin",
+                  "name": "Hemoglobina",
+                  "value": 14.2,
+                  "unit": "g/dL",
+                  "subscore": 100.0,
+                  "weight": 0.1,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "ldl_cholesterol",
+                  "name": "Colesterol LDL",
+                  "value": 100.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.2,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "triglycerides",
+                  "name": "Triglicéridos",
+                  "value": 96.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.12,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                }
+              ]
+            },
+            "joint": {
+              "score": 100.0,
+              "coverage": 0.55,
+              "confidence": "medium",
+              "status": "published",
+              "contributions": [
+                {
+                  "marker_code": "calcium",
+                  "name": "Calcio Sérico",
+                  "value": 9.5,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.1,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "crp_high_sensitivity",
+                  "name": "Proteína C Reactiva Ultrasensible (hs-CRP)",
+                  "value": 1.0,
+                  "unit": "mg/L",
+                  "subscore": 100.0,
+                  "weight": 0.3,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "vitamin_d",
+                  "name": "Vitamina D (25-OH)",
+                  "value": 50.0,
+                  "unit": "ng/mL",
+                  "subscore": 100.0,
+                  "weight": 0.15,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                }
+              ]
+            },
+            "muscle": {
+              "score": 100.0,
+              "coverage": 0.55,
+              "confidence": "medium",
+              "status": "published",
+              "contributions": [
+                {
+                  "marker_code": "creatinine",
+                  "name": "Creatinina Sérica",
+                  "value": 1.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.2,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "glucose",
+                  "name": "Glucosa en Ayunas",
+                  "value": 90.0,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.1,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "hemoglobin",
+                  "name": "Hemoglobina",
+                  "value": 14.2,
+                  "unit": "g/dL",
+                  "subscore": 100.0,
+                  "weight": 0.15,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "vitamin_d",
+                  "name": "Vitamina D (25-OH)",
+                  "value": 50.0,
+                  "unit": "ng/mL",
+                  "subscore": 100.0,
+                  "weight": 0.1,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                }
+              ]
+            },
+            "bone": {
+              "score": 100.0,
+              "coverage": 0.45,
+              "confidence": "medium",
+              "status": "published",
+              "contributions": [
+                {
+                  "marker_code": "calcium",
+                  "name": "Calcio Sérico",
+                  "value": 9.5,
+                  "unit": "mg/dL",
+                  "subscore": 100.0,
+                  "weight": 0.15,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                },
+                {
+                  "marker_code": "vitamin_d",
+                  "name": "Vitamina D (25-OH)",
+                  "value": 50.0,
+                  "unit": "ng/mL",
+                  "subscore": 100.0,
+                  "weight": 0.3,
+                  "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                  "measured_on": "2026-11-05"
+                }
+              ]
+            }
+          }
+        },
+        "flags": [],
+        "results": {
+          "panels": [
+            {
+              "panel_code": "bone_panel",
+              "specimen": "blood",
+              "rows": [
+                {
+                  "marker_code": "calcium",
+                  "name": "Calcio Sérico",
+                  "raw_name": "SYNTHETIC calcium",
+                  "panel_code": "bone_panel",
+                  "value": 9.5,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 8.5,
+                    "high": 10.5,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "9.5",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                },
+                {
+                  "marker_code": "vitamin_d",
+                  "name": "Vitamina D (25-OH)",
+                  "raw_name": "SYNTHETIC vitamin_d",
+                  "panel_code": "bone_panel",
+                  "value": 50.0,
+                  "unit": "ng/mL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 30.0,
+                    "high": 100.0,
+                    "unit": "ng/mL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "50",
+                    "unit_raw": "ng/mL",
+                    "conversion_factor": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "panel_code": "complete_blood_count",
+              "specimen": "blood",
+              "rows": [
+                {
+                  "marker_code": "hemoglobin",
+                  "name": "Hemoglobina",
+                  "raw_name": "SYNTHETIC hemoglobin",
+                  "panel_code": "complete_blood_count",
+                  "value": 14.2,
+                  "unit": "g/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 12.0,
+                    "high": 17.5,
+                    "unit": "g/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "14.2",
+                    "unit_raw": "g/dL",
+                    "conversion_factor": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "panel_code": "inflammation_panel",
+              "specimen": "blood",
+              "rows": [
+                {
+                  "marker_code": "crp_high_sensitivity",
+                  "name": "Proteína C Reactiva Ultrasensible (hs-CRP)",
+                  "raw_name": "SYNTHETIC crp_high_sensitivity",
+                  "panel_code": "inflammation_panel",
+                  "value": 1.0,
+                  "unit": "mg/L",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 0.0,
+                    "high": 3.0,
+                    "unit": "mg/L",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "1",
+                    "unit_raw": "mg/L",
+                    "conversion_factor": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "panel_code": "lipid_profile",
+              "specimen": "blood",
+              "rows": [
+                {
+                  "marker_code": "cholesterol_total",
+                  "name": "Colesterol Total",
+                  "raw_name": "SYNTHETIC cholesterol_total",
+                  "panel_code": "lipid_profile",
+                  "value": 170.0,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 0.0,
+                    "high": 200.0,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "170",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                },
+                {
+                  "marker_code": "hdl_cholesterol",
+                  "name": "Colesterol HDL",
+                  "raw_name": "SYNTHETIC hdl_cholesterol",
+                  "panel_code": "lipid_profile",
+                  "value": 55.0,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 40.0,
+                    "high": 100.0,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "55",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                },
+                {
+                  "marker_code": "ldl_cholesterol",
+                  "name": "Colesterol LDL",
+                  "raw_name": "SYNTHETIC ldl_cholesterol",
+                  "panel_code": "lipid_profile",
+                  "value": 100.0,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 0.0,
+                    "high": 130.0,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "100",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                },
+                {
+                  "marker_code": "triglycerides",
+                  "name": "Triglicéridos",
+                  "raw_name": "SYNTHETIC triglycerides",
+                  "panel_code": "lipid_profile",
+                  "value": 96.0,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 0.0,
+                    "high": 150.0,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "96",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "panel_code": "metabolic_panel",
+              "specimen": "blood",
+              "rows": [
+                {
+                  "marker_code": "glucose",
+                  "name": "Glucosa en Ayunas",
+                  "raw_name": "SYNTHETIC glucose",
+                  "panel_code": "metabolic_panel",
+                  "value": 90.0,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 70.0,
+                    "high": 100.0,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "90",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "panel_code": "renal_panel",
+              "specimen": "blood",
+              "rows": [
+                {
+                  "marker_code": "creatinine",
+                  "name": "Creatinina Sérica",
+                  "raw_name": "SYNTHETIC creatinine",
+                  "panel_code": "renal_panel",
+                  "value": 1.0,
+                  "unit": "mg/dL",
+                  "censoring": null,
+                  "edited": false,
+                  "reference": {
+                    "low": 0.6,
+                    "high": 1.3,
+                    "unit": "mg/dL",
+                    "source": "catalog"
+                  },
+                  "status": "normal",
+                  "delta": null,
+                  "subscore": 100.0,
+                  "subscore_blank_reason": null,
+                  "origin": {
+                    "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+                    "measured_on": "2026-11-05"
+                  },
+                  "original": {
+                    "value_raw": "1",
+                    "unit_raw": "mg/dL",
+                    "conversion_factor": 1.0
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "longitudinal": {
+          "marker_series": [],
+          "pillar_series": [
+            {
+              "computed_at": "2026-11-05T15:22:46.615002Z",
+              "trigger": "extraction_confirmed",
+              "scoring_version": "score-v1.0",
+              "lab_index": 100.0,
+              "pillars": {
+                "cardio": {
+                  "score": 100.0,
+                  "coverage": 0.9
+                },
+                "joint": {
+                  "score": 100.0,
+                  "coverage": 0.55
+                },
+                "muscle": {
+                  "score": 100.0,
+                  "coverage": 0.55
+                },
+                "bone": {
+                  "score": 100.0,
+                  "coverage": 0.45
+                }
+              }
+            }
+          ],
+          "scoring_version_changes": []
+        },
+        "imaging_findings": [],
+        "traceability": {
+          "extractions": [
+            {
+              "clinical_test_id": "ct_3b85a68e1e4b406c914fbf54adea13c2",
+              "extraction_id": "cte_9758337a1e924a62a0f44f8f2caafc6f",
+              "status": "confirmed",
+              "extraction_meta": {
+                "model_id": "integration-content-fixture",
+                "model_version": "1",
+                "prompt_version": "extract-v2.0",
+                "catalog_version": "cat-2026.08",
+                "extracted_at": "2026-11-05T15:22:46Z",
+                "source_generation": 1,
+                "test_only": true
+              }
+            }
+          ],
+          "scoring_version": "score-v1.0",
+          "catalog_version": "cat-2026.08",
+          "edited_markers": [],
+          "excluded_markers": []
+        },
+        "actions": {
+          "validate": "POST /api/v1/clinical-tests/{clinical_test_id}/extraction/validate",
+          "review": "PATCH /api/v1/clinical-tests/{clinical_test_id}/review",
+          "export_pdf": "POST /api/v1/patients/patient-89ad0e3bffb24e67b2f57419c954a6d1/lab-report/export"
+        }
+      }
+    },
+    {
+      "label": "patient_report_denied",
+      "status": 403,
+      "response": {
+        "detail": {
+          "code": "FORBIDDEN",
+          "message": "Solo un clínico autorizado puede consultar el reporte"
+        }
+      }
+    },
+    {
+      "label": "validation_error",
+      "status": 422,
+      "response": {
+        "detail": {
+          "code": "INVALID_INPUT",
+          "message": "Invalid request",
+          "errors": [
+            {
+              "loc": [
+                "body",
+                "client_upload_id"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "file_name"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "mime_type"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "size_bytes"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "sha256"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "test_type"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "title"
+              ],
+              "type": "missing"
+            },
+            {
+              "loc": [
+                "body",
+                "test_date"
+              ],
+              "type": "missing"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "download_pending",
+      "status": 200,
+      "response": {
+        "export_id": "lrx_3df2e2e5ee16",
+        "patient_id": "patient-89ad0e3bffb24e67b2f57419c954a6d1",
+        "status": "download_pending",
+        "file_name": "lab-report_patient-89ad0e3bffb24e67b2f57419c954a6d1_20261105.pdf",
+        "download_url": null,
+        "expires_at": null,
+        "size_bytes": 34946,
+        "sha256": "93536179063048f341c6a84ec1aa48967d6c0f40786920ec89e0e8c1dec3b121",
+        "storage": "gcs",
+        "replayed": false,
+        "generated_at": "2026-11-05T15:22:47Z",
+        "error_code": "DOWNLOAD_URL_UNAVAILABLE"
+      }
+    },
+    {
+      "label": "download_ready_replay",
+      "status": 200,
+      "response": {
+        "export_id": "lrx_3df2e2e5ee16",
+        "patient_id": "patient-89ad0e3bffb24e67b2f57419c954a6d1",
+        "status": "ready",
+        "file_name": "lab-report_patient-89ad0e3bffb24e67b2f57419c954a6d1_20261105.pdf",
+        "download_url": "<redacted signed TEST gateway URL; not GCS>",
+        "expires_at": "2026-11-05T15:27:48.085210+00:00",
+        "size_bytes": 34946,
+        "sha256": "93536179063048f341c6a84ec1aa48967d6c0f40786920ec89e0e8c1dec3b121",
+        "storage": "gcs",
+        "replayed": true,
+        "generated_at": "2026-11-05T15:22:47Z",
+        "error_code": null
+      }
+    }
+  ]
+}

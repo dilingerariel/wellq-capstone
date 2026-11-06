@@ -1,0 +1,13 @@
+{
+  "baseline": "C:\\Dev\\wellq-integration-backups\\20261105-115253\\baseline.json",
+  "checked_files": 197,
+  "existing_changed_only": [
+    "wellq-clinical-tests-main/backend/.dockerignore",
+    "wellq-clinical-tests-main/backend/app/services/scoring.py",
+    "wellq-clinical-tests-main/backend/checks/test_scoring.py"
+  ],
+  "missing": [],
+  "branch": "fix/wellq-backend-hardening",
+  "head": "fb8746cd42fe107bbda82dd92d3a4d11d545fd3e",
+  "original_tests_docs_01_12_frontend_requirements_unchanged": true
+}

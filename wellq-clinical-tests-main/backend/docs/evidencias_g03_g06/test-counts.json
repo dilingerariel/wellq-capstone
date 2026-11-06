@@ -1,0 +1,44 @@
+{
+  "before.xml": {
+    "tests": 74,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0
+  },
+  "collection-error.xml": {
+    "tests": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "full-after.xml": {
+    "tests": 613,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 209
+  },
+  "initial-after.xml": {
+    "tests": 74,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "integration-after.xml": {
+    "tests": 65,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "integration-attempt1.xml": {
+    "tests": 65,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0
+  },
+  "related-after.xml": {
+    "tests": 185,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

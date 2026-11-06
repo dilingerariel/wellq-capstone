@@ -1,7 +1,12 @@
 import logging
 import re
+import copy
+import math
+import hashlib
+import json
 from typing import Optional, Dict, Any, List
 from pymongo.database import Database
+from app.services.references import reference_status
 
 logger = logging.getLogger(__name__)
 
@@ -183,41 +188,22 @@ _CENSORED_RE = re.compile(r"^\s*(<=|>=|<|>|≤|≥)\s*(.+)$")
 
 
 class CatalogService:
+    version = "cat-2026.08"
+    clinically_validated = False
     def __init__(self):
         self.catalog_by_code: Dict[str, dict] = {item["marker_code"]: item for item in INITIAL_MARKER_CATALOG}
 
-    def seed_catalog(self, db: Database):
-        """Poblar/actualizar el catálogo en MongoDB con configuración completa"""
-        try:
-            for item in INITIAL_MARKER_CATALOG:
-                db.marker_catalog.update_one(
-                    {"marker_code": item["marker_code"]},
-                    {"$set": item},
-                    upsert=True
-                )
-            logger.info(f"✅ Catálogo de marcadores inicializado/sincronizado con {len(INITIAL_MARKER_CATALOG)} registros.")
-        except Exception as e:
-            logger.warning(f"Aviso al sembrar catálogo de marcadores: {e}")
+    def seed_catalog(self, db):
+        raise RuntimeError("Catalogue publication requires clinical approval; no startup overwrite")
 
-    def list_catalog(self, db: Optional[Database] = None) -> List[dict]:
-        if db is not None:
-            try:
-                items = list(db.marker_catalog.find({}, {"_id": 0}))
-                if items:
-                    return items
-            except Exception:
-                pass
-        return list(self.catalog_by_code.values())
+    def list_catalog(self, db=None):
+        return copy.deepcopy(list(self.catalog_by_code.values()))
 
-    def get_marker(self, marker_code: str, db: Optional[Database] = None) -> Optional[dict]:
-        if db is not None:
-            try:
-                found = db.marker_catalog.find_one({"marker_code": marker_code}, {"_id": 0})
-                if found:
-                    return found
-            except Exception:
-                pass
-        return self.catalog_by_code.get(marker_code)
+    def get_marker(self, marker_code, db=None):
+        return copy.deepcopy(self.catalog_by_code.get(marker_code))
+
+    def content_hash(self):
+        return hashlib.sha256(json.dumps(self.list_catalog(), sort_keys=True).encode()).hexdigest()
 
     def validate_and_convert(
         self,
@@ -271,6 +257,8 @@ class CatalogService:
             }
 
         # Conversión a unidad canónica
+        if not math.isfinite(num_val):
+            return {"valid": False, "error_code": "VALUE_INVALID_FORMAT", "message": "Finite numeric value required"}
         conv_factor = marker_def.get("unit_conversions", {}).get(unit_raw, 1.0)
         val_canonical = round(num_val * conv_factor, 2)
         unit_canonical = marker_def.get("canonical_unit", unit_raw)
@@ -294,12 +282,7 @@ class CatalogService:
         low = default_ref.get("low", 0.0)
         high = default_ref.get("high", 999999.0)
 
-        if val_canonical < low:
-            status = "low"
-        elif val_canonical > high:
-            status = "high"
-        else:
-            status = "normal"
+        status = reference_status(val_canonical, marker_def)
 
         return {
             "valid": True,

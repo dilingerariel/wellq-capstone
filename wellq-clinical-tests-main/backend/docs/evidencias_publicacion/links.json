@@ -1,0 +1,147 @@
+[
+  {
+    "document": "13_INTEGRACION_DOCKER_AISLADA.md",
+    "links": [
+      {
+        "source": "evidencias_integracion/compose-resolved-redacted.json",
+        "target": "evidencias_integracion/compose-resolved-public.json",
+        "type": "public_copy"
+      }
+    ]
+  },
+  {
+    "document": "17_DEMOSTRACION_FUNCIONAL_PDF.md",
+    "links": [
+      {
+        "source": "../integration/demo-output/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/reporte-http.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/reporte-http.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/resultados-demo.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/suficiente/http-redactado.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/http-redactado.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      }
+    ]
+  },
+  {
+    "document": "18_CUMPLIMIENTO_CINCO_ARCHIVOS_ORIGINALES.md",
+    "links": [
+      {
+        "source": "../integration/demo-output/resultados-demo.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/sondas-brechas-http.json",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#sondas-historicas",
+        "type": "local_regeneration"
+      }
+    ]
+  },
+  {
+    "document": "19_AUDITORIA_VISUAL_PDF.md",
+    "links": [
+      {
+        "source": "../integration/demo-output/suficiente/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/suficiente/pdf-pages/pagina-01.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/suficiente/pdf-pages/pagina-02.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/suficiente/pdf-pages/pagina-03.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/suficiente/pdf-pages/pagina-04.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/pdf-pages/pagina-01.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/pdf-pages/pagina-02.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/pdf-pages/pagina-03.png",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      }
+    ]
+  },
+  {
+    "document": "20_ESTADO_REAL_BACKEND_Y_ROADMAP.md",
+    "links": [
+      {
+        "source": "../integration/demo-output/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      }
+    ]
+  },
+  {
+    "document": "21_GUIA_DESARROLLADOR_DOCKER.md",
+    "links": [
+      {
+        "source": "../integration/demo-output/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      },
+      {
+        "source": "../integration/demo-output/incompleto/wellq-reporte-clinico-demo.pdf",
+        "target": "25_SANEAMIENTO_SEGURO_PUBLICACION.md#regeneracion",
+        "type": "local_regeneration"
+      }
+    ]
+  }
+]

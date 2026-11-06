@@ -1,0 +1,85 @@
+{
+  "branch": "fix/wellq-backend-hardening",
+  "head": "fb8746cd42fe107bbda82dd92d3a4d11d545fd3e",
+  "baseline_files": 270,
+  "missing": [],
+  "changed_existing": [
+    "wellq-clinical-tests-main/backend/app/services/uploads.py",
+    "wellq-clinical-tests-main/backend/integration/adapters.py",
+    "wellq-clinical-tests-main/backend/integration/bootstrap.py",
+    "wellq-clinical-tests-main/backend/integration/compose.yaml",
+    "wellq-clinical-tests-main/backend/app/models/schemas.py",
+    "wellq-clinical-tests-main/backend/app/routes/clinical_tests.py"
+  ],
+  "openapi_equal": true,
+  "changed_route_functions": [
+    "edit_clinical_test"
+  ],
+  "pdfs": [
+    {
+      "path": "integration\\demo-output\\wellq-reporte-clinico-demo.pdf",
+      "sha256": "3663bbf93490cc0ae76d2fb3751c5ad8f319ceff629f24a32479ea01a7965aba"
+    },
+    {
+      "path": "integration\\demo-output\\incompleto\\entrada-01.pdf",
+      "sha256": "25109decdcfa318f5cb22c8cbd91e8f9bdfa282052b29babfdc823102db58e45"
+    },
+    {
+      "path": "integration\\demo-output\\incompleto\\wellq-reporte-clinico-demo.pdf",
+      "sha256": "b5b9a0cd8babc0655adff26b4258f8bd8ffead7f21cb24384ce1c61b3d7636c4"
+    },
+    {
+      "path": "integration\\demo-output\\suficiente\\entrada-01.pdf",
+      "sha256": "675e5ae4ac41bd715e85d6e7bf3e5301955105b3225ed249a4f2c96112a85ead"
+    },
+    {
+      "path": "integration\\demo-output\\suficiente\\entrada-02.pdf",
+      "sha256": "145578ce59e428d696012b30b638eb63ec5179547a7d7691e1ab75b8c9c48c0a"
+    },
+    {
+      "path": "integration\\demo-output\\suficiente\\entrada-03.pdf",
+      "sha256": "7934040623bca5681a6004c8cf98bd2a29ab83a379a7edf70df3731ce1c84c35"
+    },
+    {
+      "path": "integration\\demo-output\\suficiente\\entrada-04.pdf",
+      "sha256": "f44596d1a5c668987252b090f464ad68723a3a4010effd1aa102f7d5feffff69"
+    },
+    {
+      "path": "integration\\demo-output\\suficiente\\wellq-reporte-clinico-demo.pdf",
+      "sha256": "3663bbf93490cc0ae76d2fb3751c5ad8f319ceff629f24a32479ea01a7965aba"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\incompleto\\entrada-01.pdf",
+      "sha256": "da5b3f024d5196cec5ca61553172fd4eb2d4965f2a75bcda1c1a4c1b38ce9d88"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\incompleto\\wellq-reporte-clinico-demo.pdf",
+      "sha256": "f79e7786c3809e50bc5b6bdb8f7f692910603a2a63c5f0a46b4127571d92028d"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\suficiente\\entrada-01.pdf",
+      "sha256": "1c8d952a0446042e63c0517182564092d3db2db51ae48f1e6d865a92e9a576f8"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\suficiente\\entrada-02.pdf",
+      "sha256": "7d9b15e65df0cdc0a1ee927b4b9956ce23051f1df5868e0853e8d6ce63fe9fea"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\suficiente\\entrada-03.pdf",
+      "sha256": "146918a625d2e9b3c3eeee463083570f444ac738224f561bbadd97d7325e46b8"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\suficiente\\entrada-04.pdf",
+      "sha256": "7f7e409d6bc55aaeb77eb8a9e59746f64b3040109b1d6e925b4b8fdf8e3712f2"
+    },
+    {
+      "path": "integration\\demo-output\\antes\\suficiente\\wellq-reporte-clinico-demo.pdf",
+      "sha256": "c23aa63a5c9258043403b967506e1ad4b43d64a27ff91a6564bc8425aa064e04"
+    }
+  ],
+  "operations_total": 23,
+  "clinical_operations": 20,
+  "operational_operations": 3,
+  "demo_artifact_zip_entries": 71,
+  "demo_artifact_mismatches": []
+}

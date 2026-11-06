@@ -1,0 +1,20 @@
+.env
+*.env
+*.pem
+*.key
+*credentials*.json
+exports/
+__pycache__/
+.pytest_cache/
+app/static/
+tests/
+checks/
+.venv/
+integration/.runtime/
+docs/evidencias_integracion/
+integration/demo-output/
+docs/evidencias_demo/
+
+# Reports/evidence are not inputs to either backend image.
+docs/
+*.public.tmp

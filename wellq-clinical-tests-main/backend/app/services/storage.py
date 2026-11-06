@@ -1,137 +1,104 @@
-import logging
-import os
+﻿"""GCS only: unavailable credentials/signatures never activate simulation."""
+import hashlib
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+from fastapi import HTTPException
 from app.config import settings
 
-logger = logging.getLogger(__name__)
+def unavailable():
+    return HTTPException(503, detail={"code": "STORAGE_UNAVAILABLE", "message": "Private storage unavailable"})
 
 class StorageService:
     def __init__(self):
-        self.bucket_name = settings.GCS_BUCKET_NAME
-        self.project_id = settings.GCS_PROJECT_ID
-        self.credentials_path = settings.GCS_CREDENTIALS_PATH
-        self.client = None
-        self.bucket = None
-        self._init_client()
+        self.client = self.bucket = None
 
-    def _init_client(self):
-        """Inicializar cliente de GCS o modo mock si no hay credenciales"""
+    def _bucket(self):
+        if self.bucket is not None:
+            return self.bucket
+        if not settings.GCS_PROJECT_ID or not settings.GCS_BUCKET_NAME:
+            raise unavailable()
         try:
-            if self.credentials_path and os.path.exists(self.credentials_path) and self.project_id != "your-gcp-project-id":
-                from google.cloud import storage
-                self.client = storage.Client.from_service_account_json(self.credentials_path)
-                self.bucket = self.client.bucket(self.bucket_name)
-                logger.info(f"✅ GCS Client conectado al bucket: {self.bucket_name}")
-            else:
-                logger.info(f"ℹ️ Modo desarrollo: GCS funcionando en modo mock (bucket={self.bucket_name}).")
-        except Exception as e:
-            logger.warning(f"No se pudo inicializar GCS real ({e}); usando modo mock.")
-            self.client = None
+            from google.cloud import storage
+            self.client = (storage.Client.from_service_account_json(settings.GCS_CREDENTIALS_PATH)
+                           if settings.GCS_CREDENTIALS_PATH else storage.Client(project=settings.GCS_PROJECT_ID))
+            bucket = self.client.bucket(settings.GCS_BUCKET_NAME)
+            bucket.reload(timeout=15)
+            if not bucket.iam_configuration.uniform_bucket_level_access_enabled or bucket.iam_configuration.public_access_prevention != "enforced":
+                raise ValueError("Private bucket controls required")
+            self.bucket = bucket
+            return bucket
+        except Exception:
+            raise unavailable()
 
-    def generate_upload_url(self, object_key: str, content_type: str, expiration_minutes: int = 15) -> Dict[str, Any]:
-        """Generar URL firmada V4 para subida (método PUT)"""
-        expires_at = datetime.utcnow() + timedelta(minutes=expiration_minutes)
-        expires_at_iso = expires_at.strftime("%Y-%m-%dT%H:%M:%SZ")
+    def generate_upload_url(self, object_key, content_type, expiration_minutes=15):
+        if not object_key.startswith("quarantine/clinical-tests/"):
+            raise ValueError("Quarantine upload required")
+        ttl = min(expiration_minutes, settings.SIGNED_URL_EXPIRATION_MINUTES)
+        headers = {"x-goog-if-generation-match": "0"}
+        try:
+            url = self._bucket().blob(object_key).generate_signed_url(version="v4", expiration=timedelta(minutes=ttl),
+                method="PUT", content_type=content_type, headers=headers)
+            return {"method": "PUT", "signed_url": url, "required_headers": {"Content-Type": content_type, **headers},
+                    "expires_at": (datetime.utcnow() + timedelta(minutes=ttl)).strftime("%Y-%m-%dT%H:%M:%SZ")}
+        except Exception:
+            raise unavailable()
 
-        if self.client and self.bucket:
+    def generate_download_url(self, object_key, expiration_minutes=5, generation=None):
+        if not object_key.startswith("private/"):
+            raise ValueError("Unvalidated download denied")
+        ttl = min(expiration_minutes, settings.DOWNLOAD_URL_EXPIRATION_MINUTES)
+        try:
+            url = self._bucket().blob(object_key, generation=generation).generate_signed_url(version="v4",
+                expiration=timedelta(minutes=ttl), method="GET", generation=generation)
+            return {"url": url, "expires_at": (datetime.utcnow() + timedelta(minutes=ttl)).strftime("%Y-%m-%dT%H:%M:%SZ")}
+        except Exception:
+            raise unavailable()
+
+    def read_object(self, object_key, generation=None):
+        try:
+            blob = self._bucket().blob(object_key, generation=generation)
+            blob.reload(timeout=15)
+            if not blob.size or blob.size > settings.MAX_CLINICAL_FILE_BYTES:
+                from app.services.file_validation import FileRejected
+                raise FileRejected("SIZE_REJECTED")
+            data = blob.download_as_bytes(if_generation_match=blob.generation, timeout=30)
+            if len(data) != blob.size:
+                raise ValueError("Truncated object")
+            return data, blob.content_type, int(blob.generation)
+        except ValueError:
+            raise
+        except Exception:
+            raise unavailable()
+
+    def promote(self, object_key, generation, sha256):
+        from google.api_core.exceptions import PreconditionFailed
+        destination = object_key.replace("quarantine/", "private/", 1) + "/" + sha256
+        try:
+            bucket = self._bucket()
             try:
-                blob = self.bucket.blob(object_key)
-                url = blob.generate_signed_url(
-                    version="v4",
-                    expiration=timedelta(minutes=expiration_minutes),
-                    method="PUT",
-                    content_type=content_type,
-                )
-                return {
-                    "method": "PUT",
-                    "signed_url": url,
-                    "required_headers": {"Content-Type": content_type},
-                    "expires_at": expires_at_iso,
-                }
-            except Exception as e:
-                logger.error(f"Error generando URL firmada real en GCS: {e}")
-                # Fallback a mock en caso de error
-        
-        # URL firmada Mock para desarrollo local
-        mock_url = (
-            f"https://storage.googleapis.com/{self.bucket_name}/{object_key}"
-            f"?X-Goog-Algorithm=GOOG4-RSA-SHA256"
-            f"&X-Goog-Date={datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}"
-            f"&X-Goog-Expires={expiration_minutes * 60}"
-            f"&X-Goog-SignedHeaders=content-type%3Bhost"
-            f"&X-Goog-Signature=mock_v4_signature_for_testing"
-        )
-        return {
-            "method": "PUT",
-            "signed_url": mock_url,
-            "required_headers": {"Content-Type": content_type},
-            "expires_at": expires_at_iso,
-        }
+                copied = bucket.copy_blob(bucket.blob(object_key, generation=generation), bucket, new_name=destination,
+                    if_generation_match=0, if_source_generation_match=generation, timeout=30)
+                return destination, int(copied.generation)
+            except PreconditionFailed:
+                data, _, existing = self.read_object(destination)
+                if hashlib.sha256(data).hexdigest() != sha256:
+                    raise ValueError("Promotion conflict")
+                return destination, existing
+        except Exception:
+            raise unavailable()
 
-    def generate_download_url(self, object_key: str, expiration_minutes: int = 5) -> Dict[str, Any]:
-        """Generar URL firmada V4 para descarga (método GET)"""
-        expires_at = datetime.utcnow() + timedelta(minutes=expiration_minutes)
-        expires_at_iso = expires_at.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        if self.client and self.bucket:
-            try:
-                blob = self.bucket.blob(object_key)
-                url = blob.generate_signed_url(
-                    version="v4",
-                    expiration=timedelta(minutes=expiration_minutes),
-                    method="GET",
-                )
-                return {
-                    "url": url,
-                    "expires_at": expires_at_iso,
-                }
-            except Exception as e:
-                logger.error(f"Error generando URL de descarga en GCS: {e}")
-
-        # URL mock
-        mock_url = (
-            f"https://storage.googleapis.com/{self.bucket_name}/{object_key}"
-            f"?X-Goog-Algorithm=GOOG4-RSA-SHA256"
-            f"&X-Goog-Expires={expiration_minutes * 60}"
-            f"&X-Goog-Signature=mock_download_signature"
-        )
-        return {
-            "url": mock_url,
-            "expires_at": expires_at_iso,
-        }
-
-    def upload_bytes(self, object_key: str, data: bytes, content_type: str = "application/octet-stream") -> str:
-        """Subir contenido generado por el servidor (p. ej. el PDF del reporte) al bucket privado.
-
-        Devuelve el modo de almacenamiento usado:
-          - "gcs":   subido al bucket real (prefijo privado indicado en object_key).
-          - "local": modo desarrollo sin credenciales; se guarda en ./exports/<nombre> para poder abrirlo.
-        Si GCS está configurado y la subida falla, lanza excepción: un export no debe perderse en silencio.
-        """
-        if self.client and self.bucket:
-            blob = self.bucket.blob(object_key)
-            blob.upload_from_string(data, content_type=content_type)
-            logger.info(f"Objeto subido a GCS: {object_key} ({len(data)} bytes)")
+    def upload_bytes(self, object_key, data, content_type="application/pdf"):
+        if not object_key.startswith("private/lab-reports/"):
+            raise ValueError("Private report prefix required")
+        try:
+            self._bucket().blob(object_key).upload_from_string(data, content_type=content_type, if_generation_match=0, timeout=30)
             return "gcs"
+        except Exception:
+            raise unavailable()
 
-        os.makedirs("exports", exist_ok=True)
-        local_path = os.path.join("exports", os.path.basename(object_key))
-        with open(local_path, "wb") as fh:
-            fh.write(data)
-        logger.info(f"Modo mock: objeto guardado localmente en {local_path} ({len(data)} bytes)")
-        return "local"
-
-    def verify_object_exists(self, object_key: str) -> bool:
-        """Verificar si el objeto existe en GCS"""
-        if self.client and self.bucket:
-            try:
-                blob = self.bucket.blob(object_key)
-                return blob.exists()
-            except Exception as e:
-                logger.warning(f"Error consultando objeto en GCS: {e}")
-                return True
-        # En modo mock asumimos que el objeto fue subido exitosamente
-        return True
+    def verify_object_exists(self, object_key):
+        try:
+            return self._bucket().blob(object_key).exists(timeout=15)
+        except Exception:
+            raise unavailable()
 
 storage_service = StorageService()

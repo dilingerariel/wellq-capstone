@@ -1,5 +1,8 @@
+# Use a SEPARATE project (-p wellq-isolated) and new disposable volumes.
+# Never overlay this on a running clinical project. Identity/scanner/provider
+# configuration still applies; this does not enable fake production services.
 services:
   fastapi:
     environment:
+      ENVIRONMENT: test
       MONGODB_DB: wellq_test
-      MONGODB_URI: mongodb://root:password@mongodb:27017/wellq_test?authSource=admin

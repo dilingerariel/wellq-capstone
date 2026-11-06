@@ -1,0 +1,56 @@
+{
+  "existing_changed": [
+    "wellq-clinical-tests-main/backend/app/services/uploads.py",
+    "wellq-clinical-tests-main/backend/integration/adapters.py",
+    "wellq-clinical-tests-main/backend/integration/bootstrap.py",
+    "wellq-clinical-tests-main/backend/integration/compose.yaml",
+    "wellq-clinical-tests-main/backend/app/models/schemas.py",
+    "wellq-clinical-tests-main/backend/app/routes/clinical_tests.py"
+  ],
+  "source_files": [
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\services\\associations.py",
+      "sha256": "71c9746b420a44d7c19d480335173a48e0d2c26cedd31666bfca3dbec08ba5c0"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\services\\upload_metadata.py",
+      "sha256": "627d3af294658037563d0a911349176fb5ac0ee645ba981c3b905333a2ea4f42"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\checks\\test_security_s01_s02.py",
+      "sha256": "edce06c9442256064f7ca4cca6f5c7502a221bb95a87163b02a336fe26ab574a"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\security_s01_s02.py",
+      "sha256": "9333d26f75ddad7f701a0105a6e414f78dd19156d784998c772a5fea7fb5b5cc"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\Security.ps1",
+      "sha256": "7aa8eb8778e0797eef59310d58081682653746c75fd9f36a76a2fcef3620cbfd"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\services\\uploads.py",
+      "sha256": "6bce761e970449eb445a349a23d54116152318b4907b21d151ad79fdab175a8b"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\adapters.py",
+      "sha256": "09669ae75332b76da923c16aa1d871f6fd2b8baca723d24ce74364cd49472913"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\bootstrap.py",
+      "sha256": "069025ab21db5f270960f2906daf71f8e6ecc3bcd016cdd0b66cf54c39f3fc97"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\integration\\compose.yaml",
+      "sha256": "c90c374146c990ffce6fe9ea925a512010ffa8f133539528bdd857b2fb9b36e3"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\models\\schemas.py",
+      "sha256": "03ac06cd749e3394826e1a77e6292f518a80171b213707a3a2962714d7d77550"
+    },
+    {
+      "path": "wellq-clinical-tests-main\\backend\\app\\routes\\clinical_tests.py",
+      "sha256": "aded39efeaff7a2a0bdb78aaffe6e970d05bac3c791863cdd8a652ab1eb30fc9"
+    }
+  ]
+}

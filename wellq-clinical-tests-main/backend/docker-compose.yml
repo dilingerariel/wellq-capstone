@@ -1,46 +1,28 @@
-version: '3.8'
-
+# Configuration template only. No database/index/replica-set migration is automatic.
 services:
   mongodb:
     image: mongo:7.0
-    container_name: wellq-mongodb
-    ports:
-      - "27017:27017"
+    command: ["mongod", "--replSet", "rs0", "--keyFile", "/run/mongo/keyfile", "--bind_ip_all"]
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: wellq_clinical
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?required}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?required}
     volumes:
       - mongodb_data:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    networks:
-      - wellq-network
-
+      - ${MONGO_KEYFILE_PATH:?required}:/run/mongo/keyfile:ro
+    networks: [wellq-network]
   fastapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: wellq-api
-    ports:
-      - "8000:8000"
+    build: .
+    ports: ["127.0.0.1:8000:8000"]
+    env_file: .env
     environment:
-      MONGODB_URI: mongodb://root:password@mongodb:27017/wellq_clinical?authSource=admin
-      MONGODB_DB: wellq_clinical
-      GCS_PROJECT_ID: ${GCS_PROJECT_ID}
-      GCS_BUCKET_NAME: ${GCS_BUCKET_NAME}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      DEBUG: "False"
-    depends_on:
-      - mongodb
-    volumes:
-      - .:/app
-    networks:
-      - wellq-network
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
+      ENVIRONMENT: production
+      WELLQ_DEBUG: "false"
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    networks: [wellq-network]
 volumes:
   mongodb_data:
-
 networks:
   wellq-network:
-    driver: bridge

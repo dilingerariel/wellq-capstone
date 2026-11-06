@@ -1,95 +1,81 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import logging
-
+from fastapi.responses import JSONResponse
+from pymongo.errors import PyMongoError, DuplicateKeyError
 from app.config import settings
+from app.database import connect_to_mongo, close_mongo_connection, mongodb
+from app.dependencies.auth import current_identity
 from app.routes import clinical_tests, extractions, scoring
-from app.database import connect_to_mongo, close_mongo_connection
+from contextlib import asynccontextmanager
+from app.models.errors import ErrorResponse
 
-# Logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# FastAPI app
-app = FastAPI(
-    title=settings.APP_NAME,
-    description="API para carga y gestión de exámenes médicos",
-    version="1.0.0",
-)
-
-@app.on_event("startup")
-def startup_db_client():
+@asynccontextmanager
+async def lifespan(app):
     connect_to_mongo()
+    try:
+        yield
+    finally:
+        close_mongo_connection()
 
-@app.on_event("shutdown")
-def shutdown_db_client():
-    close_mongo_connection()
+app = FastAPI(title=settings.APP_NAME, version="1.1.0",
+              description="Clinical API. External trusted identity and tenant schema required.", lifespan=lifespan,
+              responses={code: {"model": ErrorResponse, "description": description,
+                  "headers": ({"WWW-Authenticate": {"schema": {"type": "string"}}} if code == 401 else
+                              {"Retry-After": {"schema": {"type": "string"}}} if code in (429, 503) else {})}
+                  for code, description in {
+                  401: "Authentication required (WWW-Authenticate: Bearer)",
+                  403: "Role, relationship, permission or capability denied",
+                  404: "Resource or publishable score unavailable",
+                  409: "State, idempotency, source or retryable write conflict",
+                  422: "Invalid request; detail is an object with code and optional errors",
+                  429: "Rate limit (Retry-After where applicable)",
+                  503: "Dependency unavailable (Retry-After for database failures)",
+              }.items()})
+app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS,
+                   allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "DELETE"],
+                   allow_headers=["Authorization", "Content-Type", "Idempotency-Key"])
 
-# CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # TODO: Restringir en producción
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.middleware("http")
+async def identity_scope(request: Request, call_next):
+    token = current_identity.set(None)
+    try:
+        response = await call_next(request)
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
+    finally:
+        current_identity.reset(token)
 
-# Rutas
-app.include_router(
-    clinical_tests.router,
-    prefix="/api/v1",
-    tags=["clinical-tests"],
-)
+@app.exception_handler(PyMongoError)
+async def database_error(request, exc):
+    return JSONResponse(status_code=409 if isinstance(exc, DuplicateKeyError) else 503,
+        content={"detail": {"code": "RETRYABLE_CONFLICT", "message": "Retry with the same idempotency key"}},
+        headers={"Retry-After": "2"})
 
-app.include_router(
-    extractions.router,
-    prefix="/api/v1",
-    tags=["extractions"],
-)
+for router in (clinical_tests.router, extractions.router, scoring.router):
+    app.include_router(router, prefix="/api/v1")
 
-app.include_router(
-    scoring.router,
-    prefix="/api/v1",
-    tags=["scoring"],
-)
-
-# Health check
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
-# Dashboard Frontend UI
-import os
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+@app.get("/ready")
+async def ready():
+    try:
+        settings.validate_identity()
+        if mongodb.client is None:
+            raise RuntimeError()
+        mongodb.client.admin.command("ping")
+    except Exception:
+        return JSONResponse(status_code=503, content={"status": "unavailable"})
+    return {"status": "ready"}
 
-static_dir = os.path.join(os.path.dirname(__file__), "static")
-if os.path.exists(static_dir):
-    app.mount("/dashboard", StaticFiles(directory=static_dir, html=True), name="dashboard")
-
-exports_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "exports"))
-if os.path.exists(exports_dir):
-    app.mount("/exports", StaticFiles(directory=exports_dir), name="exports")
-
-@app.get("/demo")
-async def demo():
-    return RedirectResponse(url="/dashboard/")
-
-# Root
 @app.get("/")
 async def root():
-    return {
-        "app": settings.APP_NAME,
-        "version": "1.0.0",
-        "status": "running",
-        "dashboard": "/dashboard/"
-    }
+    return {"app": settings.APP_NAME, "version": "1.1.0", "status": "running"}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=settings.DEBUG,
-    )
+from fastapi.exceptions import RequestValidationError
+@app.exception_handler(RequestValidationError)
+async def input_error(request, exc):
+    return JSONResponse(status_code=422, content={"detail": {"code": "INVALID_INPUT", "message": "Invalid request",
+        "errors": [{"loc": list(e["loc"]), "type": e["type"]} for e in exc.errors()]}})

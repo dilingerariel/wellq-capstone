@@ -50,6 +50,10 @@ class ExcludedMarker(BaseModel):
     reason: str
 
 class ScoreSnapshotModel(BaseModel):
+    catalog_hash: Optional[str] = None
+    source_digest: Optional[str] = None
+    parameters: Dict[str, Any] = {}
+    catalog_clinically_approved: bool = False
     snapshot_id: str
     patient_id: str
     computed_at: str

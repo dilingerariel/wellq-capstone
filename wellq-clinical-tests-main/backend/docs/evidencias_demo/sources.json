@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "path": "C:\\Users\\vegal\\Downloads\\Documento_Maestro_Proyecto_Examenes_Medicos_WellQ(2).docx",
+    "sha256": "8998f513d9b0acd6dd4ac3772740aa3871cbd39671cac6f0bc42e042e0a0107a",
+    "content_sha256": "271967db64d99bafd8eb3d268a16a7afe7bd0a44a3c34c862da13aaf5666c11a",
+    "paragraphs": 1727,
+    "text_file": "C:\\Dev\\wellq-demo-backups\\20261105-130531\\source-1.txt"
+  },
+  {
+    "id": 2,
+    "path": "C:\\Users\\vegal\\Downloads\\Especificacion_Endpoints_Carga_Examenes_Medicos.docx",
+    "sha256": "95ec6196fcde946a12e17870fc28a2ee7e135ce64f6a3ee9662fc413b39ba753",
+    "content_sha256": "c7c6579ceb176a9a9e098f6e64a3fa8c4e8449e9524f98ad69653e73b16b825a",
+    "paragraphs": 928,
+    "text_file": "C:\\Dev\\wellq-demo-backups\\20261105-130531\\source-2.txt"
+  },
+  {
+    "id": 3,
+    "path": "C:\\Users\\vegal\\Downloads\\WellQ_Clinical_Test_Upload_API_Specification(4).docx",
+    "sha256": "53b31fdd545b126a8ba30c8532969ad0534ba32a65b6ad72c402ada62fc4a930",
+    "content_sha256": "5b6147dc7b0c167437a9c9445b40a5cac6706b37d14b4416a0a40e8a266c35c7",
+    "paragraphs": 468,
+    "text_file": "C:\\Dev\\wellq-demo-backups\\20261105-130531\\source-3.txt"
+  },
+  {
+    "id": 4,
+    "path": "C:\\Users\\vegal\\Downloads\\WellQ_Clinical_Test_Upload_API_Specification(5).docx",
+    "sha256": "53b31fdd545b126a8ba30c8532969ad0534ba32a65b6ad72c402ada62fc4a930",
+    "content_sha256": "5b6147dc7b0c167437a9c9445b40a5cac6706b37d14b4416a0a40e8a266c35c7",
+    "paragraphs": 468,
+    "text_file": "C:\\Dev\\wellq-demo-backups\\20261105-130531\\source-4.txt"
+  },
+  {
+    "id": 5,
+    "path": "C:\\Users\\vegal\\Downloads\\Especificación Técnica de Estándares Transversales y Capacidades Comerciales.docx",
+    "sha256": "5aaed1c113258a1d01b537a0ff9a42d19afe55773c75c4b25e53ace99a900eb4",
+    "content_sha256": "7c7ccda6cd6e1285b549bf9201cebc4f527446a00cd86d481b8e49708cfc5b6f",
+    "paragraphs": 28,
+    "text_file": "C:\\Dev\\wellq-demo-backups\\20261105-130531\\source-5.txt"
+  }
+]

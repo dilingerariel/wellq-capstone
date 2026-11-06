@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "ruff_observations": 414,
+  "mandatory_violations": 0,
+  "new_debt": 0,
+  "remaining_reviewed_debt": 414,
+  "resolved_baseline_debt": 0,
+  "note": "Passing this gate does not mean raw Ruff or every possible Ruff rule passes."
+}

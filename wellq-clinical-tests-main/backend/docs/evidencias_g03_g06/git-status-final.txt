@@ -1,0 +1,72 @@
+﻿ M wellq-clinical-tests-main/backend/.env.example
+ M wellq-clinical-tests-main/backend/Dockerfile
+ M wellq-clinical-tests-main/backend/app/config.py
+ M wellq-clinical-tests-main/backend/app/database.py
+ M wellq-clinical-tests-main/backend/app/dependencies/auth.py
+ M wellq-clinical-tests-main/backend/app/main.py
+ M wellq-clinical-tests-main/backend/app/models/extraction.py
+ M wellq-clinical-tests-main/backend/app/models/schemas.py
+ M wellq-clinical-tests-main/backend/app/models/scoring.py
+ M wellq-clinical-tests-main/backend/app/routes/clinical_tests.py
+ M wellq-clinical-tests-main/backend/app/routes/extractions.py
+ M wellq-clinical-tests-main/backend/app/services/catalog.py
+ M wellq-clinical-tests-main/backend/app/services/extractor.py
+ M wellq-clinical-tests-main/backend/app/services/scoring.py
+ M wellq-clinical-tests-main/backend/app/services/storage.py
+ M wellq-clinical-tests-main/backend/docker-compose.test.yml
+ M wellq-clinical-tests-main/backend/docker-compose.yml
+ M wellq-clinical-tests-main/backend/pytest.ini
+ M wellq-clinical-tests-main/backend/requirements.txt
+ M wellq-clinical-tests-main/backend/scripts/recompute_scoring.py
+ M wellq-clinical-tests-main/backend/tests/conftest.py
+?? wellq-clinical-tests-main/backend/.dockerignore
+?? wellq-clinical-tests-main/backend/app/models/errors.py
+?? wellq-clinical-tests-main/backend/app/models/reporting.py
+?? wellq-clinical-tests-main/backend/app/services/associations.py
+?? wellq-clinical-tests-main/backend/app/services/audit.py
+?? wellq-clinical-tests-main/backend/app/services/clinical_dates.py
+?? wellq-clinical-tests-main/backend/app/services/evaluation.py
+?? wellq-clinical-tests-main/backend/app/services/file_validation.py
+?? wellq-clinical-tests-main/backend/app/services/references.py
+?? wellq-clinical-tests-main/backend/app/services/transactions.py
+?? wellq-clinical-tests-main/backend/app/services/upload_metadata.py
+?? wellq-clinical-tests-main/backend/app/services/uploads.py
+?? wellq-clinical-tests-main/backend/app/tenancy.py
+?? wellq-clinical-tests-main/backend/app/workers/
+?? wellq-clinical-tests-main/backend/checks/
+?? wellq-clinical-tests-main/backend/docs/01_ESTADO_BACKEND.md
+?? wellq-clinical-tests-main/backend/docs/02_CORRECCIONES_IMPLEMENTADAS.md
+?? wellq-clinical-tests-main/backend/docs/03_CONTRATOS_API_FRONTEND.md
+?? wellq-clinical-tests-main/backend/docs/04_SEGURIDAD_BACKEND.md
+?? wellq-clinical-tests-main/backend/docs/05_ALMACENAMIENTO_Y_PROCESAMIENTO.md
+?? wellq-clinical-tests-main/backend/docs/06_EXTRACCION_MULTIMODAL.md
+?? wellq-clinical-tests-main/backend/docs/07_SCORING_Y_REPRODUCIBILIDAD.md
+?? wellq-clinical-tests-main/backend/docs/08_PRUEBAS_Y_RESULTADOS.md
+?? wellq-clinical-tests-main/backend/docs/09_DESPLIEGUE_Y_CONFIGURACION.md
+?? wellq-clinical-tests-main/backend/docs/10_PENDIENTES_Y_BLOQUEOS.md
+?? wellq-clinical-tests-main/backend/docs/11_HANDOFF_FRONTEND_CHATGPT.md
+?? wellq-clinical-tests-main/backend/docs/12_CIERRE_DEFECTOS_F01_F07.md
+?? wellq-clinical-tests-main/backend/docs/13_INTEGRACION_DOCKER_AISLADA.md
+?? wellq-clinical-tests-main/backend/docs/14_RESULTADOS_PRUEBAS_INTEGRACION.md
+?? wellq-clinical-tests-main/backend/docs/15_CONTRATOS_FRONTEND_ACTUALIZADOS.md
+?? wellq-clinical-tests-main/backend/docs/16_PENDIENTES_POST_INTEGRACION.md
+?? wellq-clinical-tests-main/backend/docs/17_DEMOSTRACION_FUNCIONAL_PDF.md
+?? wellq-clinical-tests-main/backend/docs/18_CUMPLIMIENTO_CINCO_ARCHIVOS_ORIGINALES.md
+?? wellq-clinical-tests-main/backend/docs/19_AUDITORIA_VISUAL_PDF.md
+?? wellq-clinical-tests-main/backend/docs/20_ESTADO_REAL_BACKEND_Y_ROADMAP.md
+?? wellq-clinical-tests-main/backend/docs/21_GUIA_DESARROLLADOR_DOCKER.md
+?? wellq-clinical-tests-main/backend/docs/22_CIERRE_SEGURIDAD_ASOCIACIONES_ARCHIVOS.md
+?? wellq-clinical-tests-main/backend/docs/23_CIERRE_EDICION_REVISION_CLINICA.md
+?? wellq-clinical-tests-main/backend/docs/change-manifest.json
+?? wellq-clinical-tests-main/backend/docs/dependencies-after.json
+?? wellq-clinical-tests-main/backend/docs/dependencies-before.json
+?? wellq-clinical-tests-main/backend/docs/evidencias_demo/
+?? wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/
+?? wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/
+?? wellq-clinical-tests-main/backend/docs/evidencias_integracion/
+?? wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/
+?? wellq-clinical-tests-main/backend/docs/openapi.json
+?? wellq-clinical-tests-main/backend/docs/test-results.xml
+?? wellq-clinical-tests-main/backend/docs/tested-dependencies.json
+?? wellq-clinical-tests-main/backend/integration/
+?? wellq-clinical-tests-main/backend/requirements-dev.txt

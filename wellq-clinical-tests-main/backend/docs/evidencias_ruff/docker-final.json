@@ -1,0 +1,182 @@
+﻿{
+    "legacy_resources":  "No mutations or data access; only the isolated project was used",
+    "project":  "wellq-int-39706292db88",
+    "containers":  [
+                       {
+                           "id":  "52abbd54db1e6aa301f268f6e3f7a95ff362d2cef3f82b44aa4b2edb99753974",
+                           "name":  "wellq-int-39706292db88-quality-f8aba7ab",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "runner-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "496a1c223ca95075a78df0d0cb26aca05a342003d1f216db20b463d5b6e362d0",
+                           "name":  "wellq-int-39706292db88-quality-2392550b",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "runner-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  1
+                       },
+                       {
+                           "id":  "aa326b179d7c20d260d352c52c66759ad71428c7c82b34142b67b28138c8e445",
+                           "name":  "wellq-int-39706292db88-worker-int-2",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "worker-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  137
+                       },
+                       {
+                           "id":  "8ddddb354608d0cf6560ad23ab9c3bf722e880c66f3125abcfcd76022367050b",
+                           "name":  "wellq-int-39706292db88-api-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "api-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  137
+                       },
+                       {
+                           "id":  "4537a1869c58e1b0a2ff72a3fb28553af0fdcb519181ea8810a1646982609a97",
+                           "name":  "wellq-int-39706292db88-objects-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "objects-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  137
+                       },
+                       {
+                           "id":  "cc5eb884d8cea8225825c418fc19a40b10cae172439cd35d90a25cad85d1ee8d",
+                           "name":  "wellq-int-39706292db88-worker-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "worker-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  137
+                       },
+                       {
+                           "id":  "1cd2e2a0d844416d5f15420860fa1ab0de65d1a06f4dd2316254aaa288ea552b",
+                           "name":  "wellq-int-39706292db88-review-54bf77f0",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "runner-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "edcceef3de41e359475982dfa5b896f883e33bb3b56c45527bbc466d1a763e41",
+                           "name":  "wellq-int-39706292db88-review-9b4bc44d",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "runner-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  1
+                       },
+                       {
+                           "id":  "9e17e4541c59426213366cf1a945f8d7c2821314167b99236cb329dfd02c828c",
+                           "name":  "wellq-int-39706292db88-security-19961f81",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "runner-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "beab8a997f06d2bfb5da54c539992f041b46ef5ede908297ec9251a5a0ce10b2",
+                           "name":  "wellq-int-39706292db88-security-befb203f",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "runner-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  1
+                       },
+                       {
+                           "id":  "fe5b580d83017a5d8a2c0707e95b9743cbd367de6cd92d21faa37a111916385f",
+                           "name":  "wellq-int-39706292db88-provision-int-attempt-fe5b580d8301",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "provision-int",
+                           "state":  "created",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "bd1eff1c0c5163e92658ec340011d7ebbfb11629539de9304baf84e552fa132e",
+                           "name":  "wellq-int-39706292db88-setup-int-attempt-bd1eff1c0c51",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "setup-int",
+                           "state":  "created",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "e9840424068ed9f0c11fa991a0c5d2d1cce73c4c8019238671e25a456e8f4ad8",
+                           "name":  "wellq-int-39706292db88-provision-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "provision-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "dedecf14479bd9c267eb1eb473b05d47b34dcbb7d4d4e3e29a7e419bff6c506c",
+                           "name":  "wellq-int-39706292db88-setup-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "setup-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       },
+                       {
+                           "id":  "fb26d90e92b67317daddbda1b1dd43187b0b37beb80d46e61f8d2a05953179f2",
+                           "name":  "wellq-int-39706292db88-clamav-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "clamav-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  143
+                       },
+                       {
+                           "id":  "f2c8b765d7c0b986cbcd785862dad203a9ede883c765c2480ea72e9ab2664594",
+                           "name":  "wellq-int-39706292db88-mongo-int-1",
+                           "project":  "wellq-int-39706292db88",
+                           "service":  "mongo-int",
+                           "state":  "exited",
+                           "ports":  {
+
+                                     },
+                           "exit_code":  0
+                       }
+                   ]
+}

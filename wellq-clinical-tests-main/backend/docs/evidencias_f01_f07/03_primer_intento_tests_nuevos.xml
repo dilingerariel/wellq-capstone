@@ -1,0 +1,1423 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="19" skipped="0" tests="52" time="13.635" timestamp="2026-11-05T11:20:22.558439-03:00" hostname="pablo"><testcase classname="checks.test_final_defects" name="test_f03_invalid_field_confidence_must_be_zero" time="0.385"><failure message="AssertionError: assert {'schema_vers...ount': 1, ...} == {'schema_vers...ount': 1, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;[+4 more lines; full report in element text]">checks\test_final_defects.py:72: in test_f03_invalid_field_confidence_must_be_zero
+    assert result["proposal"]["provider_output"] == output
+E   AssertionError: assert {'schema_vers...ount': 1, ...} == {'schema_vers...ount': 1, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'panels': [{'panel_code': 'metabolic_panel', 'panel_name_raw': 'SYNTHETIC', 'specimen': 'blood', 'collection_date': None, ...}]} != {'panels': [{'panel_code': 'metabolic_panel', 'panel_name_raw': 'SYNTHETIC', 'specimen': 'blood', 'markers': [{'marker_code': 'glucose', 'raw_name': 'Glucose test', 'value_raw': '90', 'unit_raw': 'unsupported-unit', ...}]}]}
+E     Left contains 1 more item:
+E     {'report_date': None}
+E     Use -v to get more diff</failure></testcase><testcase classname="checks.test_final_defects" name="test_f04_document_reference_must_drive_display_status" time="0.030" /><testcase classname="checks.test_final_defects" name="test_f05_future_date_must_not_pass_deterministic_validation" time="0.048" /><testcase classname="checks.test_final_defects" name="test_f02_nullable_reference_must_not_crash_scoring" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f06_signer_failure_must_not_report_ready" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f07_discard_replay_must_be_idempotent" time="0.315"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:114: in test_f07_discard_replay_must_be_idempotent
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f01_unapproved_catalog_must_not_publish_subscores" time="0.033"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:133: in test_f01_unapproved_catalog_must_not_publish_subscores
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f01_all_publication_surfaces_and_patient_denials[False]" time="0.053"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:145: in test_f01_all_publication_surfaces_and_patient_denials
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f01_all_publication_surfaces_and_patient_denials[True]" time="0.068"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:145: in test_f01_all_publication_surfaces_and_patient_denials
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f01_legacy_scores_never_gain_approval_by_toggling_settings[False]" time="0.202"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:178: in test_f01_legacy_scores_never_gain_approval_by_toggling_settings
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f01_legacy_scores_never_gain_approval_by_toggling_settings[True]" time="0.038"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:178: in test_f01_legacy_scores_never_gain_approval_by_toggling_settings
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f01_history_filters_unapproved_snapshots_and_old_export" time="0.049"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:203: in test_f01_history_filters_unapproved_snapshots_and_old_export
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[glucose-reference0-100.0]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[glucose-reference1-None]" time="0.005" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[glucose-reference2-None]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[glucose-reference3-None]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[glucose-reference4-None]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[cholesterol_total-reference5-100.0]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[hdl_cholesterol-reference6-86.0]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[hdl_cholesterol-reference7-None]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_optional_bounds_follow_direction_without_inventing_limits[glucose-reference8-None]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_bad_ranges_rejected_by_dto_and_excluded_safely_for_legacy[ref0]" time="0.007" /><testcase classname="checks.test_final_defects" name="test_f02_bad_ranges_rejected_by_dto_and_excluded_safely_for_legacy[ref1]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f02_bad_ranges_rejected_by_dto_and_excluded_safely_for_legacy[ref2]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_bad_ranges_rejected_by_dto_and_excluded_safely_for_legacy[ref3]" time="0.004" /><testcase classname="checks.test_final_defects" name="test_f02_bad_ranges_rejected_by_dto_and_excluded_safely_for_legacy[ref4]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f02_bad_ranges_rejected_by_dto_and_excluded_safely_for_legacy[ref5]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f02_http_confirmation_retains_value_and_reports_exclusion" time="0.049"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:245: in test_f02_http_confirmation_retains_value_and_reports_exclusion
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f04_document_ranges_and_unit_conversion[90-mg/dL-reference0-low]" time="0.249" /><testcase classname="checks.test_final_defects" name="test_f04_document_ranges_and_unit_conversion[110-mg/dL-reference1-normal]" time="0.050" /><testcase classname="checks.test_final_defects" name="test_f04_document_ranges_and_unit_conversion[160-mg/dL-reference2-high]" time="0.163" /><testcase classname="checks.test_final_defects" name="test_f04_document_ranges_and_unit_conversion[5-mmol/L-reference3-low]" time="0.070" /><testcase classname="checks.test_final_defects" name="test_f04_document_ranges_and_unit_conversion[90-mg/dL-reference4-indeterminate]" time="0.106" /><testcase classname="checks.test_final_defects" name="test_f04_patient_and_clinician_edits_preserve_document_range" time="0.026"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:279: in test_f04_patient_and_clinician_edits_preserve_document_range
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f05_clock_injection[2026-11-04-True]" time="0.002" /><testcase classname="checks.test_final_defects" name="test_f05_clock_injection[2026-11-05-True]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f05_clock_injection[2026-11-06-False]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f05_clock_injection[2026-02-30-False]" time="0.002" /><testcase classname="checks.test_final_defects" name="test_f05_clock_injection[20261105-False]" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f05_provider_dates_use_injected_day[collection_date]" time="0.075" /><testcase classname="checks.test_final_defects" name="test_f05_provider_dates_use_injected_day[report_date]" time="0.032" /><testcase classname="checks.test_final_defects" name="test_f05_provider_dates_use_injected_day[panel]" time="0.068" /><testcase classname="checks.test_final_defects" name="test_f05_stored_future_dates_cannot_be_confirmed[collection_date]" time="0.188"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:318: in test_f05_stored_future_dates_cannot_be_confirmed
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f05_stored_future_dates_cannot_be_confirmed[report_date]" time="0.060"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:318: in test_f05_stored_future_dates_cannot_be_confirmed
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f05_stored_future_dates_cannot_be_confirmed[panel]" time="0.081"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:318: in test_f05_stored_future_dates_cannot_be_confirmed
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f05_manual_future_dates_are_422_and_valid_correction_works[collection_date]" time="0.155"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:332: in test_f05_manual_future_dates_are_422_and_valid_correction_works
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f05_manual_future_dates_are_422_and_valid_correction_works[report_date]" time="0.042"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:332: in test_f05_manual_future_dates_are_422_and_valid_correction_works
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f05_worker_records_specific_safe_error" time="0.090"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:347: in test_f05_worker_records_specific_safe_error
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f06_signer_recovers_with_same_export_and_no_duplicate_events" time="0.207"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:359: in test_f06_signer_recovers_with_same_export_and_no_duplicate_events
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_f06_ready_without_url_is_invalid_dto" time="0.003" /><testcase classname="checks.test_final_defects" name="test_f07_concurrent_discards_with_memory_transaction_model" time="0.059"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:387: in test_f07_concurrent_discards_with_memory_transaction_model
+    init, ext = prepared(env, fake_storage, sample_pdf)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_lifecycle.py:20: in prepared
+    init, body, doc = initiate(env, sample_pdf)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+checks\test_processing.py:19: in initiate
+    r = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json=body)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase><testcase classname="checks.test_final_defects" name="test_openapi_error_envelope_matches_actual_422" time="0.782"><failure message="AssertionError: External connections forbidden in F01-F07 checks">checks\test_final_defects.py:410: in test_openapi_error_envelope_matches_actual_422
+    bad = env["client"].post("/api/v1/clinical-tests/uploads/initiate", headers=headers(env), json={})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\.venv\Lib\site-packages\starlette\testclient.py:518: in request
+    return super().request(
+..\..\.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:406: in handle_request
+    portal = stack.enter_context(self.portal_factory())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\starlette\testclient.py:490: in _portal_factory
+    with anyio.from_thread.start_blocking_portal(**self.async_backend) as portal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:655: in start_blocking_portal
+    portal = future.result()
+             ^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+..\..\.venv\Lib\site-packages\anyio\from_thread.py:639: in run_blocking_portal
+    run_eventloop(
+..\..\.venv\Lib\site-packages\anyio\_core\_eventloop.py:83: in run
+    return async_backend.run(func, args, {}, backend_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2620: in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:58: in __enter__
+    self._lazy_init()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py:137: in _lazy_init
+    self._loop = events.new_event_loop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:823: in new_event_loop
+    return get_event_loop_policy().new_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Users\vegal\AppData\Local\Programs\Python\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+checks\test_final_defects.py:33: in deny
+    raise AssertionError("External connections forbidden in F01-F07 checks")
+E   AssertionError: External connections forbidden in F01-F07 checks</failure></testcase></testsuite></testsuites>

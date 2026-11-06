@@ -1,0 +1,968 @@
+{
+  "warning": "Proposal only. No staging performed. Rerun after every change.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/.dockerignore",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/.env.example",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/Dockerfile",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/config.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/database.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/dependencies/auth.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/main.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/models/errors.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/models/extraction.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/models/reporting.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/models/schemas.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/models/scoring.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/routes/clinical_tests.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/routes/extractions.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/associations.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/audit.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/catalog.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/clinical_dates.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/evaluation.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/extractor.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/file_validation.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/references.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/scoring.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/storage.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/transactions.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/upload_metadata.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/services/uploads.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/tenancy.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/workers/__init__.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/app/workers/processing.py",
+      "category": "production"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/conftest.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_edit_review.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_final_defects.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_lifecycle.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_pdf_presentation.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_processing.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_quality_gate.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_scoring.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_security.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/checks/test_security_s01_s02.py",
+      "category": "tests"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docker-compose.test.yml",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docker-compose.yml",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/01_ESTADO_BACKEND.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/02_CORRECCIONES_IMPLEMENTADAS.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/03_CONTRATOS_API_FRONTEND.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/04_SEGURIDAD_BACKEND.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/05_ALMACENAMIENTO_Y_PROCESAMIENTO.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/06_EXTRACCION_MULTIMODAL.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/07_SCORING_Y_REPRODUCIBILIDAD.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/08_PRUEBAS_Y_RESULTADOS.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/09_DESPLIEGUE_Y_CONFIGURACION.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/10_PENDIENTES_Y_BLOQUEOS.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/11_HANDOFF_FRONTEND_CHATGPT.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/12_CIERRE_DEFECTOS_F01_F07.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/13_INTEGRACION_DOCKER_AISLADA.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/14_RESULTADOS_PRUEBAS_INTEGRACION.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/15_CONTRATOS_FRONTEND_ACTUALIZADOS.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/16_PENDIENTES_POST_INTEGRACION.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/17_DEMOSTRACION_FUNCIONAL_PDF.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/18_CUMPLIMIENTO_CINCO_ARCHIVOS_ORIGINALES.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/19_AUDITORIA_VISUAL_PDF.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/20_ESTADO_REAL_BACKEND_Y_ROADMAP.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/21_GUIA_DESARROLLADOR_DOCKER.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/22_CIERRE_SEGURIDAD_ASOCIACIONES_ARCHIVOS.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/23_CIERRE_EDICION_REVISION_CLINICA.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/24_CONSOLIDACION_GIT_Y_HANDOFF.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/25_SANEAMIENTO_SEGURO_PUBLICACION.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/26_CALIDAD_RUFF_Y_GATE_CI.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/27_RESOLUCION_P05_Y_PRECOMMIT.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/28_SINCRONIZACION_GITHUB_Y_CONSOLIDACION_LOCAL.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/29_COMMIT_LOCAL_BACKEND.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/change-manifest.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/dependencies-after.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/dependencies-before.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/application-regressions.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/integration-first.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/integration.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/pdf-regressions-first.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/pdf-regressions.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/runtime.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/sources.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_demo/visual-pages.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/01_suite_antes.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/02_siete_reproducciones_antes.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/03_primer_intento_tests_nuevos.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/04_suite_despues.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/05_historicos_puros_despues.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/06_contrato_openapi_final.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/manifest_final.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_f01_f07/resultados.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/baseline-pointer.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/before.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/change-manifest.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/collection-error.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-at-stop-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/compose-resolved-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/docker-final.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/full-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/git-status-final.txt",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/http-after.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/initial-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/integration-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/integration-attempt1.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/openapi-before.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/openapi-http.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/preservation.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/related-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/review-http-attempt1.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/review-http-mongo.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/runtime-docker.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/security-http-attempt1.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_g03_g06/test-counts.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/application-regressions.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/clamav-first.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/clamav-second.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/clamav-version.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/clamav.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/compose-resolved-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/delivery-manifest.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/frontend-examples.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/historical-matrix.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/historical-matrix.md",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/integration-after-fixes.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/integration-first.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/integration.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/preservation.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/resources.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/restart-probe.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/runtime.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/sha256.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_integracion/summary.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/allowlist.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/compose-validation-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/final-state.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/links.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/negative-control.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/sanitizer-attempt1.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/sanitizer-attempt2.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/sanitizer-tests.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/secret-scan.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_publicacion/validation.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/.gitignore",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/after.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/baseline-pointer.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/before.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/classified-before.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/compose-at-stop-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/compose-validation-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/debt-baseline.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/docker-final.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/final-state.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/full-and-publication-public.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/full-final-public.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/gate-and-publication-public.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/gate.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/http-after.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/integration-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/integration-attempt1.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/policy-before.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/preservation.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/publication-negative-control.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/review-http-attempt1.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/review-http-mongo.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/security-http-attempt1.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/summary.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_ruff/xml-publication.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/before.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/change-manifest.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-at-stop-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/compose-resolved-public.json",
+      "category": "public_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/docker-final.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/focused-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/full-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/git-status-final.txt",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/http-after.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/http-attempt1.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/http-before.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/integration-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/integration-attempt1.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/preservation.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/related-after.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/runtime-docker.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/runtime-local.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/evidencias_s01_s02/test-counts.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/openapi.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/test-results.xml",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/docs/tested-dependencies.json",
+      "category": "documentation_and_reviewed_evidence"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/.gitignore",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Build.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/ClamAV.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Common.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Demo.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/DemoProbes.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/DemoTests.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Dockerfile",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Examples.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Inspect.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/OpenDemo.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Prepare.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Report.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/RestartProbe.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Review.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Security.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Start.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Stop.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/Test.ps1",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/__init__.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/adapters.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/av_checks.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/bootstrap.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/compose.yaml",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/conftest.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/demo.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/edit_review.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/examples.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/functional_probes.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/guard.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/objects.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/prepare.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/provision.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/publication.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/quality_gate.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/render_demo.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/report.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/restart_probe.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/scan_publication.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/security_s01_s02.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/test_publication.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/tests/conftest.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/tests/test_f01_f07_real_db.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/tests/test_historical_ports.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/integration/tests/test_mongo_api.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/pytest.ini",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/requirements-dev.txt",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/requirements.txt",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/ruff.toml",
+      "category": "public_configuration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/scripts/recompute_scoring.py",
+      "category": "scripts_and_integration"
+    },
+    {
+      "path": "wellq-clinical-tests-main/backend/tests/conftest.py",
+      "category": "tests"
+    }
+  ],
+  "excluded_private_originals": [
+    "docs/evidencias_integracion/compose-resolved-redacted.json",
+    "docs/evidencias_s01_s02/compose-resolved-redacted.json",
+    "docs/evidencias_s01_s02/compose-at-stop-redacted.json",
+    "docs/evidencias_g03_g06/compose-resolved-redacted.json",
+    "docs/evidencias_g03_g06/compose-at-stop-redacted.json"
+  ]
+}

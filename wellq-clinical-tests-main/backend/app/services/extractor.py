@@ -1,51 +1,68 @@
+"""Provider-independent extraction boundary. No synthetic production output."""
 import copy
-import logging
 import uuid
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Protocol, Literal
 from pymongo.database import Database
-
-from app.database import get_database
+from pydantic import BaseModel, ConfigDict, Field
+from app.config import settings
+from app.models.extraction import MarkerStatus, ConfidenceScores, ReferenceRange
 from app.services.catalog import catalog_service
-from app.models.extraction import ExtractionStatus, DocumentType, MarkerStatus
+from app.services.storage import storage_service
+from app.services.references import canonical_document_reference, reference_status
+from app.services.clinical_dates import validate_extraction_dates
 
-logger = logging.getLogger(__name__)
+class ExtractionUnavailable(RuntimeError):
+    pass
 
-# §3.3.2: documentos que v1 no extrae (carta clínica, informe de alta). Se guardan y se descargan.
-# Placeholder determinista de la clasificación del §5.2.3 mientras no haya un clasificador real.
-NOT_APPLICABLE_KEYWORDS = (
-    "carta clínica", "carta clinica", "carta médica", "carta medica",
-    "informe de alta", "alta hospitalaria", "epicrisis",
-)
-NOT_APPLICABLE_MESSAGE = (
-    "Este tipo de documento (carta clínica o informe de alta) no se analiza automáticamente en esta versión. "
-    "El archivo queda guardado y puedes descargarlo cuando quieras."
-)
+class ProviderConfidence(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    value: float = Field(ge=0, le=1)
+    unit: float = Field(ge=0, le=1)
+    reference: float = Field(ge=0, le=1)
+    name: float = Field(ge=0, le=1)
 
-# Banderas que genera un marcador que no supera la validación determinista (§5.2.5)
-_FLAG_BY_ERROR = {
-    "UNIT_NOT_SUPPORTED": "unit_unknown",
-    "UNKNOWN_MARKER": "unmapped_marker",
-    "VALUE_IMPLAUSIBLE": "value_implausible",
-}
+class ProviderMarker(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    marker_code: str
+    raw_name: str = Field(min_length=1)
+    value_raw: str = Field(min_length=1)
+    unit_raw: str = Field(min_length=1)
+    confidence: ProviderConfidence
+    reference: Optional[ReferenceRange] = None
+    page: int = Field(ge=1)
+    evidence: str = Field(min_length=1, max_length=4000)
 
+class ProviderPanel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    panel_code: str
+    panel_name_raw: str
+    specimen: str
+    collection_date: Optional[str] = None
+    markers: list[ProviderMarker] = Field(max_length=1000)
+
+class ProviderOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal["1.0"]
+    document_type: Literal["blood_panel", "urine_panel", "imaging_report", "other", "unreadable"]
+    language: str
+    page_count: int = Field(ge=1)
+    collection_date: Optional[str] = None
+    report_date: Optional[str] = None
+    panels: list[ProviderPanel] = Field(max_length=30)
+
+class MultimodalProvider(Protocol):
+    model_id: str
+    model_version: str
+    is_test: bool
+    def extract(self, data: bytes, mime_type: str) -> dict: ...
 
 class ExtractionEngine:
-    def __init__(self):
-        self.prompt_version = "extract-v1.3"
-        self.catalog_version = "cat-2026.08"
-        self.model_id = "gemini-1.5-pro"
+    def __init__(self, provider: Optional[MultimodalProvider] = None):
+        self.provider = provider
+        self.prompt_version = "extract-v2.0"
+        self.catalog_version = catalog_service.version
 
-    # ------------------------------------------------------------------ clasificación
-    def classify_document(self, doc: Dict[str, Any]) -> Optional[str]:
-        """Devuelve el motivo si el documento no es aplicable a extracción en v1; None si sí lo es."""
-        title = (doc.get("title") or "").lower()
-        for keyword in NOT_APPLICABLE_KEYWORDS:
-            if keyword in title:
-                return "clinical_letter"
-        return None
-
-    # ------------------------------------------------------------------ normalización de un marcador
     def build_marker(self, m_code: str, raw_name: str, v_raw: str, u_raw: str, conf: float,
                      db: Optional[Database], line_no: int) -> Dict[str, Any]:
         """Normaliza un marcador. Si la validación determinista falla NO se descarta (§5.2.5, §5.5.2):
@@ -104,199 +121,93 @@ class ExtractionEngine:
             "original_value_canonical": None,
         }
 
-    # ------------------------------------------------------------------ pipeline
-    def run_extraction_pipeline(self, clinical_test_id: str, db: Database) -> Dict[str, Any]:
-        """
-        Ejecuta el pipeline de extracción sobre un examen clínico:
-        1. Lee metadatos del examen en MongoDB.
-        2. Clasifica el documento (§5.2.3): si no es aplicable => estado not_applicable.
-        3. Ejecuta extracción multimodal (o mock inteligente si no hay API key externa).
-        4. Realiza validación determinista y normalización con el catálogo canónico.
-        5. Persiste la propuesta (bloque `proposal` inmutable) en clinical_test_extractions.
-        6. Actualiza clinical_tests.extraction.
-        """
-        logger.info(f"Iniciando extracción para clinical_test_id={clinical_test_id}...")
+    def classify_document(self, doc):
+        # Classification requires document content and a configured provider.
+        raise ExtractionUnavailable("Content classification provider required")
 
-        doc = db.clinical_tests.find_one({"clinical_test_id": clinical_test_id})
-        if not doc:
-            raise ValueError(f"Examen clínico {clinical_test_id} no encontrado")
-
-        extraction_id = f"cte_{uuid.uuid4().hex[:12]}"
+    def run_extraction_pipeline(self, clinical_test_id, db, as_of=None):
+        provider = self.provider
+        if provider is None or not settings.AI_PROVIDER_APPROVED:
+            raise ExtractionUnavailable("Approved multimodal provider required")
+        if provider.is_test and settings.ENVIRONMENT != "test":
+            raise ExtractionUnavailable("Test provider forbidden outside isolated tests")
+        doc = db.clinical_tests.find_one({"clinical_test_id": clinical_test_id, "deleted_at": None})
+        if not doc or not doc.get("file", {}).get("verified_at") or doc["upload"]["status"] != "ready_for_review":
+            raise ExtractionUnavailable("Verified document required")
+        if not doc.get("ai_consent"):
+            raise ExtractionUnavailable("Patient AI consent required")
+        data, mime, generation = storage_service.read_object(doc["file"]["gcs_object_key"], doc["file"]["generation"])
+        if generation != doc["file"]["generation"]:
+            raise ExtractionUnavailable("Document generation changed")
+        # Native PDF input is deliberate; any provider requiring rasterization must
+        # supply a bounded implementation before deployment. HEIC is converted here.
+        if mime == "image/heic":
+            import io
+            from PIL import Image
+            from pillow_heif import register_heif_opener
+            register_heif_opener()
+            image = Image.open(io.BytesIO(data)); output = io.BytesIO()
+            image.convert("RGB").save(output, format="JPEG"); data = output.getvalue(); mime = "image/jpeg"
+        provider_output = provider.extract(data, mime)
+        result = ProviderOutput.model_validate(provider_output)
+        if result.page_count > settings.MAX_DOCUMENT_PAGES:
+            raise ValueError("Page limit")
+        validate_extraction_dates(result.model_dump(), [p.model_dump() for p in result.panels], as_of)
+        panels, flags, seen = [], [], set()
+        for panel in result.panels:
+            markers = []
+            for m in panel.markers:
+                if m.marker_code in seen or m.page > result.page_count:
+                    raise ValueError("Duplicate marker or invalid provenance")
+                seen.add(m.marker_code)
+                marker = self.build_marker(m.marker_code, m.raw_name, m.value_raw, m.unit_raw,
+                                           m.confidence.value, db, len(markers) + 1)
+                if m.reference is not None:
+                    try:
+                        marker["reference"] = canonical_document_reference(
+                            m.reference.model_dump(exclude_none=True), m.unit_raw,
+                            marker.get("unit_canonical"), marker.get("conversion_factor", 1.0))
+                    except ValueError:
+                        marker["reference"] = {"source": "none"}
+                        flags.append({"code": "reference_unit_unknown", "marker_code": m.marker_code})
+                marker["status"] = reference_status(marker.get("value_canonical"),
+                    catalog_service.get_marker(m.marker_code) or {}, marker.get("reference"))
+                declared = m.confidence.model_dump()
+                marker["provider_confidence"] = declared
+                marker["confidence"] = (declared.copy() if marker["validation"]["passed"]
+                                        else dict.fromkeys(declared, 0.0))
+                if (marker.get("reference") or {}).get("source") == "none":
+                    marker["confidence"]["reference"] = 0.0
+                marker["provenance"] = {"page": m.page, "evidence": m.evidence}
+                if min(marker["confidence"].values()) < 0.9:
+                    flags.append({"code": "low_confidence", "marker_code": m.marker_code})
+                if not marker["validation"]["passed"]:
+                    flags.append({"code": marker["validation"]["errors"][0], "marker_code": m.marker_code})
+                markers.append(marker)
+            panels.append({**panel.model_dump(exclude={"markers"}), "collection_date": panel.collection_date or result.collection_date,
+                           "markers": markers})
+        # No trusted patient name registry is available: never fabricate a match.
+        flags.append({"code": "identity_unverified"})
         now = datetime.utcnow()
-        collection_date = doc.get("test_date", now.strftime("%Y-%m-%d"))
-
-        extraction_meta = {
-            "model_id": self.model_id,
-            "model_version": "2026-07-15",
-            "prompt_version": self.prompt_version,
-            "catalog_version": self.catalog_version,
-            "extracted_at": now,
-            "duration_ms": 1250,
-            "overall_confidence": 0.97,
-        }
-
-        # --- Clasificación: documentos que v1 no extrae
-        reason = self.classify_document(doc)
-        if reason:
-            extraction_doc = {
-                "schema_version": "1.0",
-                "clinical_test_id": clinical_test_id,
-                "extraction_id": extraction_id,
-                "patient_id": doc["patient_id"],
-                "status": ExtractionStatus.NOT_APPLICABLE.value,
-                "document": {
-                    "document_type": DocumentType.OTHER.value,
-                    "description": NOT_APPLICABLE_MESSAGE,
-                    "language": "es",
-                    "page_count": 1,
-                    "collection_date": collection_date,
-                    "report_date": now.strftime("%Y-%m-%d"),
-                },
-                "panels": [],
-                "flags": [{"code": "not_applicable", "reason": reason, "message": NOT_APPLICABLE_MESSAGE}],
-                "extraction_meta": {**extraction_meta, "classification": reason},
-                "confirmation": {"status": "not_applicable"},
-                "created_at": now,
-                "updated_at": now,
-                "superseded_at": None,
-            }
-            return self._persist(extraction_doc, doc, db, now,
-                                 ExtractionStatus.NOT_APPLICABLE, DocumentType.OTHER, marker_count=0, unmapped_count=0)
-
-        # --- Determinar marcadores a extraer según el tipo de examen o título
-        title_lower = doc.get("title", "").lower()
-
-        if "lipid" in title_lower or "colesterol" in title_lower:
-            raw_markers = [
-                ("cholesterol_total", "Colesterol Total", "212", "mg/dL", 0.98),
-                ("ldl_cholesterol", "Colesterol LDL", "138", "mg/dL", 0.97),
-                ("hdl_cholesterol", "Colesterol HDL", "48", "mg/dL", 0.96),
-                ("triglycerides", "Triglicéridos", "165", "mg/dL", 0.95),
-            ]
-            panel_name = "PERFIL LIPÍDICO"
-            panel_code = "lipid_profile"
-            desc = "Perfil lipídico: colesterol total, LDL, HDL y triglicéridos."
-        else:
-            raw_markers = [
-                ("hemoglobin", "Hemoglobina", "14.2", "g/dL", 0.99),
-                ("glucose", "Glucosa", "92", "mg/dL", 0.98),
-                ("creatinine", "Creatinina", "0.95", "mg/dL", 0.97),
-                ("vitamin_d", "Vitamina D 25-OH", "32.5", "ng/mL", 0.95),
-            ]
-            panel_name = "ANALÍTICA GENERAL"
-            panel_code = "general_metabolic"
-            desc = f"Analítica clínica general: hemoglobina, glucosa, función renal y vitamina D ({doc.get('title')})."
-
-        # Procesar y normalizar marcadores contra el catálogo canónico (los inválidos se conservan con bandera)
-        processed_markers = []
-        flags = []
-        for m_code, raw_name, v_raw, u_raw, conf in raw_markers:
-            marker = self.build_marker(m_code, raw_name, v_raw, u_raw, conf, db, len(processed_markers) + 1)
-            processed_markers.append(marker)
-            if not marker["validation"]["passed"]:
-                error_code = marker["validation"]["errors"][0]
-                flags.append({
-                    "code": _FLAG_BY_ERROR.get(error_code, "value_invalid"),
-                    "marker_code": m_code,
-                    "message": f"{raw_name}: no se pudo normalizar ({error_code}); se muestra con su valor literal y no se puntúa",
-                })
-
-        unmapped_count = sum(1 for m in processed_markers if m["mapping_status"] == "unmapped")
-
-        # Construir documento de extracción canónico
-        extraction_doc = {
-            "schema_version": "1.0",
-            "clinical_test_id": clinical_test_id,
-            "extraction_id": extraction_id,
-            "patient_id": doc["patient_id"],
-            "status": ExtractionStatus.AWAITING_CONFIRMATION.value,
-            "document": {
-                "document_type": DocumentType.BLOOD_PANEL.value,
-                "description": desc,
-                "language": "es",
-                "page_count": 1,
-                "issuer": {
-                    "laboratory_name": "Laboratorio de Referencia WellQ",
-                    "clinician_name": "Dr. Sistema",
-                    "reference_number": f"LAB-{uuid.uuid4().hex[:6].upper()}",
-                },
-                "patient_stated": {
-                    "name": "Paciente WellQ",
-                    "identity_match": "match",
-                },
-                "collection_date": collection_date,
-                "report_date": now.strftime("%Y-%m-%d"),
-            },
-            "panels": [
-                {
-                    "panel_code": panel_code,
-                    "panel_name_raw": panel_name,
-                    "specimen": "blood",
-                    "collection_date": collection_date,
-                    "fasting": True,
-                    "markers": processed_markers,
-                }
-            ],
-            "flags": flags,
-            "extraction_meta": extraction_meta,
-            "confirmation": {
-                "status": "awaiting_confirmation",
-                "confirmed_by": None,
-                "confirmed_at": None,
-                "validated_by": None,
-                "validated_at": None,
-                "edit_count": 0,
-            },
-            "created_at": now,
-            "updated_at": now,
-            "superseded_at": None,
-        }
-
-        return self._persist(extraction_doc, doc, db, now,
-                             ExtractionStatus.AWAITING_CONFIRMATION, DocumentType.BLOOD_PANEL,
-                             marker_count=len(processed_markers), unmapped_count=unmapped_count)
-
-    # ------------------------------------------------------------------ persistencia
-    def _persist(self, extraction_doc: Dict[str, Any], test_doc: Dict[str, Any], db: Database, now: datetime,
-                 status: ExtractionStatus, doc_type: DocumentType, marker_count: int, unmapped_count: int) -> Dict[str, Any]:
-        clinical_test_id = extraction_doc["clinical_test_id"]
-
-        # §7.3: la propuesta del modelo se guarda como bloque inmutable, antes de cualquier edición
-        extraction_doc["proposal"] = copy.deepcopy({
-            "document": extraction_doc["document"],
-            "panels": extraction_doc["panels"],
-            "flags": extraction_doc["flags"],
-        })
-
-        # Guardar en clinical_test_extractions
-        db.clinical_test_extractions.insert_one(extraction_doc)
-
-        # Actualizar clinical_tests
-        db.clinical_tests.update_one(
-            {"clinical_test_id": clinical_test_id},
-            {
-                "$set": {
-                    "extraction": {
-                        "status": status.value,
-                        "extraction_id": extraction_doc["extraction_id"],
-                        "attempts": 1,
-                        "document_type": doc_type.value,
-                        "marker_count": marker_count,
-                        "unmapped_count": unmapped_count,
-                        "edit_count": 0,
-                        "confirmed_at": None,
-                        "confirmed_by": None,
-                        "validated_at": None,
-                        "validated_by": None,
-                        "last_error": None,
-                    },
-                    "upload.status": "ready_for_review",
-                    "updated_at": now,
-                }
-            }
-        )
-
-        logger.info(f"✅ Extracción completada para {clinical_test_id}: estado {status.value}, {marker_count} marcadores.")
-        return extraction_doc
+        state = ("unreadable" if result.document_type == "unreadable" else
+                 "not_applicable" if result.document_type == "other" else "awaiting_confirmation")
+        if state == "awaiting_confirmation" and not seen:
+            raise ValueError("Incomplete extraction")
+        extraction = {"schema_version": "1.0", "clinical_test_id": clinical_test_id,
+            "extraction_id": "cte_" + uuid.uuid4().hex, "patient_id": doc["patient_id"], "status": state,
+            "document": {"document_type": result.document_type, "language": result.language,
+                         "page_count": result.page_count, "collection_date": result.collection_date,
+                         "report_date": result.report_date},
+            "panels": panels, "flags": flags,
+            "extraction_meta": {"model_id": provider.model_id, "model_version": provider.model_version,
+                "prompt_version": self.prompt_version, "catalog_version": self.catalog_version,
+                "extracted_at": now, "source_generation": generation, "test_only": provider.is_test},
+            "confirmation": {"status": state}, "created_at": now, "updated_at": now, "superseded_at": None}
+        extraction["proposal"] = copy.deepcopy({k: extraction[k] for k in ("document", "panels", "flags")})
+        extraction["proposal"]["provider_output"] = copy.deepcopy(provider_output)
+        db.clinical_test_extractions.insert_one(extraction)
+        db.clinical_tests.update_one({"clinical_test_id": clinical_test_id, "deleted_at": None},
+            {"$set": {"extraction.extraction_id": extraction["extraction_id"], "extraction.status": state, "updated_at": now}})
+        return extraction
 
 extraction_engine = ExtractionEngine()

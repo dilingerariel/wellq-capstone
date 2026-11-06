@@ -1,0 +1,212 @@
+[
+  {
+    "original": "tests/test_clinician_access.py:79::test_clinician_without_relationship_gets_403_everywhere_and_is_audited",
+    "integration": "test_clinician_without_relationship_gets_403_everywhere_and_is_audited",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_clinician_access.py:112::test_clinicians_with_relationship_have_access",
+    "integration": "test_clinicians_with_relationship_have_access",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_clinician_correction.py:70::test_clinician_correction_reaches_series_and_report",
+    "integration": "test_clinician_correction_reaches_series_and_report",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_clinician_validation.py:87::test_invalid_corrections_are_rejected_and_nothing_changes",
+    "integration": "test_invalid_corrections_are_rejected_and_nothing_changes",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_clinician_validation.py:139::test_correction_is_reflected_in_extraction_panels",
+    "integration": "test_correction_is_reflected_in_extraction_panels",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_clinician_validation.py:170::test_clinical_rejection_does_not_fail_and_invalidates_markers",
+    "integration": "test_clinical_rejection_does_not_fail_and_invalidates_markers",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_clinician_validation.py:190::test_validation_without_corrections_does_not_recompute_score",
+    "integration": "test_validation_without_corrections_does_not_recompute_score",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_flow.py:39::test_complete_extraction_and_confirmation_flow",
+    "integration": "test_complete_extraction_and_confirmation_flow",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_proposal.py:70::test_proposal_block_is_immutable",
+    "integration": "test_proposal_block_is_immutable",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_proposal.py:107::test_reprocess_creates_a_new_proposal_and_keeps_the_old_one",
+    "integration": "test_reprocess_creates_a_new_proposal_and_keeps_the_old_one",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_proposal.py:126::test_clinical_letter_is_not_applicable_but_downloadable",
+    "integration": "test_clinical_letter_is_not_applicable_but_downloadable",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_rules.py:80::test_get_extraction_rules",
+    "integration": "test_get_extraction_rules",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_rules.py:112::test_confirm_rules_state_idempotency_and_summary",
+    "integration": "test_confirm_rules_state_idempotency_and_summary",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_rules.py:146::test_value_implausible_is_rejected",
+    "integration": "test_value_implausible_is_rejected",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_rules.py:160::test_reprocess_rules",
+    "integration": "test_reprocess_rules",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_extraction_rules.py:200::test_reprocess_limit_per_exam",
+    "integration": "test_reprocess_limit_per_exam",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_full_lifecycle.py:42::test_endpoints_5_to_11_lifecycle",
+    "integration": "test_endpoints_5_to_11_lifecycle",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_lab_report.py:76::test_lab_report_endpoint_19",
+    "integration": "test_lab_report_endpoint_19",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_lab_report.py:145::test_lab_report_validation_and_empty",
+    "integration": "test_lab_report_validation_and_empty",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_lab_report_export.py:77::test_export_lab_report_endpoint_20",
+    "integration": "test_export_lab_report_endpoint_20",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_lab_report_export.py:132::test_export_lab_report_validation",
+    "integration": "test_export_lab_report_validation",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_markers_series.py:72::test_marker_series_endpoint_17",
+    "integration": "test_marker_series_endpoint_17",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_markers_series.py:106::test_marker_series_validation",
+    "integration": "test_marker_series_validation",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_recompute_batch.py:38::test_bulk_recompute_dry_run_vs_apply",
+    "integration": "test_bulk_recompute_dry_run_vs_apply",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_scoring_flow.py:82::test_full_scoring_flow_and_endpoint_18",
+    "integration": "test_full_scoring_flow_and_endpoint_18",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_scoring_flow.py:212::test_lab_score_no_score_available",
+    "integration": "test_lab_score_no_score_available",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_scoring_reproducibility.py:106::test_same_input_gives_same_output",
+    "integration": "test_same_input_gives_same_output",
+    "result": "PASS",
+    "infrastructure": "original pure function; no Mongo/HTTP",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_scoring_reproducibility.py:113::test_subscore_is_always_between_0_and_100",
+    "integration": "test_subscore_is_always_between_0_and_100",
+    "result": "PASS",
+    "infrastructure": "original pure function; no Mongo/HTTP",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_scoring_reproducibility.py:136::test_recomputing_with_the_same_inputs_gives_the_same_score",
+    "integration": "test_recomputing_with_the_same_inputs_gives_the_same_score",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  },
+  {
+    "original": "tests/test_upload_flow.py:23::test_full_upload_flow",
+    "integration": "test_full_upload_flow",
+    "result": "PASS",
+    "infrastructure": "real Mongo + HTTP + workers; explicit object/AI/scanner doubles",
+    "real_gcs_or_external_ai": "not certified"
+  }
+]

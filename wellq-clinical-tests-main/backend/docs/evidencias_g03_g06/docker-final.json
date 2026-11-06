@@ -1,0 +1,460 @@
+{
+  "legacy_metadata_only": [
+    {
+      "created": "2026-10-06T04:49:12.806610268Z",
+      "name": "wellq-api",
+      "id": "9d0114f23ab9ccc5b42ca756e4f82159d092300b908d7590693199943ded1adb",
+      "state": "running",
+      "started_at": "2026-11-05T13:32:36.758108955Z"
+    },
+    {
+      "created": "2026-10-06T00:22:20.601149796Z",
+      "name": "wellq-mongodb",
+      "id": "5a093258a33323e063ba7c7ad20c0e20a410d13688d94d6b84bf4f825305120d",
+      "state": "running",
+      "started_at": "2026-11-05T13:32:35.096322049Z"
+    }
+  ],
+  "project": "wellq-int-39706292db88",
+  "containers": [
+    {
+      "mounts": [
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/demo-output"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/evidence"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/historical-reference.py"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/private.pem"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "1cd2e2a0d844416d5f15420860fa1ab0de65d1a06f4dd2316254aaa288ea552b",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T23:08:51.584671475Z",
+      "name": "wellq-int-39706292db88-review-54bf77f0",
+      "service": "runner-int",
+      "state": "exited",
+      "exit_code": 0
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "48e3e4bd1e78e273110430e272410085c07de907688eb9f8eebe9831d19f59fb",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T23:08:32.602353165Z",
+      "name": "wellq-int-39706292db88-objects-int-1",
+      "service": "objects-int",
+      "state": "exited",
+      "exit_code": 137
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "a34a849f665659a56cf2fbca249e323edc114a67e95499e51a651548e71b4cd6",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T23:08:32.585749533Z",
+      "name": "wellq-int-39706292db88-worker-int-1",
+      "service": "worker-int",
+      "state": "exited",
+      "exit_code": 137
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "690d8608a38a892cd93e496d3c746965d30b5f069f09529c820e8585427cf506",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T23:08:32.352494247Z",
+      "name": "wellq-int-39706292db88-worker-int-2",
+      "service": "worker-int",
+      "state": "exited",
+      "exit_code": 137
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "14e05b31ff497a67eec051a80f72ae5dbae5232619ce480c8434673a3c54b0d7",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T23:08:32.33265697Z",
+      "name": "wellq-int-39706292db88-api-int-1",
+      "service": "api-int",
+      "state": "exited",
+      "exit_code": 137
+    },
+    {
+      "mounts": [
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/demo-output"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/evidence"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/historical-reference.py"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/private.pem"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "edcceef3de41e359475982dfa5b896f883e33bb3b56c45527bbc466d1a763e41",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T23:05:33.378700591Z",
+      "name": "wellq-int-39706292db88-review-9b4bc44d",
+      "service": "runner-int",
+      "state": "exited",
+      "exit_code": 1
+    },
+    {
+      "mounts": [
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/demo-output"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/evidence"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/historical-reference.py"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/private.pem"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "9e17e4541c59426213366cf1a945f8d7c2821314167b99236cb329dfd02c828c",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T22:17:24.73746671Z",
+      "name": "wellq-int-39706292db88-security-19961f81",
+      "service": "runner-int",
+      "state": "exited",
+      "exit_code": 0
+    },
+    {
+      "mounts": [
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/demo-output"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/evidence"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/historical-reference.py"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/private.pem"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "beab8a997f06d2bfb5da54c539992f041b46ef5ede908297ec9251a5a0ce10b2",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T22:15:02.128359335Z",
+      "name": "wellq-int-39706292db88-security-befb203f",
+      "service": "runner-int",
+      "state": "exited",
+      "exit_code": 1
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "fe5b580d83017a5d8a2c0707e95b9743cbd367de6cd92d21faa37a111916385f",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T22:07:48.594101015Z",
+      "name": "wellq-int-39706292db88-provision-int-attempt-fe5b580d8301",
+      "service": "provision-int",
+      "state": "created",
+      "exit_code": 0
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-key",
+          "Destination": "/mongo-key"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        }
+      ],
+      "id": "bd1eff1c0c5163e92658ec340011d7ebbfb11629539de9304baf84e552fa132e",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T22:07:48.484374912Z",
+      "name": "wellq-int-39706292db88-setup-int-attempt-bd1eff1c0c51",
+      "service": "setup-int",
+      "state": "created",
+      "exit_code": 0
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/gateway.key"
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/identity/public.pem"
+        }
+      ],
+      "id": "e9840424068ed9f0c11fa991a0c5d2d1cce73c4c8019238671e25a456e8f4ad8",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T16:23:14.736528328Z",
+      "name": "wellq-int-39706292db88-provision-int-1",
+      "service": "provision-int",
+      "state": "exited",
+      "exit_code": 0
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-key",
+          "Destination": "/mongo-key"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-synthetic-store",
+          "Destination": "/synthetic-store"
+        }
+      ],
+      "id": "dedecf14479bd9c267eb1eb473b05d47b34dcbb7d4d4e3e29a7e419bff6c506c",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T16:23:14.644276782Z",
+      "name": "wellq-int-39706292db88-setup-int-1",
+      "service": "setup-int",
+      "state": "exited",
+      "exit_code": 0
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-clam-signatures",
+          "Destination": "/var/lib/clamav"
+        }
+      ],
+      "id": "fb26d90e92b67317daddbda1b1dd43187b0b37beb80d46e61f8d2a05953179f2",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T15:24:32.285198283Z",
+      "name": "wellq-int-39706292db88-clamav-int-1",
+      "service": "clamav-int",
+      "state": "exited",
+      "exit_code": 143
+    },
+    {
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-key",
+          "Destination": "/mongo-key"
+        },
+        {
+          "Type": "volume",
+          "Name": "8c742a378c34b7b8d385fbc689d4422de3e073a1bef03403c1884bdb7c37b679",
+          "Destination": "/data/configdb"
+        },
+        {
+          "Type": "volume",
+          "Name": "wellq-int-39706292db88-mongo-data",
+          "Destination": "/data/db"
+        }
+      ],
+      "id": "f2c8b765d7c0b986cbcd785862dad203a9ede883c765c2480ea72e9ab2664594",
+      "project": "wellq-int-39706292db88",
+      "ports": {},
+      "created": "2026-11-05T14:59:44.808650376Z",
+      "name": "wellq-int-39706292db88-mongo-int-1",
+      "service": "mongo-int",
+      "state": "exited",
+      "exit_code": 0
+    }
+  ],
+  "legacy_identity_and_start_unchanged_from_phase1": true
+}

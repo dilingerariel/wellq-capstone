@@ -1,0 +1,20 @@
+{
+  "application-regressions.xml": "8dd7b33bec9067b89afead1ca6e7cca3fa8471ba7af0f317e717084ce088beaf",
+  "clamav-first.xml": "cb9226f52ca196c88cf69739439acf77e7ae66fd13181fc9af905fe9f5c3a49f",
+  "clamav-second.xml": "a6b48ce6ae2db36732e01b5b7e6e3516297eef9b1271e9a7bedc941aee3bf3d4",
+  "clamav-version.json": "9da32f1ecf5556d3b246fded984f25978d5660e1a680deedb944790db2703531",
+  "clamav.xml": "2ed69e10194efb3f485b12037a5f929714b74e67d10434c04ff89d5f21e805ed",
+  "compose-resolved-redacted.json": "f1abbe4946bfcd28a5335d789539708a87f2660c6c4958be740318931c2b09d2",
+  "delivery-manifest.json": "42c692d4375fc2407973e8e73a1958284e3f680846fadbf09739eb860a2cef4d",
+  "frontend-examples.json": "4d74e9419cbefefe89cc8112ef5a3a86b3c0cedd8582c43b33ceebc0d48a63ab",
+  "historical-matrix.json": "2f0c0769bc00539afb502c331410664d9ea25c69057dc2f73eaf93c7f7011adf",
+  "historical-matrix.md": "9525328bd96f89109267e941dbec7313b4ba5ba0a81130948cb57e220c6329af",
+  "integration-after-fixes.xml": "42af32386a118c2ced62526e61152bf647b3dd2effbb8c7bb42eb040d4fbbcfd",
+  "integration-first.xml": "8d38bed97697e48cb087a4837a1aaaa9906c13eb279db3aab5a64b04346b9467",
+  "integration.xml": "2e022f250b29fc78f6b307e1682dead75a2486a71be4a4d4fee34acac61be20a",
+  "preservation.json": "18727bff81dbf6469dd0c3fdf862eb7e47f0c2075d77e2e7924e2d8d5de50958",
+  "resources.json": "88a4f013281e8f8c5d37bb965ff88137472feeb240e604c037ab944bcc8bc864",
+  "restart-probe.json": "4c0537ea24edcfd1810b96beabc0878f2f6afaf69c2eeec30119b033824a6544",
+  "runtime.json": "455b8dd14632dad1e3f87390126306ecb25d0f302427ccef22c2f43636fa0b61",
+  "summary.json": "6c84cb3ed741a2755738f4a5831cb75f66e99bde788989bb9d7e7b05e3ad8959"
+}

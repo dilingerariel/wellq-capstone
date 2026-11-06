@@ -1,0 +1,467 @@
+[
+  {
+    "case": "case_id:valid",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_e6717ca5808b4f0bb7c360ef8e5989a5",
+      "clinical_test_id": "ct_e6717ca5808b4f0bb7c360ef8e5989a5",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:15.137111+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "appointment_id:valid",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_4faee609492a4dad846117a14ae5473d",
+      "clinical_test_id": "ct_4faee609492a4dad846117a14ae5473d",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:15.550301+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "case_id:patient",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:patient",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "case_id:tenant",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:tenant",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "case_id:missing",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:missing",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "case_id:unauthorized",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:unauthorized",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "case_id:inactive",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:inactive",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "case_id:relationship",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:relationship",
+    "status": 403,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_NOT_OWNED",
+        "message": "Association unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "case_id:unavailable",
+    "status": 503,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_VERIFIER_UNAVAILABLE",
+        "message": "Association verification unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "appointment_id:unavailable",
+    "status": 503,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_VERIFIER_UNAVAILABLE",
+        "message": "Association verification unavailable"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "valid.pdf",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_bc80aaae14ef435db46ac6eb8ca35bc3",
+      "clinical_test_id": "ct_bc80aaae14ef435db46ac6eb8ca35bc3",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:17.839423+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "valid.jpeg",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_f62368f26fda498f82da16501f46a78a",
+      "clinical_test_id": "ct_f62368f26fda498f82da16501f46a78a",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "image/jpeg",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:18.016962+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "valid.jpg",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_23e6b925b71c421b8012f4102f3e4dec",
+      "clinical_test_id": "ct_23e6b925b71c421b8012f4102f3e4dec",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "image/jpeg",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:18.169664+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "valid.png",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_b2907974f01a45eb96d9c8d300a8779e",
+      "clinical_test_id": "ct_b2907974f01a45eb96d9c8d300a8779e",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "image/png",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:18.329807+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "valid.heic",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_f4214c5a4c464ad585c5e7baef753822",
+      "clinical_test_id": "ct_f4214c5a4c464ad585c5e7baef753822",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "image/heic",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:18.495261+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "VALID.PDF",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_4c2679707abf4118ada004f660bdfbc2",
+      "clinical_test_id": "ct_4c2679707abf4118ada004f660bdfbc2",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:18.644536+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "an\u00e1lisis.2026.pdf",
+    "status": 201,
+    "response": {
+      "upload_id": "ctu_19cd774aa928425bb5973b40d6c42bff",
+      "clinical_test_id": "ct_19cd774aa928425bb5973b40d6c42bff",
+      "status": "initiated",
+      "upload": {
+        "method": "PUT",
+        "signed_url": "<redacted signed TEST gateway URL; not GCS>",
+        "required_headers": {
+          "Content-Type": "application/pdf",
+          "x-goog-if-generation-match": "0"
+        },
+        "expires_at": "2026-11-06T00:29:18.818780+00:00"
+      }
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "report.exe",
+    "status": 422,
+    "response": {
+      "detail": {
+        "code": "INVALID_INPUT",
+        "message": "Invalid request",
+        "errors": [
+          {
+            "loc": [
+              "body",
+              "file_name"
+            ],
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "report.exe.pdf",
+    "status": 422,
+    "response": {
+      "detail": {
+        "code": "INVALID_INPUT",
+        "message": "Invalid request",
+        "errors": [
+          {
+            "loc": [
+              "body",
+              "file_name"
+            ],
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "../report.pdf",
+    "status": 422,
+    "response": {
+      "detail": {
+        "code": "INVALID_INPUT",
+        "message": "Invalid request",
+        "errors": [
+          {
+            "loc": [
+              "body",
+              "file_name"
+            ],
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "report.png",
+    "status": 422,
+    "response": {
+      "detail": {
+        "code": "INVALID_METADATA",
+        "message": "File extension and MIME disagree"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "report.pdf",
+    "status": 422,
+    "response": {
+      "detail": {
+        "code": "INVALID_METADATA",
+        "message": "File extension and MIME disagree"
+      }
+    },
+    "persisted_records": 0
+  },
+  {
+    "case": "declared-pdf-with-invalid-bytes",
+    "status": 200,
+    "response": {
+      "clinical_test_id": "ct_02c6ba0745c44f51ac2902dc6a186be2",
+      "upload_id": "ctu_02c6ba0745c44f51ac2902dc6a186be2",
+      "status": "rejected",
+      "processing": {
+        "malware_scan": "pending",
+        "mime_validation": "pending"
+      },
+      "local_file_can_be_deleted": false,
+      "error": {
+        "code": "FILE_REJECTED"
+      },
+      "completed_at": null
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "patch-verified-association",
+    "status": 200,
+    "response": {
+      "clinical_test_id": "ct_be391480836c4ae29e779c69840ca492",
+      "patient_id": "patient-c2db0441725f4d5c8aa395866f1e65ee",
+      "title": "SYNTHETIC SECURITY TEST",
+      "test_type": "blood_test",
+      "test_date": "2026-11-06",
+      "notes": null,
+      "case_id": "b949b72cd853457e9666525c55c5d386",
+      "appointment_id": null,
+      "file": {
+        "name": "synthetic.pdf",
+        "mime_type": "application/pdf",
+        "size_bytes": 10
+      },
+      "status": "initiated",
+      "review": {
+        "status": "not_reviewed",
+        "reviewed_at": null,
+        "reviewed_by": null
+      },
+      "created_at": "2026-11-06T00:14:20Z",
+      "updated_at": "2026-11-06T00:14:21Z"
+    },
+    "persisted_records": 1
+  },
+  {
+    "case": "refresh-verifier-unavailable",
+    "status": 503,
+    "response": {
+      "detail": {
+        "code": "ASSOCIATION_VERIFIER_UNAVAILABLE",
+        "message": "Association verification unavailable"
+      }
+    },
+    "persisted_records": 1
+  }
+]
