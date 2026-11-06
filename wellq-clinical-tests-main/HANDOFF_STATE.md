@@ -102,7 +102,8 @@ Las 16 suites corren contra el backend en Docker (`wellq-api`) y pasan al 100%:
 
 **Comando de verificación:**
 ```powershell
-docker exec -e WELLQ_ALLOW_ANY_DB=1 -e WELLQ_TEST_DB=wellq_clinical -e WELLQ_TEST_MONGO_URI=mongodb://root:password@mongodb:27017/?authSource=admin wellq-api pytest -v tests/
+# Definir WELLQ_TEST_MONGO_URI en el entorno privado desde el gestor de secretos; -e reenvia la variable sin incluir la URI en el comando.
+docker exec -e WELLQ_ALLOW_ANY_DB=1 -e WELLQ_TEST_DB=wellq_clinical -e WELLQ_TEST_MONGO_URI wellq-api pytest -v tests/
 # Resultado: 209 passed in 61.69s [100%]
 ```
 
