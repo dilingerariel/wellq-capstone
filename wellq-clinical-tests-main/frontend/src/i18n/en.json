@@ -367,5 +367,7 @@
   "type_urine_test": "Urine test",
   "type_imaging": "Medical imaging",
   "type_pathology": "Pathology",
-  "type_other": "Other document"
+  "type_other": "Other document",
+  "CLINICAL_VERSION_CONFLICT": "Server state changed. This operation was not sent. Compare your draft before loading current state.",
+  "CLINICAL_VERSION_REQUIRED": "Server state changed. This operation was not sent. Compare your draft before loading current state."
 }

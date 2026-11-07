@@ -1,4 +1,5 @@
 from app.models.reporting import MarkerSeriesResponse, LabReportResponse, LabReportExportResponse
+from app.services.clinical_version import clinical_version, require_clinical_version
 from app.services import uploads
 import logging
 logger = logging.getLogger(__name__)
@@ -105,7 +106,7 @@ async def get_upload_status(
 
 # ============ HELPER: FORMATEO DE RESPUESTA ============
 
-def format_clinical_test_response(doc: dict) -> ClinicalTestResponse:
+def format_clinical_test_response(doc: dict, db=None) -> ClinicalTestResponse:
     created_at = doc["created_at"].strftime("%Y-%m-%dT%H:%M:%SZ") if isinstance(doc.get("created_at"), datetime) else str(doc.get("created_at", ""))
     updated_at = doc["updated_at"].strftime("%Y-%m-%dT%H:%M:%SZ") if isinstance(doc.get("updated_at"), datetime) else str(doc.get("updated_at", ""))
     reviewed_at = doc.get("review", {}).get("reviewed_at")
@@ -113,6 +114,7 @@ def format_clinical_test_response(doc: dict) -> ClinicalTestResponse:
         reviewed_at = reviewed_at.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return ClinicalTestResponse(
+        clinical_version=clinical_version(db, doc) if db is not None else None,
         clinical_test_id=doc["clinical_test_id"],
         patient_id=doc["patient_id"],
         title=doc.get("title", ""),
@@ -231,7 +233,7 @@ async def get_clinical_test(
             detail={"code": ErrorCode.FORBIDDEN.value, "message": "Rol no autorizado"}
         )
 
-    return format_clinical_test_response(doc)
+    return format_clinical_test_response(doc, db)
 
 # ============ ENDPOINT 7: EDIT METADATA (PACIENTE) ============
 
@@ -305,7 +307,7 @@ async def edit_clinical_test(
               metadata_changes=changes)
         doc = db.clinical_tests.find_one({"_id": doc["_id"]})
 
-    return format_clinical_test_response(doc)
+    return format_clinical_test_response(doc, db)
 
 # ============ ENDPOINT 8: SOFT DELETE (PACIENTE) ============
 
@@ -486,6 +488,7 @@ async def list_patient_clinical_tests(
 @router.patch(
     "/clinical-tests/{clinical_test_id}/review",
     response_model=ClinicalTestResponse,
+    responses={428: {"description": "CLINICAL_VERSION_REQUIRED: GET current version before writing"}},
 )
 @atomic_write
 async def review_clinical_test(
@@ -516,10 +519,12 @@ async def review_clinical_test(
     previous = doc.get("review", {})
     if previous.get("status") == "reviewed":
         if previous.get("reviewed_by") == current_clinician and previous.get("private_note") == request.review_note:
-            return format_clinical_test_response(doc)
+            return format_clinical_test_response(doc, db)
         raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Review is immutable"})
     if previous.get("status") != "not_reviewed":
         raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Invalid review state"})
+
+    require_clinical_version(db, doc, request.expected_version)
 
     now = datetime.utcnow()
     written = db.clinical_tests.update_one(
@@ -540,7 +545,7 @@ async def review_clinical_test(
     audit(db, "clinical_test_reviewed", "clinical_test", clinical_test_id,
           previous_status=previous.get("status"))
     updated_doc = db.clinical_tests.find_one({"_id": doc["_id"]})
-    return format_clinical_test_response(updated_doc)
+    return format_clinical_test_response(updated_doc, db)
 
 # ============ ENDPOINT 18: GET LAB SCORE (SOLO CLÍNICO) ============
 

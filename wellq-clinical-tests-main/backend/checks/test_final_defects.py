@@ -295,7 +295,7 @@ def test_f04_patient_and_clinician_edits_preserve_document_range(env, fake_stora
     assert response.status_code == 200 and response.json()["panels"][0]["markers"][0]["status"] == "low"
     hc = clinician(env)
     path = "/api/v1/clinical-tests/" + init["clinical_test_id"] + "/extraction/validate"
-    result = env["client"].post(path, headers=hc, json={"marker_corrections": [{"marker_code": "glucose", "value_raw": "110", "unit_raw": "mg/dL"}]})
+    result = env["client"].post(path, headers=hc, json={"expected_version": env["client"].get(path.removesuffix("/extraction/validate"), headers=hc).json()["clinical_version"], "marker_corrections": [{"marker_code": "glucose", "value_raw": "110", "unit_raw": "mg/dL"}]})
     assert result.status_code == 200 and result.json()["panels"][0]["markers"][0]["status"] == "normal"
     series = env["client"].get("/api/v1/patients/patient-test/markers?marker_codes=glucose", headers=hc).json()
     assert series["series"][0]["points"][0]["status"] == "normal"
@@ -443,7 +443,7 @@ def test_f01_clinical_correction_does_not_publish_unapproved_cache(env, fake_sto
     env["monkeypatch"].setattr(settings, "CATALOG_CLINICALLY_APPROVED", False)
     hc = clinician(env)
     result = env["client"].post("/api/v1/clinical-tests/" + init["clinical_test_id"] + "/extraction/validate",
-        headers=hc, json={"marker_corrections": [{"marker_code": "glucose", "value_raw": "95", "unit_raw": "mg/dL"}]})
+        headers=hc, json={"expected_version": env["client"].get("/api/v1/clinical-tests/" + init["clinical_test_id"], headers=hc).json()["clinical_version"], "marker_corrections": [{"marker_code": "glucose", "value_raw": "95", "unit_raw": "mg/dL"}]})
     assert result.status_code == 200, result.text
     assert env["db"].clinical_markers.find_one({})["subscore"] is None
     report = env["client"].get("/api/v1/patients/patient-test/lab-report?include_series=true", headers=hc).json()

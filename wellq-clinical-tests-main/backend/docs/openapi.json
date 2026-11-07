@@ -1603,6 +1603,9 @@
                 }
               }
             }
+          },
+          "428": {
+            "description": "CLINICAL_VERSION_REQUIRED: GET current version before writing"
           }
         }
       }
@@ -2962,6 +2965,9 @@
                 }
               }
             }
+          },
+          "428": {
+            "description": "CLINICAL_VERSION_REQUIRED: GET current version before writing"
           }
         }
       }
@@ -3369,6 +3375,17 @@
       },
       "ClinicalTestResponse": {
         "properties": {
+          "clinical_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clinical Version"
+          },
           "clinical_test_id": {
             "type": "string",
             "title": "Clinical Test Id"
@@ -3456,6 +3473,18 @@
       },
       "ClinicianValidationRequest": {
         "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
           "validation_status": {
             "type": "string",
             "enum": [
@@ -3875,6 +3904,17 @@
       },
       "ExtractionResponse": {
         "properties": {
+          "clinical_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clinical Version"
+          },
           "schema_version": {
             "type": "string",
             "title": "Schema Version",
@@ -5226,6 +5266,18 @@
       },
       "ReviewRequest": {
         "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
           "review_status": {
             "type": "string",
             "const": "reviewed",

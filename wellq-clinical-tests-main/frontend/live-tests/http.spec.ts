@@ -174,4 +174,18 @@ test('clinician review, corrections and rejection persist through real FastAPI',
   await page.getByRole('button', { name: 'Preparar rechazo', exact: true }).click()
   await page.getByRole('button', { name: 'Confirmar rechazo clínico', exact: true }).click()
   await expect(page.getByText('Extracción rechazada', { exact: true })).toBeVisible()
+  // Reload clears RAM patient selection; explicitly select the authorized patient again.
+  await page.reload()
+  await page.getByLabel('ID del paciente autorizado', { exact: true }).fill(fixture.patient)
+  await page.getByRole('button', { name: 'Consultar paciente', exact: true }).click()
+  await page.getByLabel('Estado del documento', { exact: true }).selectOption('ready_for_review')
+  await page.getByRole('link', { name: 'SYNTHETIC CLINICAL REJECTION', exact: true }).click()
+  await page
+    .getByRole('link', { name: 'Revisi\u00f3n y validaci\u00f3n cl\u00ednica', exact: true })
+    .click()
+  await expect(page.getByText('Extracci\u00f3n rechazada', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Valor glucose', { exact: true })).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Preparar validaci\u00f3n', exact: true }),
+  ).toBeDisabled()
 })

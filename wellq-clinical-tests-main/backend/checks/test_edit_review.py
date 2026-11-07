@@ -23,7 +23,10 @@ def patch(env,cid,body,role='patient',identity='patient-test',tenant='tenant-a')
 
 
 def review(env,cid,doctor='doctor-1',body=None):
-    return patch(env,cid+'/review',body if body is not None else {'review_status':'reviewed','review_note':'SYNTHETIC PRIVATE NOTE'},'clinician',doctor)
+    from app.services.clinical_version import clinical_version
+    doc = env['db'].clinical_tests.find_one({'clinical_test_id': cid})
+    payload = body if body is not None else {'review_status':'reviewed','review_note':'SYNTHETIC PRIVATE NOTE'}
+    return patch(env,cid+'/review',{**payload, 'expected_version': clinical_version(env['db'], doc)},'clinician',doctor)
 
 
 def test_original_g03_null_and_empty_patch(env,fake_storage):

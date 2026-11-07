@@ -4,6 +4,7 @@ import { documentSchema, proposalSchema, bodyFor, createDraft, type ClinicianApi
 import { ApiError } from '../../services/http'
 function setup() {
   let doc = documentSchema.parse({
+      clinical_version: 'a'.repeat(64),
       clinical_test_id: 'synthetic-doc',
       patient_id: 'synthetic-patient',
       title: 'Synthetic clinical document',
@@ -253,5 +254,40 @@ describe('clinical operations', () => {
     c.preview('review')
     await c.send()
     expect(api.review).toHaveBeenCalledTimes(1)
+  })
+  it('sends the server snapshot precondition and retains RAM draft on atomic conflict', async () => {
+    const { c, api } = setup()
+    await start(c)
+    c.update({ ...c.getSnapshot().draft, clinicalNote: 'RAM conflict draft' })
+    c.preview('validated')
+    vi.mocked(api.validate).mockRejectedValueOnce(new ApiError(409, 'CLINICAL_VERSION_CONFLICT'))
+    await c.send()
+    expect(vi.mocked(api.validate).mock.calls[0]![1].expected_version).toBe('a'.repeat(64))
+    expect(c.getSnapshot().phase).toBe('conflict')
+    expect(c.getSnapshot().draft.clinicalNote).toBe('RAM conflict draft')
+    await c.send()
+    expect(api.validate).toHaveBeenCalledTimes(1)
+  })
+  it('does not write against a server without the precondition contract', async () => {
+    const { c, api, getDoc, setDoc } = setup()
+    setDoc({ ...getDoc(), clinical_version: null })
+    await start(c)
+    c.preview('review')
+    await c.send()
+    expect(api.review).not.toHaveBeenCalled()
+    expect(c.getSnapshot().error).toBe('CLINICAL_VERSION_REQUIRED')
+  })
+  it('rejects a mixed read snapshot and loads rejected extraction read only', async () => {
+    const { c, api, getExt, setExt } = setup()
+    setExt({ ...getExt(), clinical_version: 'b'.repeat(64) })
+    await start(c)
+    expect(c.getSnapshot().phase).toBe('conflict')
+    c.clear()
+    setExt({ ...getExt(), clinical_version: 'a'.repeat(64), status: 'rejected' })
+    await start(c)
+    expect(c.getSnapshot().extraction?.status).toBe('rejected')
+    c.preview('validated')
+    await c.send()
+    expect(api.validate).not.toHaveBeenCalled()
   })
 })

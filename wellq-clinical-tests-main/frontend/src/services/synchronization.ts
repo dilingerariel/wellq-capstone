@@ -1,3 +1,41 @@
+import type { QueryClient } from '@tanstack/react-query'
+
+/** Recover invalidated reads even when an observer mounts after identity approval. */
+export function recoverInvalidatedReads(client: QueryClient, permitted: () => boolean) {
+  let active = true,
+    queued = false
+  const attempted = new Set<string>()
+  const schedule = () => {
+    if (!active || queued) return
+    queued = true
+    queueMicrotask(() => {
+      queued = false
+      if (!active || !permitted()) return
+      const targets = new Set(
+        client
+          .getQueryCache()
+          .findAll({ type: 'active' })
+          .filter((q) => q.state.isInvalidated && !attempted.has(q.queryHash))
+          .map((q) => q.queryHash),
+      )
+      targets.forEach((hash) => attempted.add(hash))
+      // Join an existing read, without cancelling it or retrying errors in a loop.
+      void client.refetchQueries(
+        { type: 'active', predicate: (q) => targets.has(q.queryHash) },
+        { cancelRefetch: false },
+      )
+    })
+  }
+  const unsubscribe = client.getQueryCache().subscribe((event) => {
+    if (event.type === 'observerAdded' || event.type === 'observerOptionsUpdated') schedule()
+  })
+  schedule()
+  return () => {
+    active = false
+    unsubscribe()
+  }
+}
+
 /** One concurrent read recovery per key. No persistent queue and no mutation replay. */
 export class ReadRecovery {
   private running = new Map<string, Promise<void>>()

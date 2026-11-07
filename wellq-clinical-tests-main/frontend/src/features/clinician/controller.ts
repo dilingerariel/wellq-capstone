@@ -134,6 +134,8 @@ export class ClinicianController {
     }
     this.ensure(g)
     if (ext && ext.clinical_test_id !== this.state.id) throw new ApiError(502, 'INVALID_RESPONSE')
+    if (ext?.clinical_version && ext.clinical_version !== doc.clinical_version)
+      throw new ApiError(409, 'CLINICAL_VERSION_CONFLICT')
     return { doc, ext }
   }
   private fail(e: unknown, g: number) {
@@ -148,7 +150,7 @@ export class ClinicianController {
           : 0
     this.set({
       phase:
-        a?.status === 409
+        a?.status === 409 || a?.status === 428
           ? 'conflict'
           : this.pending
             ? 'uncertain'
@@ -238,7 +240,14 @@ export class ClinicianController {
         this.set({ phase: 'conflict', error: 'clinicalConflict' })
         return
       }
-      this.pending ??= { action, body: bodyFor(action, this.state.draft, this.state.extraction) }
+      if (!doc.clinical_version) throw new ApiError(428, 'CLINICAL_VERSION_REQUIRED')
+      this.pending ??= {
+        action,
+        body: {
+          ...bodyFor(action, this.state.draft, this.state.extraction),
+          expected_version: doc.clinical_version,
+        },
+      }
       if (action === 'review') {
         const result = await this.api.review(
           this.state.id,
@@ -279,7 +288,11 @@ export class ClinicianController {
       })
       this.invalidate()
     } catch (e) {
-      if (g === this.generation && e instanceof ApiError && [403, 404, 422, 429].includes(e.status))
+      if (
+        g === this.generation &&
+        e instanceof ApiError &&
+        [403, 404, 409, 422, 428, 429].includes(e.status)
+      )
         this.pending = undefined
       this.fail(e, g)
     } finally {

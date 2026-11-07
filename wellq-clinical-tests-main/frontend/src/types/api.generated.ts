@@ -1,10 +1,10 @@
 // Generated from backend/docs/openapi.json. Do not edit.
-// Source SHA-256: 6a93ffc916ac2b8f180c3ed9e2c0cbade7fc4a5f103d5a6136e385f05129c49d
+// Source SHA-256: 0df77701e75d7c40bd45a75b8d9128a5ed56b09963f99a7b88f30051dd3410b9
 export type CatalogItemResponse = { "catalog_version"?: string; "clinically_validated"?: boolean; "marker_code": string; "name": string; "panel_code": string; "specimen": string; "canonical_unit": string; "supported_units": Array<string>; "pillars": Array<string>; "typical_range": { [key: string]: unknown } }
 
-export type ClinicalTestResponse = { "clinical_test_id": string; "patient_id": string; "title": string; "test_type": TestType; "test_date": string; "notes"?: string | null; "case_id"?: string | null; "appointment_id"?: string | null; "file": FileInfo; "status": UploadStatus; "review": ReviewInfo; "created_at": string; "updated_at": string }
+export type ClinicalTestResponse = { "clinical_version"?: string | null; "clinical_test_id": string; "patient_id": string; "title": string; "test_type": TestType; "test_date": string; "notes"?: string | null; "case_id"?: string | null; "appointment_id"?: string | null; "file": FileInfo; "status": UploadStatus; "review": ReviewInfo; "created_at": string; "updated_at": string }
 
-export type ClinicianValidationRequest = { "validation_status"?: "validated" | "rejected"; "marker_corrections"?: Array<MarkerCorrection> | null; "clinical_note"?: string | null }
+export type ClinicianValidationRequest = { "expected_version"?: string | null; "validation_status"?: "validated" | "rejected"; "marker_corrections"?: Array<MarkerCorrection> | null; "clinical_note"?: string | null }
 
 export type CompleteUploadRequest = { "client_upload_id": string; "sha256": string; "size_bytes": number }
 
@@ -28,7 +28,7 @@ export type ErrorResponse = { "detail": ErrorDetail }
 
 export type ExcludedMarker = { "marker_code"?: string | null; "raw_name"?: string | null; "reason": string }
 
-export type ExtractionResponse = { "schema_version"?: string; "clinical_test_id": string; "extraction_id": string; "status": ExtractionStatus; "document": DocumentMetadata; "panels"?: Array<PanelItem>; "flags"?: Array<{ [key: string]: unknown }>; "extraction_meta"?: { [key: string]: unknown }; "confirmation"?: { [key: string]: unknown } }
+export type ExtractionResponse = { "clinical_version"?: string | null; "schema_version"?: string; "clinical_test_id": string; "extraction_id": string; "status": ExtractionStatus; "document": DocumentMetadata; "panels"?: Array<PanelItem>; "flags"?: Array<{ [key: string]: unknown }>; "extraction_meta"?: { [key: string]: unknown }; "confirmation"?: { [key: string]: unknown } }
 
 export type ExtractionStatus = "queued" | "extracting" | "awaiting_confirmation" | "confirmed" | "clinically_validated" | "extraction_failed" | "unreadable" | "discarded" | "not_applicable" | "rejected"
 
@@ -84,7 +84,7 @@ export type ReprocessRequest = { "confirm_reprocess_confirmed"?: boolean }
 
 export type ReviewInfo = { "status": ReviewStatus; "reviewed_at"?: string | null; "reviewed_by"?: string | null }
 
-export type ReviewRequest = { "review_status"?: string; "review_note"?: string | null }
+export type ReviewRequest = { "expected_version"?: string | null; "review_status"?: string; "review_note"?: string | null }
 
 export type ReviewStatus = "not_reviewed" | "reviewed"
 

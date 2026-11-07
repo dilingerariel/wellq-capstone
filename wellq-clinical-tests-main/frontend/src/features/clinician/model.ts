@@ -4,6 +4,11 @@ import { extractionSchema, markersOf, editable, type Extraction } from '../revie
 import { createHttp } from '../../services/http'
 import type { ReviewRequest, ClinicianValidationRequest } from '../../types/api.generated'
 export const documentSchema = examSchema.extend({
+  clinical_version: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable()
+    .optional(),
   review: z.object({
     status: z.enum(['not_reviewed', 'reviewed']),
     reviewed_by: z.string().nullable().optional(),
@@ -13,6 +18,11 @@ export const documentSchema = examSchema.extend({
 export type ClinicalDocument = z.infer<typeof documentSchema>
 // Deliberately exclude private notes; GET does not provide a private-note read contract.
 export const proposalSchema = extractionSchema.extend({
+  clinical_version: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable()
+    .optional(),
   confirmation: z
     .object({
       validated_by: z.string().nullable().optional(),

@@ -367,5 +367,7 @@
   "type_urine_test": "Análisis de orina",
   "type_imaging": "Imagen médica",
   "type_pathology": "Patología",
-  "type_other": "Otro documento"
+  "type_other": "Otro documento",
+  "CLINICAL_VERSION_CONFLICT": "El estado del servidor cambió. No se envió esta operación; compara el borrador antes de cargar el estado actual.",
+  "CLINICAL_VERSION_REQUIRED": "El estado del servidor cambió. No se envió esta operación; compara el borrador antes de cargar el estado actual."
 }

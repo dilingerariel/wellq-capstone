@@ -24,6 +24,7 @@ from urllib.parse import urlencode, urlsplit
 
 import jwt
 from clinical_live import CLONE, check_clinical
+from current_backend import create_api
 from cryptography.hazmat.primitives import serialization
 
 FRONT = Path(__file__).resolve().parents[1]
@@ -234,6 +235,16 @@ def main():
     assert "@mongo-int:27017/" + state["db"] + "?" in env["MONGODB_URI"]
     assert env["JWT_ISSUER"] == "https://identity.wellq-integration.invalid"
     assert env["JWT_AUDIENCE"] == "wellq-integration-only"
+    original_api = api
+    api = create_api(command, before[api], BACK, project)
+    before[api] = inspect(api)
+    assert before[api]["Image"] == before[original_api]["Image"]
+    assert not before[api]["HostConfig"]["PortBindings"]
+    assert before[api]["HostConfig"]["ReadonlyRootfs"]
+    source_mount = next(m for m in before[api]["Mounts"] if m["Destination"] == "/app/app")
+    assert source_mount["RW"] is False
+    # The original API stays stopped; no container or volume is recreated.
+    print("Dedicated API uses current backend source read-only; original API remains stopped.", flush=True)
     # Compare the running image's product Python sources with this checkout.
     archive = command(["docker", "cp", api + ":/app/app", "-"])
     compared = 0
@@ -270,7 +281,7 @@ def main():
         resource = resource or fixture[role]
         grants = ["clinical:read"] if permissions is None else permissions
         claims = {
-            "sub": "synthetic-http-" + role,
+            "sub": "synthetic-http-" + role + ":" + resource,
             "role": role,
             "resource_id": resource,
             role + "_id": resource,

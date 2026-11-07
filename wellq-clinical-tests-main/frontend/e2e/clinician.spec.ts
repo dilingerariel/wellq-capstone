@@ -53,6 +53,7 @@ async function setup(
     }
   }, permissions)
   const doc = {
+    clinical_version: 'a'.repeat(64),
     clinical_test_id: 'synthetic-doc',
     patient_id: 'synthetic-patient',
     title: 'SYNTHETIC CLINICAL DOCUMENT',
@@ -121,8 +122,13 @@ async function setup(
         controls.fail = 0
         body = {
           detail: {
-            code: status === 422 ? 'INVALID_MARKER_CORRECTIONS' : 'REQUEST_FAILED',
-            errors: [{ marker_code: 'glucose', code: 'UNIT_NOT_SUPPORTED' }],
+            code:
+              status === 422
+                ? 'INVALID_MARKER_CORRECTIONS'
+                : status === 409
+                  ? 'CLINICAL_VERSION_CONFLICT'
+                  : 'REQUEST_FAILED',
+            errors: status === 422 ? [{ marker_code: 'glucose', code: 'UNIT_NOT_SUPPORTED' }] : [],
           },
         }
       } else {
@@ -133,10 +139,7 @@ async function setup(
         body = ext
       }
     } else if (path.endsWith('/extraction')) {
-      if (ext.status === 'rejected') {
-        status = 409
-        body = { detail: { code: 'EXTRACTION_NOT_READY' } }
-      } else body = ext
+      body = ext
     } else if (path.endsWith('/synthetic-doc')) body = doc
     else body = { items: [doc], next_cursor: null }
     await r.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) })
@@ -175,7 +178,11 @@ for (const width of [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920])
       page.getByText('El servidor registró la operación.', { exact: false }),
     ).toBeVisible()
     expect(controls.review).toEqual([
-      { review_status: 'reviewed', review_note: 'SYNTHETIC PRIVATE REVIEW' },
+      {
+        review_status: 'reviewed',
+        review_note: 'SYNTHETIC PRIVATE REVIEW',
+        expected_version: 'a'.repeat(64),
+      },
     ])
     await page.getByRole('button', { name: 'Consultar nuevamente', exact: true }).click()
     await expect(
@@ -334,4 +341,30 @@ test('clinical touch, keyboard, dark English and scaled reflow', async ({ browse
   ).toEqual([])
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await context.close()
+})
+
+test('atomic conflict preserves draft and explicit current read shows rejection without another write', async ({
+  page,
+}) => {
+  const { controls, doc, ext } = await setup(page)
+  await page
+    .getByRole('textbox', { name: 'Nota cl\u00ednica de validaci\u00f3n', exact: true })
+    .fill('SYNTHETIC SAFE RAM DRAFT')
+  controls.fail = 409
+  await page.getByRole('button', { name: 'Preparar validaci\u00f3n', exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Confirmar validaci\u00f3n cl\u00ednica', exact: true })
+    .click()
+  await expect(page.getByRole('alert').filter({ hasText: 'cambi' })).toContainText('cambi')
+  await expect(
+    page.getByRole('textbox', { name: 'Nota cl\u00ednica de validaci\u00f3n', exact: true }),
+  ).toHaveValue('SYNTHETIC SAFE RAM DRAFT')
+  expect(controls.validation).toHaveLength(1)
+  doc.clinical_version = 'b'.repeat(64)
+  ext.status = 'rejected'
+  page.once('dialog', (d) => d.accept())
+  await page.getByRole('button', { name: 'Cargar estado actual', exact: true }).click()
+  await expect(page.getByText('Extracci\u00f3n rechazada', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Valor glucose', { exact: true })).toBeDisabled()
+  expect(controls.validation).toHaveLength(1)
 })

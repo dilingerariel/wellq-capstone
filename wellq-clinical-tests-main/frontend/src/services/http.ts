@@ -65,12 +65,14 @@ export function createHttp(
         let code = 'REQUEST_FAILED'
         let issues: { marker_code: string; code: string }[] = []
         // Only bounded machine codes are retained; never reflect clinical error text.
-        if (response.status === 409 || response.status === 422)
+        if ([409, 422, 428].includes(response.status))
           try {
             const error = z
               .object({
                 detail: z.object({
                   code: z.enum([
+                    'CLINICAL_VERSION_REQUIRED',
+                    'CLINICAL_VERSION_CONFLICT',
                     'EXTRACTION_NOT_READY',
                     'INVALID_CLINICAL_DATE',
                     'EXTRACTION_SUPERSEDED',

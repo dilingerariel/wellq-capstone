@@ -1,4 +1,5 @@
 from app.services.transactions import atomic_write
+from app.services.clinical_version import clinical_version, require_clinical_version
 import logging
 import uuid
 from datetime import datetime
@@ -161,6 +162,7 @@ async def get_extraction(
     # El clínico ve solo extracciones en estado confirmed o clinically_validated
     if user.role == "clinician" and ext_doc["status"] not in (
         ExtractionStatus.CONFIRMED.value, ExtractionStatus.CLINICALLY_VALIDATED.value,
+        ExtractionStatus.REJECTED.value,
         ExtractionStatus.NOT_APPLICABLE.value,  # §3.3.2: visible para paciente y clínico
     ):
         raise HTTPException(
@@ -170,6 +172,7 @@ async def get_extraction(
         )
 
     return ExtractionResponse(
+        clinical_version=clinical_version(db, doc, ext_doc),
         schema_version=ext_doc.get("schema_version", "1.0"),
         clinical_test_id=ext_doc["clinical_test_id"],
         extraction_id=ext_doc["extraction_id"],
@@ -658,6 +661,7 @@ async def reprocess_extraction(
 @router.post(
     "/clinical-tests/{clinical_test_id}/extraction/validate",
     response_model=ExtractionResponse,
+    responses={428: {"description": "CLINICAL_VERSION_REQUIRED: GET current version before writing"}},
     summary="Validación clínica de la extracción (Clínico)",
 )
 @atomic_write
@@ -708,6 +712,10 @@ async def validate_extraction_clinician(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={"code": "NOT_FOUND", "message": "Documento de extracción no encontrado"}
         )
+
+    require_clinical_version(db, doc, request.expected_version, ext_doc)
+    if ext_doc.get("status") != "confirmed" or ext_doc.get("superseded_at") is not None:
+        raise HTTPException(409, detail={"code": "CLINICAL_VERSION_CONFLICT", "message": "Extraction changed"})
 
     now = datetime.utcnow()
     applied_corrections: List[Dict[str, Any]] = []
@@ -910,7 +918,9 @@ async def validate_extraction_clinician(
         _audit_event(db, "marker_correction", doc["patient_id"], clinical_test_id, extraction_id,
                      "clinician", current_clinician, **{"marker_code": ac["marker_code"]})
 
+    updated_doc = db.clinical_tests.find_one({"_id": doc["_id"]})
     return ExtractionResponse(
+        clinical_version=clinical_version(db, updated_doc),
         schema_version="1.0",
         clinical_test_id=clinical_test_id,
         extraction_id=extraction_id,

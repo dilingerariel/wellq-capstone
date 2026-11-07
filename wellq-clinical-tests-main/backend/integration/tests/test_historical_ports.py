@@ -206,7 +206,7 @@ def test_endpoints_5_to_11_lifecycle(ctx):
     down=ctx.req('POST',path+'/download-url');assert down.status_code==200
     assert down.json()['file_name']=='synthetic.pdf'
     assert ctx.req('GET',ctx.patient_url('clinical-tests'),role='clinician').status_code==200
-    review=ctx.req('PATCH',path+'/review',role='clinician',json={'review_status':'reviewed','review_note':'SYNTHETIC PRIVATE'})
+    review=ctx.req('PATCH',path+'/review',role='clinician',json={'review_status':'reviewed','review_note':'SYNTHETIC PRIVATE','expected_version':ctx.req('GET',path,role='clinician').json()['clinical_version']})
     assert review.status_code==200 and review.json()['review']['reviewed_by']==ctx.doctor
     assert 'SYNTHETIC PRIVATE' not in ctx.req('GET',path).text
     locked=ctx.req('PATCH',path,json={'title':'forbidden'})

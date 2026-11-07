@@ -38,7 +38,7 @@ def create(ctx,ready=False):
 
 def review(ctx,cid,doctor=None,note='SYNTHETIC PRIVATE NOTE'):
     return ctx.req('PATCH','/clinical-tests/'+cid+'/review',headers=ctx.headers('clinician',identity=doctor or ctx.doctor),
-        json={'review_status':'reviewed','review_note':note})
+        json={'review_status':'reviewed','review_note':note,'expected_version':ctx.req('GET','/clinical-tests/'+cid,role='clinician').json().get('clinical_version')})
 
 def events(ctx,cid):
     return ctx.raw.audit_events.count_documents({'client_id':ctx.tenant,'resource_id':cid,

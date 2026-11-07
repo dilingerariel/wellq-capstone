@@ -14,7 +14,7 @@ import { apiSource, type ClinicalSource } from '../services/clinical'
 import type { PortalSession, Role } from '../types/session'
 import { SessionManager, type SessionPhase } from '../services/session'
 import { Connectivity, type ConnectionStatus } from '../services/connectivity'
-import { ReadRecovery } from '../services/synchronization'
+import { ReadRecovery, recoverInvalidatedReads } from '../services/synchronization'
 import { UploadController } from '../features/uploads/controller'
 import { uploadApi } from '../features/uploads/api'
 import { createHttp } from '../services/http'
@@ -281,12 +281,10 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
     const version = approvedRecovery,
       boundary = identity.boundary,
       token = identity.session?.accessToken
-    // Observer options can still be disabled while React commits recovery approval.
-    // Defer stale reads until those options are enabled; join any read already running.
-    const timer = window.setTimeout(() => {
+    return recoverInvalidatedReads(client, () => {
       const current = manager.getSnapshot(),
         net = network.getSnapshot()
-      if (
+      return (
         current.phase === 'authenticated' &&
         current.boundary === boundary &&
         current.session?.accessToken === token &&
@@ -294,9 +292,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
         net.recovery === version &&
         approval.version === version
       )
-        void client.refetchQueries({ type: 'active', stale: true }, { cancelRefetch: false })
-    }, 0)
-    return () => window.clearTimeout(timer)
+    })
   }, [
     connection,
     identity.phase,
