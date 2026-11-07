@@ -92,6 +92,22 @@ export function OverviewPage() {
         )}
       </section>
       {role === 'patient' && <UploadPreparation />}
+      {role === 'clinician' && (
+        <section className="next-card">
+          <div>
+            <h2>{t('recordsTitle')}</h2>
+            <p>{t('recordsIntro')}</p>
+            <div className="upload-actions">
+              <Link className="button secondary" to="/history">
+                {t('recordsOpenHistory')}
+              </Link>
+              <Link className="button secondary" to="/reports">
+                {t('recordsOpenReport')}
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
       <div className="next-grid">
         <article className="next-card">
           <span className="file-icon">

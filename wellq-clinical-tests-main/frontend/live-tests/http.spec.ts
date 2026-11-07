@@ -5,6 +5,7 @@ const fixture = JSON.parse(process.env.WELLQ_HTTP_FIXTURE || '{}') as {
   patientSession: PortalSession
   clinicianSession: PortalSession
   uploadSession: PortalSession
+  recordsSession: PortalSession
   clinicalSession: PortalSession
   pdfBytes: string
 }
@@ -188,4 +189,40 @@ test('clinician review, corrections and rejection persist through real FastAPI',
   await expect(
     page.getByRole('button', { name: 'Preparar validaci\u00f3n', exact: true }),
   ).toBeDisabled()
+})
+
+test('authorized history, hidden unapproved scores and server PDF work through real FastAPI and Mongo', async ({
+  page,
+}) => {
+  await page.addInitScript((session) => {
+    window.wellqIdentity = { getSession: async () => session }
+  }, fixture.recordsSession)
+  await page.goto('/history')
+  await page.getByLabel('ID del paciente autorizado', { exact: true }).fill(fixture.patient)
+  await page.getByRole('button', { name: 'Consultar paciente', exact: true }).click()
+  await expect(
+    page.getByRole('table', { name: 'Mediciones recibidas de la API, en orden cronol\u00f3gico' }),
+  ).toBeVisible()
+  await expect(
+    page.getByText(
+      'El catálogo no está aprobado clínicamente. Se ocultan los puntajes numéricos.',
+      { exact: true },
+    ),
+  ).toBeVisible()
+  await page.locator('main').getByRole('link', { name: 'Reportes', exact: true }).click()
+  await expect(
+    page.getByRole('table', { name: 'Resultados del reporte entregados por FastAPI' }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Generar PDF', exact: true }).evaluate((b) => {
+    ;(b as HTMLButtonElement).click()
+    ;(b as HTMLButtonElement).click()
+  })
+  const button = page.getByRole('button', { name: 'Descargar PDF verificado', exact: true })
+  await expect(button).toBeEnabled()
+  const download = page.waitForEvent('download')
+  await button.click()
+  expect(await (await download).failure()).toBeNull()
+  await expect(
+    page.getByText('PDF verificado y entregado al navegador para guardar.', { exact: true }),
+  ).toBeVisible()
 })

@@ -22,10 +22,15 @@ import { ReviewController } from '../features/review/controller'
 import { reviewApi } from '../features/review/model'
 import { ClinicianController } from '../features/clinician/controller'
 import { clinicianApi } from '../features/clinician/model'
+import { reportingApi, type ReportingApi } from '../features/records/model'
+import { ReportExportController } from '../features/records/export-controller'
 
 const mode = import.meta.env.VITE_DATA_MODE || 'demo'
 if (mode !== 'demo' && mode !== 'api') throw new Error('VITE_DATA_MODE must be demo or api')
 interface Runtime {
+  reporting: ReportingApi
+  reportExport: ReportExportController
+  verifySession: () => Promise<boolean>
   clinician: ClinicianController
   review: ReviewController
   upload: UploadController
@@ -96,6 +101,44 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   const connection = connectionState.status
   const [approvedRecovery, setApprovedRecovery] = useState(0)
   const [approval] = useState(() => ({ version: 0 }))
+  const [reporting] = useState(() =>
+    reportingApi(
+      createHttp(
+        import.meta.env.VITE_API_BASE_URL || '/api/v1',
+        () => manager.getSnapshot().session?.accessToken,
+        (token) => manager.invalidate(token),
+        (status) => {
+          if (status === 'unavailable') window.setTimeout(() => network.report(status), 0)
+          else network.report(status)
+        },
+      ),
+    ),
+  )
+  const [reportExport] = useState(
+    () =>
+      new ReportExportController(
+        reporting,
+        () => {
+          const current = manager.getSnapshot(),
+            net = network.getSnapshot(),
+            s = current.session
+          return (
+            mode === 'api' &&
+            current.phase === 'authenticated' &&
+            s?.role === 'clinician' &&
+            s.expiresAt * 1000 > Date.now() &&
+            ['clinical:read', 'reports:export'].every((p) => s.permissions.includes(p)) &&
+            s.capabilities.includes('report_export') &&
+            net.status === 'online' &&
+            approval.version === net.recovery
+          )
+        },
+        async () => {
+          const boundary = manager.getSnapshot().boundary
+          return (await manager.verify(true)) && boundary === manager.getSnapshot().boundary
+        },
+      ),
+  )
   const [upload] = useState(
     () =>
       new UploadController(
@@ -201,10 +244,13 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       ),
   )
   useEffect(() => {
+    privateResources.add(reportExport.clear)
     privateResources.add(clinician.clear)
     privateResources.add(review.clear)
     privateResources.add(upload.clear)
     return () => {
+      privateResources.delete(reportExport.clear)
+      reportExport.clear()
       privateResources.delete(upload.clear)
       privateResources.delete(review.clear)
       privateResources.delete(clinician.clear)
@@ -212,7 +258,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       review.clear()
       upload.clear()
     }
-  }, [privateResources, upload, review, clinician])
+  }, [privateResources, upload, review, clinician, reportExport])
   const renewedExpiry = useRef<number | null>(null)
   useEffect(() => network.start(), [network])
   useEffect(() => {
@@ -258,6 +304,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       if (identity.phase !== 'loading' || connection !== 'online') {
         review.suspend()
         clinician.suspend()
+        reportExport.suspend()
       }
     }
   }, [
@@ -268,6 +315,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
     upload,
     review,
     clinician,
+    reportExport,
   ])
   useEffect(() => {
     if (
@@ -366,6 +414,12 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        reporting,
+        reportExport,
+        verifySession: async () => {
+          const before = manager.getSnapshot().boundary
+          return (await manager.verify(true)) && before === manager.getSnapshot().boundary
+        },
         clinician,
         review,
         upload,

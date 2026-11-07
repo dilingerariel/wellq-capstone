@@ -23,6 +23,9 @@ const UploadPage = lazy(() =>
 const ReviewPage = lazy(() =>
   import('../features/review/ReviewPage').then((m) => ({ default: m.ReviewPage })),
 )
+const RecordsPage = lazy(() =>
+  import('../features/records/RecordsPage').then((m) => ({ default: m.RecordsPage })),
+)
 function Home() {
   const { role } = useRuntime()
   return <Navigate replace to={role === 'clinician' ? '/clinical' : '/patient'} />
@@ -92,6 +95,22 @@ export function App() {
             element={
               <RoleGuard role="patient">
                 <ReviewPage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="history"
+            element={
+              <RoleGuard role="clinician">
+                <RecordsPage view="history" />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="reports"
+            element={
+              <RoleGuard role="clinician">
+                <RecordsPage view="report" />
               </RoleGuard>
             }
           />

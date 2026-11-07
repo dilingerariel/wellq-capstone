@@ -1,5 +1,7 @@
 # WellQ · Portal web
 
+Historial, gráficos longitudinales y reportes implementados en `/history` y `/reports`: [contratos, permisos, PDF, continuidad y verificación](HISTORY.md). Desarrollo en rama independiente; aún sin publicación de este módulo a `main`.
+
 Integración actual: [configuración de identidad y prueba HTTP real](INTEGRATION.md). La identidad productiva requiere un proveedor aprobado; el entorno aislado usa una autoridad sintética y FastAPI/MongoDB reales. Las validaciones históricas siguientes conservan su alcance original.
 
 Carga implementada en `/upload`: [flujo, recuperación y requisitos de almacenamiento](UPLOAD.md). Incluye initiate, PUT de bytes, complete y sondeo; continúa bloqueada sin una sesión de paciente autorizada y nunca simula envíos en demo.

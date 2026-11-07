@@ -7,6 +7,7 @@ export class ApiError extends Error {
     public readonly code: string,
     public readonly retryAfter: string | null = null,
     public readonly issues: { marker_code: string; code: string }[] = [],
+    public readonly reason: string | null = null,
   ) {
     super(code)
     this.name = 'ApiError'
@@ -63,14 +64,19 @@ export function createHttp(
       if (!response.ok) {
         if (response.status === 401) unauthorized(accessToken)
         let code = 'REQUEST_FAILED'
+        let reason: string | null = null
         let issues: { marker_code: string; code: string }[] = []
         // Only bounded machine codes are retained; never reflect clinical error text.
-        if ([409, 422, 428].includes(response.status))
+        if ([404, 409, 422, 428, 502, 503].includes(response.status))
           try {
             const error = z
               .object({
                 detail: z.object({
                   code: z.enum([
+                    'NO_SCORE_AVAILABLE',
+                    'EXPORT_SOURCE_CHANGED',
+                    'STORAGE_ERROR',
+                    'PDF_ENGINE_UNAVAILABLE',
                     'CLINICAL_VERSION_REQUIRED',
                     'CLINICAL_VERSION_CONFLICT',
                     'EXTRACTION_NOT_READY',
@@ -93,6 +99,7 @@ export function createHttp(
                     'INVALID_MARKER_CORRECTIONS',
                     'INVALID_VALIDATION_STATUS',
                   ]),
+                  reason: z.enum(['insufficient_coverage', 'no_confirmed_exams']).optional(),
                   errors: z
                     .array(
                       z.object({
@@ -115,12 +122,19 @@ export function createHttp(
             if (error.success) {
               code = error.data.detail.code
               issues = error.data.detail.errors || []
+              reason = error.data.detail.reason || null
             }
           } catch {
             if (combined.aborted) throw combined.reason
           }
         report(response.status >= 500 ? 'unavailable' : 'online')
-        throw new ApiError(response.status, code, response.headers.get('Retry-After'), issues)
+        throw new ApiError(
+          response.status,
+          code,
+          response.headers.get('Retry-After'),
+          issues,
+          reason,
+        )
       }
       let body: unknown
       try {
