@@ -4,7 +4,7 @@ Integración actual: [configuración de identidad y prueba HTTP real](INTEGRATIO
 
 Carga implementada en `/upload`: [flujo, recuperación y requisitos de almacenamiento](UPLOAD.md). Incluye initiate, PUT de bytes, complete y sondeo; continúa bloqueada sin una sesión de paciente autorizada y nunca simula envíos en demo.
 
-Primera implementación React del portal. Rama `feature/wellq-react-frontend`, basada en `20fa09c`. Sin cambios de lógica clínica ni de infraestructura. Se retira únicamente el HTML de demostración no servido por FastAPI.
+Portal React integrado en `main` mediante merge explícito de los siete commits funcionales de `feature/wellq-react-frontend`, conservando su historia. Incluye carga, confirmación del paciente y [revisión/validación clínica](CLINICIAN.md), con precondición atómica y consulta de rechazos tras recargar. La integración del código no constituye un despliegue productivo.
 
 ## Ejecutar en Windows
 
@@ -28,6 +28,20 @@ npm.cmd run test:browser
 ```
 
 Las pruebas de navegador usan Edge instalado en Windows y dos servidores locales temporales: 5173 (demo) y 5174 (API con identidad/respuestas sintéticas interceptadas). Cerrar otros procesos que usen esos puertos antes de ejecutarlas. Capturas y trazas quedan en `test-results/`, ignorado por Git. Estas pruebas no acreditan integración clínica real.
+
+## Iniciar FastAPI y contrato clínico
+
+En otra consola, con el venv del repositorio existente y las variables privadas del backend ya configuradas mediante su procedimiento autorizado:
+
+```powershell
+cd C:\Dev\wellq-capstone\wellq-clinical-tests-main\backend
+& ..\..\.venv\Scripts\python.exe -m pip install -r requirements.txt
+& ..\..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+MongoDB debe estar disponible como replica set autenticado, con el esquema e índices previamente preparados. También se requiere la configuración RS256 del proveedor de identidad. Estos comandos no inicializan bases ni sustituyen la configuración privada. No publicar `.env`, claves ni URI autenticadas. El frontend se conecta mediante el proxy descrito más abajo; sin el host de identidad aprobado, el modo API permanece bloqueado.
+
+GET del detalle y de la extracción proporcionan `clinical_version`. Las nuevas escrituras de revisión y validación/rechazo deben enviar `expected_version`: una versión obsoleta devuelve **409** y la precondición omitida devuelve **428**, sin cambios. Los clientes anteriores conservan las lecturas, pero deben actualizar sus escrituras. No eliminar la protección ni reproducir mutaciones al reconectar. El reintento autorizado de revisión mantiene su semántica inmutable. Ver [contrato y pruebas](CLINICIAN.md).
 
 ## Estructura
 
