@@ -1,6 +1,6 @@
 # WellQ · Portal web
 
-Historial, gráficos longitudinales y reportes implementados en `/history` y `/reports`: [contratos, permisos, PDF, continuidad y verificación](HISTORY.md). Desarrollo en rama independiente; aún sin publicación de este módulo a `main`.
+Historial, gráficos longitudinales y reportes implementados en `/history` y `/reports`: [contratos, permisos, PDF, continuidad y verificación](HISTORY.md). La exportación PDF del portal permanece limitada a pruebas autorizadas; está bloqueada en builds productivos mientras siga pendiente la precondición atómica de fuente.
 
 Integración actual: [configuración de identidad y prueba HTTP real](INTEGRATION.md). La identidad productiva requiere un proveedor aprobado; el entorno aislado usa una autoridad sintética y FastAPI/MongoDB reales. Las validaciones históricas siguientes conservan su alcance original.
 

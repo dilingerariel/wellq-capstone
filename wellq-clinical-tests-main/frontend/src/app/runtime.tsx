@@ -28,6 +28,7 @@ import { ReportExportController } from '../features/records/export-controller'
 const mode = import.meta.env.VITE_DATA_MODE || 'demo'
 if (mode !== 'demo' && mode !== 'api') throw new Error('VITE_DATA_MODE must be demo or api')
 interface Runtime {
+  pdfExportEnabled: boolean
   reporting: ReportingApi
   reportExport: ReportExportController
   verifySession: () => Promise<boolean>
@@ -123,6 +124,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
             net = network.getSnapshot(),
             s = current.session
           return (
+            import.meta.env.DEV &&
             mode === 'api' &&
             current.phase === 'authenticated' &&
             s?.role === 'clinician' &&
@@ -414,6 +416,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        pdfExportEnabled: import.meta.env.DEV,
         reporting,
         reportExport,
         verifySession: async () => {

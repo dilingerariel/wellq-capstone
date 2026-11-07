@@ -59,7 +59,7 @@ def check_records(forward, session, fixture, api, container_python, exports, dow
         call(base+'/lab-report/export',identity,denied,'POST',{'window_months':12,'include_series':True},'synthetic-denied-export')
     mismatches=[c for c in checks if c['status']!=c['expected']]
     assert not mismatches,'Reporting status mismatches: '+json.dumps(mismatches)
-    assert len(exports)==1 and downloads['count']==1 and not downloads['authorization_seen']
+    assert len(exports)==2 and exports[0]==exports[1] and downloads['count']==1 and not downloads['authorization_seen']
     path,headers,body=exports[0]
     def replay():
         r=forward(path,headers,'POST',body);assert r['status']==200

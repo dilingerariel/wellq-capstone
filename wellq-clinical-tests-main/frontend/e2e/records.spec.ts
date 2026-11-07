@@ -42,6 +42,7 @@ async function setup(
     status: 0,
     signer: false,
     expired: false,
+    changeDuringStorage: false,
     score: false,
     blocked: false,
     changed: false,
@@ -60,6 +61,7 @@ async function setup(
   await page.route('https://storage.invalid/**', async (r) => {
     controls.downloads++
     controls.bearer ||= !!r.request().headers().authorization
+    if (controls.changeDuringStorage) controls.status = 409
     await r.fulfill({
       status: controls.expired ? 403 : 200,
       contentType: 'application/pdf',
@@ -217,6 +219,8 @@ for (const width of [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920])
     ).toBeVisible()
     expect(controls.downloads).toBe(1)
     expect(controls.bearer).toBe(false)
+    expect(controls.exports).toHaveLength(2)
+    expect(controls.exports[0]).toEqual(controls.exports[1])
   })
 test('patient role has neither clinical navigation nor records access', async ({ page }) => {
   await setup(page, { role: 'patient' })
@@ -370,6 +374,26 @@ test('storage failure is visible and recovery requires explicit same-key export'
     page.getByRole('button', { name: 'Descargar PDF verificado', exact: true }),
   ).toBeEnabled()
   expect(controls.exports[0]!.key).toBe(controls.exports[1]!.key)
+})
+
+test('source change during storage download discards bytes before the browser can save them', async ({
+  page,
+}) => {
+  const controls = await setup(page)
+  await report(page)
+  await page.getByRole('button', { name: 'Generar PDF', exact: true }).click()
+  const download = page.getByRole('button', { name: 'Descargar PDF verificado', exact: true })
+  await expect(download).toBeEnabled()
+  let saved = 0
+  page.on('download', () => saved++)
+  controls.changeDuringStorage = true
+  await download.click()
+  await expect(page.getByRole('alert')).toContainText('fuente del reporte cambió')
+  expect(controls.downloads).toBe(1)
+  expect(controls.exports).toHaveLength(2)
+  expect(controls.exports[0]).toEqual(controls.exports[1])
+  expect(saved).toBe(0)
+  await expect(download).toBeDisabled()
 })
 
 test('touch landscape and 200 percent equivalent reflow retain accessible clinical details', async ({

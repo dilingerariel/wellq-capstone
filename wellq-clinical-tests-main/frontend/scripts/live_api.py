@@ -25,6 +25,7 @@ from urllib.parse import urlencode, urlsplit
 import jwt
 from clinical_live import CLONE, check_clinical
 from records_live import check_records, check_stale_export
+from export_concurrency_live import check_export_concurrency
 from current_backend import create_api
 from cryptography.hazmat.primitives import serialization
 
@@ -657,6 +658,7 @@ def main():
         print(output.encode("ascii", "backslashreplace").decode())
         assert browser.returncode == 0, "Real HTTP browser checks failed"
         records_proof=check_records(forward,session,fixture,api,container_python,report_exports,report_downloads)
+        export_concurrency_proof=check_export_concurrency(forward,session,fixture,api,container_python)
         clinical_proof=check_clinical(forward,session,fixture,api,container_python)
         assert check_stale_export(forward,report_exports)
         assert len(confirmations)==1, 'Exactly one browser confirmation required'
@@ -695,6 +697,7 @@ def main():
             "upload_proof": upload_proof,
             "clinical_proof":clinical_proof,
             "records_proof":records_proof,
+            "export_concurrency_proof":export_concurrency_proof,
             "score_absent_before_validation":True,
             "export_source_change_denied":True,
             "storage_transfer": transfer_evidence,

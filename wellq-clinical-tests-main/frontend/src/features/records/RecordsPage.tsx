@@ -36,8 +36,16 @@ export function RecordsPage({ view }: { view: 'history' | 'report' }) {
 }
 function Records({ patient, view }: { patient: string; view: 'history' | 'report' }) {
   const { t, i18n } = useTranslation()
-  const { reporting, reportExport, session, boundary, canRequest, verifySession, source } =
-    useRuntime()
+  const {
+    reporting,
+    reportExport,
+    session,
+    boundary,
+    canRequest,
+    verifySession,
+    source,
+    pdfExportEnabled,
+  } = useRuntime()
   const client = useQueryClient(),
     active = useRef(true)
   useEffect(() => {
@@ -131,6 +139,7 @@ function Records({ patient, view }: { patient: string; view: 'history' | 'report
   const points = ordered(series.data?.series[0]?.points || [])
   const busy = ['generating', 'downloading'].includes(exported.phase),
     canExport =
+      pdfExportEnabled &&
       canRequest &&
       !denied &&
       session?.permissions.includes('reports:export') &&
@@ -537,7 +546,10 @@ function Records({ patient, view }: { patient: string; view: 'history' | 'report
               <section className="records-export" aria-label={t('recordsExportTitle')}>
                 <h3>{t('recordsExportTitle')}</h3>
                 <p>{t('recordsExportHelp')}</p>
-                {!canExport && <p>{t('recordsExportPermission')}</p>}
+                <p role="status">
+                  {t(pdfExportEnabled ? 'recordsExportTestOnly' : 'recordsExportProductionBlocked')}
+                </p>
+                {pdfExportEnabled && !canExport && <p>{t('recordsExportPermission')}</p>}
                 <div className="upload-actions">
                   <button
                     className="button primary"

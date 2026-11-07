@@ -484,5 +484,7 @@
   "PDF_ENGINE_UNAVAILABLE": "El motor PDF del servidor no está disponible.",
   "DOWNLOAD_EXPIRED": "El enlace privado caducó o fue rechazado. Renuévalo explícitamente.",
   "DOWNLOAD_FAILED": "La descarga del PDF falló en transporte, tamaño o integridad.",
-  "RECORD_PATIENT_MISMATCH": "La respuesta no corresponde al paciente autorizado. Se bloqueó el acceso."
+  "RECORD_PATIENT_MISMATCH": "La respuesta no corresponde al paciente autorizado. Se bloqueó el acceso.",
+  "recordsExportProductionBlocked": "La exportación PDF no está habilitada para uso productivo. Puedes consultar el reporte clínico en pantalla.",
+  "recordsExportTestOnly": "Exportación disponible solo para pruebas autorizadas. El PDF es una instantánea fechada; no acredita vigencia continua."
 }

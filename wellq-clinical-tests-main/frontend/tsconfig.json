@@ -23,7 +23,9 @@
     "vite.config.ts",
     "playwright.config.ts",
     "playwright.live.config.ts",
+    "playwright.release.config.ts",
     "e2e",
-    "live-tests"
+    "live-tests",
+    "release-tests"
   ]
 }

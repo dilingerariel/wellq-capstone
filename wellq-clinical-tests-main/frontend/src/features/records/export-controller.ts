@@ -156,6 +156,18 @@ export class ReportExportController {
         throw new ApiError(409, 'EXPORT_SOURCE_CHANGED')
       const bytes = await this.read(result, c.signal)
       this.ensure(g)
+      // Replay binds these bytes to the persisted full server source, including
+      // fields omitted by the display projection. No new export key is created.
+      const checked = await this.api.export(plan.patient, plan.params, plan.key, c.signal)
+      this.ensure(g)
+      if (
+        !checked.replayed ||
+        checked.patient_id !== plan.patient ||
+        checked.export_id !== result.export_id ||
+        checked.sha256 !== result.sha256 ||
+        checked.size_bytes !== result.size_bytes
+      )
+        throw new ApiError(409, 'EXPORT_SOURCE_CHANGED')
       this.save(bytes, result.file_name)
       this.set({ phase: 'downloaded', result: undefined })
     } catch (e) {

@@ -20,6 +20,7 @@ import { constantRange, ordered, verifiedRange } from './TrendChart'
 import { ScorePanel } from './ScorePanel'
 
 function setup() {
+  let exports = 0
   let current = reportSchema.parse(syntheticReport()),
     allowed = true
   const result = exportSchema.parse({
@@ -39,7 +40,10 @@ function setup() {
     report: vi.fn(async () => structuredClone(current)),
     markers: vi.fn(),
     scores: vi.fn(),
-    export: vi.fn<ReportingApi['export']>(async () => result),
+    export: vi.fn<ReportingApi['export']>(async () => {
+      result.replayed = ++exports > 1
+      return result
+    }),
   }
   const save = vi.fn(),
     read = vi.fn(async () => new Uint8Array([1, 2])),
@@ -134,6 +138,8 @@ it('single flight generates once and downloads only after an explicit action and
   await Promise.all([c.download(), c.download()])
   expect(read).toHaveBeenCalledOnce()
   expect(save).toHaveBeenCalledOnce()
+  expect(api.export).toHaveBeenCalledTimes(2)
+  expect(api.export.mock.calls[0]?.[2]).toBe(api.export.mock.calls[1]?.[2])
   expect(c.getSnapshot().phase).toBe('downloaded')
 })
 it('retains the exact idempotency key after timeout and pending signer; never retries automatically', async () => {
@@ -173,6 +179,30 @@ it('blocks stale source before generation, after generation and before downloadi
     if (stage === 'before') expect(api.export).not.toHaveBeenCalled()
   }
 })
+it('rejects a PDF created from an intervening source even when the visible report returns to its original state', async () => {
+  const { c, api, report, result, read, save } = setup()
+  // A -> B during generation -> A before both client reads. The backend's
+  // persisted full-source hash still binds this PDF to B and rejects replay.
+  api.export
+    .mockResolvedValueOnce(result)
+    .mockRejectedValue(new ApiError(409, 'EXPORT_SOURCE_CHANGED'))
+  await c.prepare('synthetic-patient', reportParams, report)
+  await c.download()
+  expect(read).toHaveBeenCalledOnce()
+  expect(save).not.toHaveBeenCalled()
+  expect(c.getSnapshot().phase).toBe('stale')
+})
+it('discards verified bytes when the source changes while storage is responding', async () => {
+  const { c, api, report, read, save } = setup()
+  await c.prepare('synthetic-patient', reportParams, report)
+  read.mockImplementationOnce(async () => {
+    api.export.mockRejectedValue(new ApiError(409, 'EXPORT_SOURCE_CHANGED'))
+    return new Uint8Array([1, 2])
+  })
+  await c.download()
+  expect(save).not.toHaveBeenCalled()
+  expect(c.getSnapshot().phase).toBe('stale')
+})
 it('expires private links and renews them with the existing key', async () => {
   const { c, api, result, report, read } = setup()
   await c.prepare('synthetic-patient', reportParams, report)
@@ -184,6 +214,22 @@ it('expires private links and renews them with the existing key', async () => {
   await c.prepare('synthetic-patient', reportParams, report)
   expect(api.export.mock.calls[0]?.[2]).toBe(api.export.mock.calls[1]?.[2])
 })
+it.each(['export_id', 'sha256', 'size_bytes', 'replayed'] as const)(
+  'rejects changed export proof %s before saving any bytes',
+  async (field) => {
+    const { c, api, report, result, save } = setup()
+    await c.prepare('synthetic-patient', reportParams, report)
+    const changed = {
+      ...result,
+      replayed: true,
+      [field]: field === 'replayed' ? false : field === 'size_bytes' ? 99 : 'different',
+    }
+    api.export.mockResolvedValueOnce(changed)
+    await c.download()
+    expect(save).not.toHaveBeenCalled()
+    expect(c.getSnapshot().phase).toBe('stale')
+  },
+)
 it('clears data and ignores delayed export replies on identity/patient cancellation', async () => {
   const { c, api, report, result, revoke } = setup()
   let resolve!: (v: typeof result) => void

@@ -484,5 +484,7 @@
   "PDF_ENGINE_UNAVAILABLE": "The server PDF engine is unavailable.",
   "DOWNLOAD_EXPIRED": "The private link expired or was refused. Renew it explicitly.",
   "DOWNLOAD_FAILED": "The PDF download failed its transport, size or integrity checks.",
-  "RECORD_PATIENT_MISMATCH": "The response does not match the authorized patient. Access was blocked."
+  "RECORD_PATIENT_MISMATCH": "The response does not match the authorized patient. Access was blocked.",
+  "recordsExportProductionBlocked": "PDF export is not enabled for production use. You can read the clinical report on screen.",
+  "recordsExportTestOnly": "Export is available only for authorized testing. The PDF is a dated snapshot; it does not certify continuous currency."
 }
