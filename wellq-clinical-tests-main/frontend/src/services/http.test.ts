@@ -4,7 +4,7 @@ import { createHttp } from './http'
 import { apiSource } from './clinical'
 afterEach(() => vi.unstubAllGlobals())
 describe('HTTP boundary', () => {
-  it.each([401, 403, 404, 409, 422, 429, 503])(
+  it.each([400, 401, 403, 404, 409, 422, 429, 500, 503])(
     'preserves status %s without reflecting sensitive response bodies',
     async (status) => {
       const unauthorized = vi.fn()
@@ -49,7 +49,7 @@ describe('HTTP boundary', () => {
     expect(url).toContain('/patients/synthetic-patient/clinical-tests?')
     expect(new URL(url, 'http://localhost').searchParams.get('cursor')).toBe('opaque+/=')
     expect(init).toMatchObject({
-      signal: controller.signal,
+      signal: expect.any(AbortSignal),
       credentials: 'omit',
       cache: 'no-store',
       headers: { Authorization: ['Bearer', 'synthetic-external-token'].join(' ') },

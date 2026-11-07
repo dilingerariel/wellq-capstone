@@ -6,18 +6,33 @@ import { useRuntime } from '../../app/runtime'
 import { ErrorState, Loading } from '../../components/States'
 import { StatusBadge } from '../../components/StatusBadge'
 import { formatDate } from '../../lib/format'
+import { CachedNotice, NeedsConnection } from '../../components/Continuity'
+import { usePatientScope } from './PatientScope'
+import { ApiError } from '../../services/http'
 export function ExamDetailPage() {
   const { id = '' } = useParams()
-  const { source } = useRuntime()
+  const { source, canRequest } = useRuntime()
+  const { patientId } = usePatientScope()
   const { t, i18n } = useTranslation()
   const query = useQuery({
     queryKey: ['exam', id],
     queryFn: ({ signal }) => source!.detail(id, signal),
-    enabled: Boolean(source && id),
+    enabled: Boolean(source && id && canRequest),
+    refetchInterval: (q) =>
+      canRequest &&
+      ['initiated', 'object_uploaded', 'processing'].includes(q.state.data?.status || '')
+        ? 10_000
+        : false,
   })
-  if (query.isError) return <ErrorState error={query.error} retry={() => void query.refetch()} />
+  if (query.isError && !query.data)
+    return (
+      <ErrorState error={query.error} retry={canRequest ? () => void query.refetch() : undefined} />
+    )
+  if (!query.data && !canRequest) return <NeedsConnection />
   if (!query.data) return <Loading />
   const exam = query.data
+  if (patientId && exam.patient_id !== patientId)
+    return <ErrorState error={new ApiError(403, 'PATIENT_CONTEXT_MISMATCH')} />
   const details = [
     ['type', t(`type_${exam.test_type}`)],
     ['date', formatDate(exam.test_date, i18n.language)],
@@ -36,6 +51,7 @@ export function ExamDetailPage() {
   ]
   return (
     <>
+      <CachedNotice error={query.isError} />
       <Link to="/exams" className="back-link">
         <ArrowLeft size={16} aria-hidden="true" />
         {t('back')}

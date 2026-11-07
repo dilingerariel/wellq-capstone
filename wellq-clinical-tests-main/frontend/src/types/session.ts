@@ -11,12 +11,16 @@ export const sessionSchema = z.object({
 })
 export type PortalSession = z.infer<typeof sessionSchema>
 export type Role = PortalSession['role']
+export interface IdentityProvider {
+  getSession: () => Promise<unknown>
+  signIn?: () => Promise<void>
+  signOut?: () => Promise<void>
+  refreshSession?: () => Promise<unknown>
+  subscribe?: (callback: () => void) => () => void
+}
 declare global {
   interface Window {
     /** Supplied by the trusted identity host, before mounting React. No login endpoint is invented. */
-    wellqIdentity?: {
-      getSession: () => Promise<unknown>
-      subscribe?: (callback: () => void) => () => void
-    }
+    wellqIdentity?: IdentityProvider
   }
 }

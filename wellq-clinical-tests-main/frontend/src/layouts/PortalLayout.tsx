@@ -17,6 +17,8 @@ import {
 import { useRuntime } from '../app/runtime'
 import { usePreferences } from '../hooks/usePreferences'
 import { PatientScope } from '../features/exams/PatientScope'
+import { ContinuityBanner, ConnectionIndicator } from '../components/Continuity'
+import { SessionControls, SessionGate } from '../features/session/SessionControls'
 
 export function PortalLayout() {
   const { t, i18n } = useTranslation()
@@ -26,6 +28,12 @@ export function PortalLayout() {
   const location = useLocation()
   const main = useRef<HTMLElement>(null)
   const previousPath = useRef(location.pathname)
+  const menuButton = useRef<HTMLButtonElement>(null)
+  const navigation = useRef<HTMLElement>(null)
+  function closeMenu() {
+    setOpen(false)
+    menuButton.current?.focus()
+  }
   useEffect(() => {
     if (previousPath.current !== location.pathname) main.current?.focus({ preventScroll: true })
     previousPath.current = location.pathname
@@ -42,7 +50,21 @@ export function PortalLayout() {
         {t('skip')}
       </a>
       <div className="portal-shell">
-        <aside className={`sidebar ${open ? 'is-open' : ''}`} id="portal-navigation">
+        <aside
+          ref={navigation}
+          className={`sidebar ${open ? 'is-open' : ''}`}
+          id="portal-navigation"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') closeMenu()
+          }}
+        >
+          <button
+            className="icon-button mobile-close"
+            onClick={closeMenu}
+            aria-label={t('closeMenu')}
+          >
+            <X size={22} aria-hidden="true" />
+          </button>
           <NavLink className="brand" to={home} onClick={() => setOpen(false)}>
             <span className="brand-mark">
               <Activity size={25} aria-hidden="true" />
@@ -84,7 +106,16 @@ export function PortalLayout() {
                 aria-label={t(open ? 'closeMenu' : 'menu')}
                 aria-expanded={open}
                 aria-controls="portal-navigation"
-                onClick={() => setOpen((v) => !v)}
+                ref={menuButton}
+                onClick={() => {
+                  if (open) closeMenu()
+                  else {
+                    setOpen(true)
+                    window.requestAnimationFrame(() =>
+                      navigation.current?.querySelector<HTMLAnchorElement>('a')?.focus(),
+                    )
+                  }
+                }}
               >
                 {open ? <X size={21} /> : <Menu size={21} />}
               </button>
@@ -139,6 +170,10 @@ export function PortalLayout() {
               )}
             </div>
           </header>
+          <div className="session-strip">
+            <ConnectionIndicator />
+            <SessionControls />
+          </div>
           {runtime.mode === 'demo' && (
             <div className="demo-banner">
               <FlaskConical size={15} aria-hidden="true" />
@@ -146,23 +181,11 @@ export function PortalLayout() {
             </div>
           )}
           <main className="content" id="main-content" ref={main} tabIndex={-1}>
+            <ContinuityBanner />
             {runtime.mode === 'api' && !runtime.session ? (
-              <section className="panel state">
-                <ShieldCheck size={35} aria-hidden="true" />
-                <h1>{t(runtime.loading ? 'loadingSession' : 'sessionPending')}</h1>
-                <p>{t('sessionHelp')}</p>
-                <button
-                  className="button primary"
-                  disabled={runtime.loading}
-                  onClick={runtime.reloadIdentity}
-                >
-                  {t('reloadIdentity')}
-                </button>
-              </section>
+              <SessionGate />
             ) : (
-              <PatientScope
-                key={`${runtime.role}:${runtime.session?.tenantId || 'demo'}:${runtime.session?.resourceId || 'demo'}`}
-              >
+              <PatientScope key={`${runtime.role}:${runtime.boundary}`}>
                 <Outlet />
               </PatientScope>
             )}

@@ -9,6 +9,7 @@ import {
   type ExamPage,
 } from '../types/clinical'
 import { createHttp } from './http'
+import type { ConnectionStatus } from './connectivity'
 
 export interface ClinicalSource {
   list: (filters: ExamFilters, patientId: string, signal?: AbortSignal) => Promise<ExamPage>
@@ -19,9 +20,10 @@ export function apiSource(
   base: string,
   role: Role,
   token: () => string | undefined,
-  unauthorized: () => void,
+  unauthorized: (token?: string) => void,
+  report?: (status: ConnectionStatus) => void,
 ): ClinicalSource {
-  const http = createHttp(base, token, unauthorized)
+  const http = createHttp(base, token, unauthorized, report)
   return {
     list: (filters, patientId, signal) => {
       const params = new URLSearchParams({ limit: '6' })

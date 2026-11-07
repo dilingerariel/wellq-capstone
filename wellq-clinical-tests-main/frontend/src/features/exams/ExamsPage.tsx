@@ -5,9 +5,12 @@ import { ExamTable } from '../../components/ExamTable'
 import { Empty, ErrorState, Loading } from '../../components/States'
 import { statuses, testTypes, type ExamFilters } from '../../types/clinical'
 import { useExams } from './useExams'
+import { useRuntime } from '../../app/runtime'
+import { CachedNotice, NeedsConnection } from '../../components/Continuity'
 
 export function ExamsPage() {
   const { t } = useTranslation()
+  const { canRequest } = useRuntime()
   const [filters, setFilters] = useState<ExamFilters>({})
   const [cursors, setCursors] = useState<Array<string | undefined>>([undefined])
   const query = useExams({ ...filters, cursor: cursors.at(-1) })
@@ -25,18 +28,19 @@ export function ExamsPage() {
         </div>
         <button
           className="button secondary"
-          disabled={!query.allowed || query.needsPatient || query.isFetching}
+          disabled={!canRequest || !query.allowed || query.needsPatient || query.isFetching}
           onClick={() => void query.refetch()}
         >
           <RefreshCw size={16} aria-hidden="true" />
           {t('refresh')}
         </button>
       </div>
+      <CachedNotice error={query.isError} />
       <section className="panel">
         <div className="filter-bar">
           <SlidersHorizontal size={18} aria-hidden="true" />
           <div>
-            <label htmlFor="status-filter" className="sr-only">
+            <label htmlFor="status-filter" className="filter-label">
               {t('filterStatus')}
             </label>
             <select
@@ -58,7 +62,7 @@ export function ExamsPage() {
             </select>
           </div>
           <div>
-            <label htmlFor="type-filter" className="sr-only">
+            <label htmlFor="type-filter" className="filter-label">
               {t('filterType')}
             </label>
             <select
@@ -89,9 +93,14 @@ export function ExamsPage() {
           <Empty description="noGrant" />
         ) : query.needsPatient ? (
           <Empty description="noPatient" />
-        ) : query.isError ? (
-          <ErrorState error={query.error} retry={() => void query.refetch()} />
-        ) : query.isPending ? (
+        ) : query.isError && !query.data ? (
+          <ErrorState
+            error={query.error}
+            retry={canRequest ? () => void query.refetch() : undefined}
+          />
+        ) : !canRequest && !query.data ? (
+          <NeedsConnection />
+        ) : !query.data ? (
           <Loading />
         ) : query.data.items.length === 0 ? (
           <Empty />

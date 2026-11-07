@@ -8,7 +8,7 @@ export function ExamTable({ items }: { items: Exam[] }) {
   const { t, i18n } = useTranslation()
   return (
     <div className="table-scroll" role="region" aria-label={t('examTitle')} tabIndex={0}>
-      <table>
+      <table className="responsive-table">
         <caption className="sr-only">{t('examTitle')}</caption>
         <thead>
           <tr>
@@ -38,18 +38,20 @@ export function ExamTable({ items }: { items: Exam[] }) {
                   </div>
                 </div>
               </td>
-              <td className="date-cell">{formatDate(exam.test_date, i18n.language)}</td>
-              <td>
+              <td className="date-cell" data-label={t('date')}>
+                {formatDate(exam.test_date, i18n.language)}
+              </td>
+              <td data-label={t('status')}>
                 <StatusBadge status={exam.status} />
               </td>
-              <td>
+              <td data-label={t('review')}>
                 <span
                   className={`review-label ${exam.review.status === 'reviewed' ? 'reviewed' : ''}`}
                 >
                   {t(`review_${exam.review.status}`)}
                 </span>
               </td>
-              <td>
+              <td data-label={t('actions')}>
                 <Link
                   className="icon-button"
                   aria-label={`${t('viewExam')}: ${exam.title}`}

@@ -13,9 +13,10 @@ import { useRuntime } from '../../app/runtime'
 import { useExams } from '../exams/useExams'
 import { ExamTable } from '../../components/ExamTable'
 import { Loading, Empty, ErrorState } from '../../components/States'
+import { CachedNotice, NeedsConnection } from '../../components/Continuity'
 export function OverviewPage() {
   const { t } = useTranslation()
-  const { role } = useRuntime()
+  const { role, canRequest } = useRuntime()
   const query = useExams()
   const items = query.data?.items
   const cards = [
@@ -61,6 +62,7 @@ export function OverviewPage() {
         ))}
       </div>
       <p className="small-note">{t('pageOnly')}</p>
+      <CachedNotice error={query.isError} />
       <section className="panel">
         <div className="panel-heading">
           <h2>{t('recent')}</h2>
@@ -73,9 +75,14 @@ export function OverviewPage() {
           <Empty description="noGrant" />
         ) : query.needsPatient ? (
           <Empty description="noPatient" />
-        ) : query.isError ? (
-          <ErrorState error={query.error} retry={() => void query.refetch()} />
-        ) : query.isPending ? (
+        ) : query.isError && !query.data ? (
+          <ErrorState
+            error={query.error}
+            retry={canRequest ? () => void query.refetch() : undefined}
+          />
+        ) : !canRequest && !query.data ? (
+          <NeedsConnection />
+        ) : !query.data ? (
           <Loading />
         ) : !items?.length ? (
           <Empty />

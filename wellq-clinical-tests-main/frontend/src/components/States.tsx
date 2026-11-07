@@ -25,12 +25,20 @@ export function Empty({ description = 'emptyBody' }: { description?: string }) {
 export function ErrorState({ error, retry }: { error: unknown; retry?: () => void }) {
   const { t } = useTranslation()
   const status = error instanceof ApiError ? error.status : 'unknown'
-  const known = [0, 401, 403, 404, 409, 422, 429, 503, 502].includes(Number(status))
+  const known = [0, 400, 401, 403, 404, 409, 422, 429, 500, 503, 502].includes(Number(status))
   return (
     <div role="alert" className="state error">
       <AlertCircle aria-hidden="true" />
       <h2>{t('errorTitle')}</h2>
-      <p>{t(known ? `error_${status}` : 'error_unknown')}</p>
+      <p>
+        {t(
+          error instanceof ApiError && error.code === 'REQUEST_TIMEOUT'
+            ? 'error_timeout'
+            : known
+              ? `error_${status}`
+              : 'error_unknown',
+        )}
+      </p>
       {retry && (
         <button className="button secondary" onClick={retry}>
           {t('retry')}

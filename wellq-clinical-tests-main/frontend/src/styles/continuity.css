@@ -1,0 +1,229 @@
+.content {
+  container-type: inline-size;
+}
+.session-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 38px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.session-controls,
+.session-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.connection-indicator {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.connection-online {
+  color: var(--accent-text);
+}
+.connection-offline,
+.connection-timeout,
+.connection-unreachable,
+.connection-unavailable {
+  color: var(--danger);
+}
+.continuity-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--demo-border);
+  background: var(--demo-bg);
+  color: var(--demo-text);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.continuity-banner > div {
+  flex: 1;
+  min-width: 150px;
+}
+.continuity-banner p {
+  margin: 4px 0 0;
+  color: inherit;
+  font-size: 13px;
+}
+.cached-notice,
+.draft-notice {
+  padding: 10px;
+  border-left: 3px solid var(--accent-text);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 13px;
+}
+.filter-label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+.mobile-close {
+  display: none;
+}
+.document-title,
+.details dd,
+.hero h1,
+.panel-heading,
+.breadcrumb {
+  overflow-wrap: anywhere;
+}
+.button,
+.icon-button,
+input,
+select {
+  min-height: 44px;
+}
+.icon-button {
+  min-width: 44px;
+}
+.table-scroll table {
+  font-size: 14px;
+}
+.subtext,
+.badge,
+.review-label,
+.small-note,
+.footer {
+  font-size: 12px;
+}
+.hero h1 {
+  font-size: clamp(1.7rem, 2.5vw, 2.25rem);
+}
+@container (max-width:700px) {
+  .next-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-mark {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .session-strip {
+    padding: 10px 18px;
+  }
+  .mobile-close {
+    display: inline-flex;
+    align-self: flex-end;
+  }
+  .sidebar.is-open {
+    max-height: none;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .metric-top {
+    font-size: 12px;
+  }
+  .patient-scope label,
+  .patient-scope form p {
+    font-size: 13px;
+  }
+  .patient-scope {
+    align-items: flex-start;
+  }
+  .patient-scope form > div {
+    min-width: 0;
+  }
+  .patient-scope form {
+    min-width: 0;
+  }
+  .patient-avatar {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 600px) {
+  .responsive-table,
+  .responsive-table tbody {
+    display: block;
+    width: 100%;
+    white-space: normal;
+  }
+  .responsive-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .responsive-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0;
+    border: 0;
+    font-size: 14px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .responsive-table td[data-label]::before {
+    content: attr(data-label);
+    font-size: 12px;
+    color: var(--muted);
+    flex: 0 0 36%;
+  }
+  .responsive-table .document-title {
+    font-size: 14px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .document-cell {
+    min-width: 0;
+  }
+  .document-cell > div {
+    min-width: 0;
+  }
+  .badge {
+    white-space: normal;
+    text-align: right;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metric:first-child {
+    grid-column: 1/-1;
+  }
+  .metric:first-child .metric-top {
+    min-height: 0;
+  }
+  .metric-top {
+    min-height: 60px;
+  }
+  .footer {
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .filter-bar > div {
+    flex-basis: 100%;
+  }
+  .pagination > div {
+    flex-wrap: wrap;
+  }
+  .continuity-banner > .button {
+    width: 100%;
+  }
+}
+@media (forced-colors: active) {
+  .badge,
+  .button,
+  .connection-indicator {
+    border: 1px solid CanvasText;
+  }
+}
