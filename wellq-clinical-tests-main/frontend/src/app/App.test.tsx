@@ -21,7 +21,12 @@ describe('portal navigation and states', () => {
   it('lists synthetic exams and navigates to real document metadata', async () => {
     const user = userEvent.setup()
     portal()
-    const document = await screen.findByRole('link', { name: 'Panel de laboratorio · DEMO' })
+    // Wait for the lazy route on a cold runner; this checks behavior, not a 1s SLA.
+    const document = await screen.findByRole(
+      'link',
+      { name: 'Panel de laboratorio · DEMO' },
+      { timeout: 5000 },
+    )
     expect(screen.getByText(es.demoNotice)).toBeInTheDocument()
     await user.click(document)
     expect(

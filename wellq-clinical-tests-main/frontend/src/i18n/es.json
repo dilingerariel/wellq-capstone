@@ -1,4 +1,11 @@
 {
+  "session_unverified": "Identidad temporalmente sin verificar; se conservan los datos de esta sesión en memoria",
+  "uploadPreparation": "Cómo se protegerá tu documento",
+  "uploadStepHash": "Seleccionar el archivo y comprobar su integridad.",
+  "uploadStepInitiate": "Revisar los datos del examen y tu consentimiento.",
+  "uploadStepTransfer": "Enviar el documento de forma privada con una autorización temporal.",
+  "uploadStepVerify": "Confirmar y consultar el estado del servidor antes de permitir el borrado local.",
+  "uploadPreparationPending": "Carga pendiente de habilitar. No se ha seleccionado, enviado ni sincronizado ningún documento.",
   "connectionStatus": "Estado de conexión",
   "connection_checking": "Comprobando conexión",
   "connection_online": "API accesible",

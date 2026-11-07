@@ -14,6 +14,7 @@ import { useExams } from '../exams/useExams'
 import { ExamTable } from '../../components/ExamTable'
 import { Loading, Empty, ErrorState } from '../../components/States'
 import { CachedNotice, NeedsConnection } from '../../components/Continuity'
+import { UploadPreparation } from '../uploads/UploadPreparation'
 export function OverviewPage() {
   const { t } = useTranslation()
   const { role, canRequest } = useRuntime()
@@ -90,6 +91,7 @@ export function OverviewPage() {
           <ExamTable items={items.slice(0, 4)} />
         )}
       </section>
+      {role === 'patient' && <UploadPreparation />}
       <div className="next-grid">
         <article className="next-card">
           <span className="file-icon">

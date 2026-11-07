@@ -1,5 +1,7 @@
 # WellQ · Portal web
 
+Integración actual: [configuración de identidad y prueba HTTP real](INTEGRATION.md). La identidad productiva requiere un proveedor aprobado; el entorno aislado usa una autoridad sintética y FastAPI/MongoDB reales. Las validaciones históricas siguientes conservan su alcance original.
+
 Primera implementación React del portal. Rama `feature/wellq-react-frontend`, basada en `20fa09c`. Sin cambios de lógica clínica ni de infraestructura. Se retira únicamente el HTML de demostración no servido por FastAPI.
 
 ## Ejecutar en Windows
@@ -100,7 +102,7 @@ Las fuentes académicas también mencionan administrador/auditor: no se implemen
 
 Las versiones exactas se fijan en `package.json` y `package-lock.json`. Los overrides de minimatch 11.0.1 afectan únicamente a herramientas de lint; corrigen GHSA-g3hv-75wg-m249 sin ejecutar `audit fix --force` ni degradar ESLint. Revalidar al actualizar herramientas. Documentación oficial consultada: [Vite](https://vite.dev/guide/), [React Router](https://reactrouter.com/start/declarative/installation), [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview).
 
-Siguiente módulo: integrar el proveedor real de identidad y verificar lectura con sesiones patient/clinician y relaciones clínicas autorizadas; después, revisión/validación clínica del examen con trazabilidad.
+Siguiente módulo: conectar el proveedor aprobado de identidad y después implementar la carga real mediante URL firmada, confirmación y sondeo. Las lecturas patient/clinician y el aislamiento se comprueban ahora contra FastAPI/MongoDB reales con una autoridad sintética de integración; esto no acredita un SSO externo.
 
 ## Evolución: identidad, red y shell offline
 

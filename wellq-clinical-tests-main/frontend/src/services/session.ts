@@ -1,7 +1,7 @@
 import { sessionSchema, type IdentityProvider, type PortalSession } from '../types/session'
 
 export type SessionPhase =
-  'loading' | 'authenticated' | 'signed-out' | 'unavailable' | 'expired' | 'error'
+  'unverified' | 'loading' | 'authenticated' | 'signed-out' | 'unavailable' | 'expired' | 'error'
 export interface SessionState {
   session: PortalSession | null
   phase: SessionPhase
@@ -74,7 +74,15 @@ export class SessionManager {
         this.commit(result.data, 'authenticated')
         return true
       } catch {
-        if (generation === this.generation) this.commit(null, 'error')
+        if (generation === this.generation) {
+          // Provider transport failure is not proof of logout. Keep a still-valid
+          // session and RAM-only work, but block new reads until verification succeeds.
+          const previous = this.state.session
+          this.commit(
+            previous && previous.expiresAt * 1000 > Date.now() ? previous : null,
+            previous && previous.expiresAt * 1000 > Date.now() ? 'unverified' : 'error',
+          )
+        }
         return false
       }
     })()

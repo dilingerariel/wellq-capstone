@@ -1,4 +1,11 @@
 {
+  "session_unverified": "Identity temporarily unverified; current session data remains in memory",
+  "uploadPreparation": "How your document will be protected",
+  "uploadStepHash": "Select the file and check its integrity.",
+  "uploadStepInitiate": "Review the exam details and your consent.",
+  "uploadStepTransfer": "Send the document privately using temporary authorization.",
+  "uploadStepVerify": "Complete and check server status before permitting local deletion.",
+  "uploadPreparationPending": "Uploads are not enabled yet. No document has been selected, sent, or synchronized.",
   "connectionStatus": "Connection status",
   "connection_checking": "Checking connection",
   "connection_online": "API reachable",

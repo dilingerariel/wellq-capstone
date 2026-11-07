@@ -1,6 +1,90 @@
 import { test, expect } from './fixtures'
 import { demoSource } from '../src/features/demo/source'
 
+test('identity network failure preserves the draft and cached view, gates reads until explicit revalidation', async ({
+  page,
+  context,
+}) => {
+  await page.addInitScript(() => {
+    let unavailable = false
+    window.addEventListener('synthetic-identity-outage', () => {
+      unavailable = true
+    })
+    window.addEventListener('synthetic-identity-restored', () => {
+      unavailable = false
+    })
+    const session = {
+      accessToken: 'synthetic-offline-identity',
+      role: 'clinician',
+      tenantId: 'synthetic-tenant',
+      resourceId: 'synthetic-clinician',
+      permissions: ['clinical:read'],
+      capabilities: [],
+      expiresAt: Math.floor(Date.now() / 1000) + 300,
+    }
+    window.wellqIdentity = {
+      getSession: async () => session,
+      refreshSession: async () => {
+        if (unavailable) throw new TypeError('Synthetic provider network failure')
+        return session
+      },
+    }
+  })
+  let disconnected = false,
+    reads = 0
+  const data = await demoSource.list({}, 'demo-patient')
+  await page.route('**/health', (route) =>
+    disconnected
+      ? route.abort('internetdisconnected')
+      : route.fulfill({ status: 200, contentType: 'application/json', body: '{"status":"ok"}' }),
+  )
+  await page.route('**/api/v1/**', async (route) => {
+    reads++
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(data),
+    })
+  })
+  await page.goto('http://127.0.0.1:5174/exams')
+  await page.getByLabel('ID del paciente autorizado', { exact: true }).fill('demo-patient')
+  await page.getByRole('button', { name: 'Consultar paciente' }).click()
+  await expect(
+    page.getByRole('link', { name: 'Panel de laboratorio · DEMO', exact: true }),
+  ).toBeVisible()
+  await page
+    .getByLabel('ID del paciente autorizado', { exact: true })
+    .fill('synthetic-private-draft')
+  await page.evaluate(() => window.dispatchEvent(new Event('synthetic-identity-outage')))
+  disconnected = true
+  await context.setOffline(true)
+  await expect(page.getByRole('button', { name: 'Consultar paciente' })).toBeDisabled()
+  const before = reads
+  disconnected = false
+  await context.setOffline(false)
+  await expect(
+    page.getByText(
+      'Identidad temporalmente sin verificar; se conservan los datos de esta sesión en memoria',
+      { exact: true },
+    ),
+  ).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Consultar paciente' })).toBeDisabled()
+  await expect(page.getByLabel('ID del paciente autorizado', { exact: true })).toHaveValue(
+    'synthetic-private-draft',
+  )
+  await expect(
+    page.getByRole('link', { name: 'Panel de laboratorio · DEMO', exact: true }),
+  ).toBeVisible()
+  expect(reads).toBe(before)
+  await page.evaluate(() => window.dispatchEvent(new Event('synthetic-identity-restored')))
+  await page.getByRole('button', { name: 'Renovar sesión', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Consultar paciente' })).toBeEnabled()
+  await expect.poll(() => reads).toBe(before + 1)
+  await expect(page.getByLabel('ID del paciente autorizado', { exact: true })).toHaveValue(
+    'synthetic-private-draft',
+  )
+})
+
 test('offline preserves cached reads and unsent form, reconnect revalidates once, service failure is not fake success', async ({
   page,
   context,

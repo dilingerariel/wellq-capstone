@@ -21,6 +21,34 @@ const session = (overrides = {}) => ({
   ...overrides,
 })
 describe('external identity boundary', () => {
+  it('preserves a valid RAM session on provider transport failure, blocks trust, then revalidates', async () => {
+    const getSession = vi.fn().mockResolvedValue(session())
+    const clear = vi.fn()
+    const manager = new SessionManager(() => ({ getSession }), clear)
+    await manager.verify()
+    clear.mockClear()
+    const previous = manager.getSnapshot().session
+    getSession.mockRejectedValueOnce(new TypeError('Synthetic transport unavailable'))
+    expect(await manager.verify(true)).toBe(false)
+    expect(manager.getSnapshot()).toMatchObject({ phase: 'unverified', session: previous })
+    expect(clear).not.toHaveBeenCalled()
+    expect(await manager.verify(true)).toBe(true)
+    expect(manager.getSnapshot().phase).toBe('authenticated')
+    expect(clear).not.toHaveBeenCalled()
+    getSession.mockResolvedValueOnce(null)
+    await manager.verify()
+    expect(manager.getSnapshot().session).toBeNull()
+    expect(clear).toHaveBeenCalledOnce()
+  })
+  it('does not preserve expired identity when its provider is unreachable', async () => {
+    const getSession = vi.fn().mockResolvedValue(session())
+    const manager = new SessionManager(() => ({ getSession }), vi.fn())
+    await manager.verify()
+    vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 600_000)
+    getSession.mockRejectedValue(new TypeError('Synthetic outage'))
+    await manager.verify()
+    expect(manager.getSnapshot().session).toBeNull()
+  })
   it('retries provider exceptions and never restores a delayed sign-in after logout', async () => {
     const read = vi
       .fn()

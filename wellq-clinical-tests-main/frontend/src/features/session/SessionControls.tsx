@@ -13,7 +13,7 @@ export function SessionControls() {
       </span>
       {runtime.session && (
         <>
-          {runtime.canRenew && (
+          {(runtime.canRenew || runtime.sessionPhase === 'unverified') && (
             <button
               className="icon-button"
               disabled={runtime.loading || runtime.connection !== 'online'}

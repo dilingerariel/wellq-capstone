@@ -1,3 +1,20 @@
+.upload-preparation {
+  padding: 20px;
+  margin-top: 20px;
+}
+.upload-preparation h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.upload-preparation li {
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+.upload-preparation p {
+  font-size: 13px;
+  margin-bottom: 0;
+}
 .content {
   container-type: inline-size;
 }

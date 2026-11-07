@@ -12,6 +12,7 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "test:browser": "playwright test",
+    "test:live": "node scripts/run-live.mjs",
     "build": "npm run contracts:check && npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "contracts:generate": "node scripts/generate-api.mjs",
