@@ -29,27 +29,52 @@ export function createHttp(
     throw new Error('Invalid API base URL')
   if (url.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
     throw new Error('HTTPS required for remote API')
-  return async <T>(path: string, schema: z.ZodType<T>, signal?: AbortSignal): Promise<T> => {
+  return async <T>(
+    path: string,
+    schema: z.ZodType<T>,
+    signal?: AbortSignal,
+    mutation?: { body: unknown; key: string },
+  ): Promise<T> => {
     const accessToken = token()
     const controller = new AbortController()
     const timer = window.setTimeout(() => controller.abort(), timeoutMs)
     const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal
     try {
       const response = await fetch(`${base.replace(/\/$/, '')}${path}`, {
+        method: mutation ? 'POST' : 'GET',
+        body: mutation ? JSON.stringify(mutation.body) : undefined,
         signal: combined,
         cache: 'no-store',
         credentials: 'omit',
         redirect: 'error',
         headers: {
           Accept: 'application/json',
+          ...(mutation
+            ? { 'Content-Type': 'application/json', 'Idempotency-Key': mutation.key }
+            : {}),
           ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
       })
       if (signal?.aborted) throw signal.reason
       if (!response.ok) {
         if (response.status === 401) unauthorized(accessToken)
+        let code = 'REQUEST_FAILED'
+        // Only bounded machine codes are retained; never reflect clinical error text.
+        if (response.status === 409)
+          try {
+            const error = z
+              .object({
+                detail: z.object({
+                  code: z.enum(['EXTRACTION_NOT_READY', 'INVALID_CLINICAL_DATE']),
+                }),
+              })
+              .safeParse(await response.json())
+            if (error.success) code = error.data.detail.code
+          } catch {
+            if (combined.aborted) throw combined.reason
+          }
         report(response.status >= 500 ? 'unavailable' : 'online')
-        throw new ApiError(response.status, 'REQUEST_FAILED', response.headers.get('Retry-After'))
+        throw new ApiError(response.status, code, response.headers.get('Retry-After'))
       }
       let body: unknown
       try {

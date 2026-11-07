@@ -6,6 +6,7 @@ Test signing keys stay in the ignored backend integration runtime, never in Reac
 """
 
 import base64
+import hashlib
 import io
 import json
 import os
@@ -19,7 +20,7 @@ import time
 import traceback
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import jwt
 from cryptography.hazmat.primitives import serialization
@@ -82,7 +83,9 @@ PIPE_RELAY = """
 import base64,json,sys,urllib.request,urllib.error
 for line in sys.stdin:
  p=json.loads(line)
- req=urllib.request.Request('http://127.0.0.1:8000'+p['path'],headers=p['headers'])
+ origin='http://objects-int:8080' if p.get('storage') else 'http://127.0.0.1:8000'
+ data=base64.b64decode(p['body']) if p.get('body') is not None else None
+ req=urllib.request.Request(origin+p['path'],headers=p['headers'],data=data,method=p.get('method','GET'))
  try:
   try: response=urllib.request.urlopen(req,timeout=15)
   except urllib.error.HTTPError as error: response=error
@@ -91,6 +94,46 @@ for line in sys.stdin:
     'type':response.headers.get('Content-Type','application/json')}
  except (OSError,urllib.error.URLError): result={'transport_failure':True}
  print(json.dumps(result),flush=True)
+"""
+
+WORKER = """
+import json,sys
+from integration.bootstrap import configure
+configure()
+from integration.guard import database
+from app.workers.processing import run_once
+p=json.load(sys.stdin);raw=database()
+# Restrict the worker's initial lease/expired-job operations to this synthetic tenant.
+# All subsequent writes retain the unmodified product worker's tenant facade/fence.
+class Collection:
+ def __init__(self,collection): self.collection=collection; self.name=collection.name
+ def update_many(self,query,update,**kw):
+  return self.collection.update_many({'$and':[{'client_id':p['tenant']},query]},update,**kw)
+ def find_one_and_update(self,query,update,**kw):
+  return self.collection.find_one_and_update({'$and':[{'client_id':p['tenant']},query]},update,**kw)
+ def __getattr__(self,name): return getattr(self.collection,name)
+class Scoped:
+ client=raw.client
+ clinical_tests=Collection(raw.clinical_tests)
+ def __getitem__(self,name): return self.clinical_tests if name=='clinical_tests' else raw[name]
+worked=run_once(Scoped(),'upload')
+print(json.dumps({'worked':worked}))
+"""
+
+VERIFY_UPLOAD = """
+import hashlib,json,sys
+from integration.guard import database
+from integration.adapters import object_path
+p=json.load(sys.stdin);db=database()
+docs=list(db.clinical_tests.find({'client_id':p['tenant'],'title':'SYNTHETIC BROWSER UPLOAD'}))
+assert len(docs)==1
+d=docs[0];data=object_path(d['file']['gcs_object_key']).read_bytes()
+assert d['upload']['status']=='ready_for_review' and d['upload']['job']['status']=='done'
+assert hashlib.sha256(data).hexdigest()==p['sha256']==d['file']['sha256']
+assert len(data)==d['file']['size_bytes']==p['size']
+assert d['file']['verified_at'] and d['file']['generation']
+assert db.audit_events.count_documents({'client_id':p['tenant'],'resource_id':d['clinical_test_id']})>0
+print(json.dumps({'bytes_verified':True,'server_worker_verified':True,'single_document':True,'byte_count':len(data)}))
 """
 
 SEED = """
@@ -126,7 +169,9 @@ def main():
     assert re.fullmatch(r"wellq-int-[a-f0-9]+", project)
     assert project == "wellq-int-" + run and state["db"] == "wellq_integration_" + run
     mongo, api = project + "-mongo-int-1", project + "-api-int-1"
-    before = {name: inspect(name) for name in (mongo, api)}
+    objects = project + "-objects-int-1"
+    before = {name: inspect(name) for name in (mongo, api, objects)}
+    assert before[objects]["Image"] == before[api]["Image"]
     # Refuse a stack shared with other running applications or unrelated mounts.
     all_ids = command(["docker", "ps", "-aq"]).decode().split()
     all_containers = json.loads(command(["docker", "inspect", *all_ids]))
@@ -242,8 +287,14 @@ def main():
     relay_process = None
     relay_lock = threading.Lock()
 
-    def forward(path, headers):
-        payload = {"path": path, "headers": headers}
+    def forward(path, headers, method="GET", body=None, storage=False):
+        payload = {
+            "path": path,
+            "headers": headers,
+            "method": method,
+            "body": base64.b64encode(body).decode() if body is not None else None,
+            "storage": storage,
+        }
         if relay_process is None:
             return container_python(api, RELAY, payload)
         with relay_lock:
@@ -263,8 +314,9 @@ def main():
     started = []
     bridge = None
     checks = []
+    worker_threads = []
     try:
-        for name in (mongo, api):
+        for name in (mongo, api, objects):
             command(["docker", "start", name])
             started.append(name)
             if name == mongo:
@@ -366,9 +418,134 @@ def main():
         )
         check("wrong-role-route", clinical_path, patient, 403)
 
+        transfer_evidence = {
+            "byte_count": 0,
+            "put_requests": 0,
+            "authorization_seen": False,
+        }
+        worker_results = []
+        pdf = container_python(
+            api,
+            "import io,json,base64;from reportlab.pdfgen import canvas;b=io.BytesIO();c=canvas.Canvas(b);c.drawString(20,700,'SYNTHETIC BROWSER UPLOAD - NO PATIENT DATA');c.save();print(json.dumps({'bytes':base64.b64encode(b.getvalue()).decode()}))",
+        )["bytes"]
+        pdf_bytes = base64.b64decode(pdf)
+
+        def process_upload():
+            try:
+                time.sleep(1)
+                worker_results.append(container_python(api, WORKER, fixture)["worked"])
+            except CommandFailure:
+                worker_results.append(False)
+
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *args):
                 pass
+
+            def cors(self):
+                if self.headers.get("Origin") == "http://127.0.0.1:5175":
+                    self.send_header(
+                        "Access-Control-Allow-Origin", "http://127.0.0.1:5175"
+                    )
+                    self.send_header("Vary", "Origin")
+
+            def do_OPTIONS(self):
+                self.send_response(204)
+                self.cors()
+                self.send_header("Access-Control-Allow-Methods", "PUT,OPTIONS")
+                self.send_header(
+                    "Access-Control-Allow-Headers",
+                    "Content-Type,x-goog-if-generation-match",
+                )
+                self.end_headers()
+
+            def respond(self, response, storage=False):
+                body = base64.b64decode(response["body"])
+                if not storage and "application/json" in response["type"]:
+                    document = json.loads(body)
+                    if isinstance(document, dict) and isinstance(
+                        document.get("upload"), dict
+                    ):
+                        descriptor = document["upload"]
+                        target = urlsplit(descriptor["signed_url"])
+                        assert (
+                            target.netloc == "objects-int:8080"
+                            and target.path.startswith("/object/quarantine/")
+                        )
+                        # Explicit test gateway origin translation only, signature/path unchanged.
+                        descriptor["signed_url"] = (
+                            "http://127.0.0.1:"
+                            + str(bridge.server_port)
+                            + target.path
+                            + "?"
+                            + target.query
+                        )
+                        body = json.dumps(document).encode()
+                self.send_response(response["status"])
+                self.cors()
+                self.send_header("Content-Type", response["type"])
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(body)))
+                try:
+                    self.end_headers()
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionError):
+                    pass
+
+            def do_PUT(self):
+                if not self.path.startswith("/object/quarantine/clinical-tests/"):
+                    self.send_error(404)
+                    return
+                if self.headers.get("Authorization"):
+                    transfer_evidence["authorization_seen"] = True
+                    self.send_error(400)
+                    return
+                size = int(self.headers.get("Content-Length", "0"))
+                if not 0 < size <= 20 * 1024 * 1024:
+                    self.send_error(413)
+                    return
+                data = self.rfile.read(size)
+                response = forward(
+                    self.path,
+                    {
+                        key: self.headers[key]
+                        for key in ("Content-Type", "x-goog-if-generation-match")
+                        if key in self.headers
+                    },
+                    "PUT",
+                    data,
+                    True,
+                )
+                transfer_evidence["put_requests"] += 1
+                if response["status"] == 200:
+                    transfer_evidence["byte_count"] += len(data)
+                self.respond(response, True)
+
+            def do_POST(self):
+                if not re.fullmatch(
+                    r"/api/v1/clinical-tests/uploads/(initiate|[^/]+/(complete|refresh-url))",
+                    self.path,
+                ):
+                    self.send_error(404)
+                    return
+                size = int(self.headers.get("Content-Length", "0"))
+                if not 0 < size <= 65536:
+                    self.send_error(413)
+                    return
+                response = forward(
+                    self.path,
+                    {
+                        key: self.headers[key]
+                        for key in ("Authorization", "Content-Type", "Idempotency-Key")
+                        if key in self.headers
+                    },
+                    "POST",
+                    self.rfile.read(size),
+                )
+                self.respond(response)
+                if self.path.endswith("/complete") and response["status"] == 200:
+                    worker = threading.Thread(target=process_upload, daemon=True)
+                    worker_threads.append(worker)
+                    worker.start()
 
             def do_GET(self):
                 if not (
@@ -380,16 +557,7 @@ def main():
                 response = forward(
                     self.path, {"Authorization": self.headers.get("Authorization", "")}
                 )
-                body = base64.b64decode(response["body"])
-                self.send_response(response["status"])
-                self.send_header("Content-Type", response["type"])
-                self.send_header("Cache-Control", "no-store")
-                self.send_header("Content-Length", str(len(body)))
-                try:
-                    self.end_headers()
-                    self.wfile.write(body)
-                except (BrokenPipeError, ConnectionError):
-                    pass  # Browser cancellation is expected; no request/header logging.
+                self.respond(response)
 
         bridge = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         threading.Thread(target=bridge.serve_forever, daemon=True).start()
@@ -398,7 +566,15 @@ def main():
             bridge.server_port
         )
         browser_env["WELLQ_HTTP_FIXTURE"] = json.dumps(
-            {**fixture, "patientSession": patient, "clinicianSession": clinician}
+            {
+                **fixture,
+                "patientSession": patient,
+                "clinicianSession": clinician,
+                "uploadSession": session(
+                    permissions=["clinical:read", "clinical:write"]
+                ),
+                "pdfBytes": pdf,
+            }
         )
         browser = subprocess.run(
             [
@@ -425,14 +601,35 @@ def main():
         )
         print(output.encode("ascii", "backslashreplace").decode())
         assert browser.returncode == 0, "Real HTTP browser checks failed"
+        for worker in worker_threads:
+            worker.join(timeout=30)
+        assert worker_results and all(worker_results), (
+            "Scoped product worker did not complete"
+        )
+        upload_proof = container_python(
+            api,
+            VERIFY_UPLOAD,
+            {
+                **fixture,
+                "sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+                "size": len(pdf_bytes),
+            },
+        )
+        assert (
+            not transfer_evidence["authorization_seen"]
+            and transfer_evidence["put_requests"] == 1
+        )
+        assert transfer_evidence["byte_count"] == len(pdf_bytes)
         evidence = {
             "authority": "synthetic RS256 integration authority; no external SSO",
             "transport": "browser -> Vite -> loopback relay -> uvicorn HTTP -> authenticated Mongo replica set",
             "backend_python_sources_matched": compared,
             "checks": checks,
             "synthetic_documents_appended": 7,
-            "clinical_api_mutations": False,
-            "external_storage_ai_scanner": "explicit integration doubles; not exercised",
+            "clinical_api_mutations": "one synthetic upload; no real patient data",
+            "upload_proof": upload_proof,
+            "storage_transfer": transfer_evidence,
+            "external_storage_ai_scanner": "filesystem signed HTTP test storage and scanner double; GCS/antivirus/AI production not certified; AI not requested",
             "browser_passed": True,
             "no_published_docker_ports": True,
         }
@@ -447,6 +644,8 @@ def main():
             if bridge:
                 bridge.shutdown()
                 bridge.server_close()
+            for worker in worker_threads:
+                worker.join(timeout=30)
             if relay_process:
                 relay_process.stdin.close()
                 relay_process.wait(timeout=20)

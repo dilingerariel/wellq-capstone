@@ -17,6 +17,9 @@ const ExamDetailPage = lazy(() =>
 const CatalogPage = lazy(() =>
   import('../features/catalog/CatalogPage').then((m) => ({ default: m.CatalogPage })),
 )
+const UploadPage = lazy(() =>
+  import('../features/uploads/UploadPage').then((m) => ({ default: m.UploadPage })),
+)
 function Home() {
   const { role } = useRuntime()
   return <Navigate replace to={role === 'clinician' ? '/clinical' : '/patient'} />
@@ -71,6 +74,14 @@ export function App() {
           <Route path="exams" element={<ExamsPage />} />
           <Route path="exams/:id" element={<ExamDetailPage />} />
           <Route path="catalog" element={<CatalogPage />} />
+          <Route
+            path="upload"
+            element={
+              <RoleGuard role="patient">
+                <UploadPage />
+              </RoleGuard>
+            }
+          />
           <Route path="dashboard/*" element={<Home />} />
           <Route path="demo" element={<Home />} />
           <Route path="*" element={<NotFound />} />

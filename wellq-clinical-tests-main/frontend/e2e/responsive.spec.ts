@@ -2,7 +2,7 @@ import { test, expect } from './fixtures'
 import AxeBuilder from '@axe-core/playwright'
 
 for (const width of [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920]) {
-  test(`responsive clinical, patient, exams, detail and catalog at ${width}px`, async ({
+  test(`responsive clinical, patient, exams, detail, catalog and upload at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 })
@@ -30,6 +30,27 @@ for (const width of [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920]) {
     ).toBe(true)
     if ([320, 768, 1440].includes(width))
       await page.screenshot({ path: `test-results/continuity-${width}.png`, fullPage: true })
+    if (width === 320)
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+            .analyze()
+        ).violations,
+      ).toEqual([])
+    await page.getByRole('link', { name: 'Cargar examen', exact: true }).last().click()
+    await expect(page.getByRole('heading', { name: 'Cargar examen', exact: true })).toBeVisible()
+    await page.getByLabel('Seleccionar documento', { exact: true }).setInputFiles({
+      name: 'synthetic_document_filename_'.repeat(7) + '.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.from('synthetic-demo-only'),
+    })
+    await expect(page.getByRole('button', { name: 'Enviar documento', exact: true })).toBeDisabled()
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true)
+    if ([320, 768, 1440].includes(width))
+      await page.screenshot({ path: `test-results/upload-${width}.png`, fullPage: true })
     if (width === 320)
       expect(
         (
@@ -71,6 +92,14 @@ test('touch landscape, menu focus/Escape and 200 percent equivalent reflow', asy
         }).length,
     )
   expect(smallTargets).toBe(0)
+  await page.getByLabel('Vista de demostración').selectOption('patient')
+  await menu.tap()
+  await page.locator('nav').getByRole('link', { name: 'Cargar examen', exact: true }).tap()
+  await expect(page.getByRole('heading', { name: 'Cargar examen', exact: true })).toBeVisible()
+  await page.setViewportSize({ width: 844, height: 390 })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  )
   await context.close()
   const zoom = await browser.newContext({
     viewport: { width: 640, height: 450 },
@@ -79,6 +108,14 @@ test('touch landscape, menu focus/Escape and 200 percent equivalent reflow', asy
   const zoomPage = await zoom.newPage()
   await zoomPage.goto('http://127.0.0.1:5173/exams')
   await expect(zoomPage.getByRole('heading', { name: 'Exámenes médicos' })).toBeVisible()
+  expect(
+    await zoomPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true)
+  await zoomPage.getByLabel('Vista de demostración').selectOption('patient')
+  const zoomMenu = zoomPage.getByRole('button', { name: 'Abrir navegación', exact: true })
+  if (await zoomMenu.isVisible()) await zoomMenu.click()
+  await zoomPage.locator('nav').getByRole('link', { name: 'Cargar examen', exact: true }).click()
+  await expect(zoomPage.getByRole('heading', { name: 'Cargar examen', exact: true })).toBeVisible()
   expect(
     await zoomPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
   ).toBe(true)

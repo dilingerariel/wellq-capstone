@@ -15,10 +15,14 @@ import type { PortalSession, Role } from '../types/session'
 import { SessionManager, type SessionPhase } from '../services/session'
 import { Connectivity, type ConnectionStatus } from '../services/connectivity'
 import { ReadRecovery } from '../services/synchronization'
+import { UploadController } from '../features/uploads/controller'
+import { uploadApi } from '../features/uploads/api'
+import { createHttp } from '../services/http'
 
 const mode = import.meta.env.VITE_DATA_MODE || 'demo'
 if (mode !== 'demo' && mode !== 'api') throw new Error('VITE_DATA_MODE must be demo or api')
 interface Runtime {
+  upload: UploadController
   mode: 'demo' | 'api'
   role: Role
   session: PortalSession | null
@@ -56,11 +60,13 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
         },
       }),
   )
+  const [privateResources] = useState(() => new Set<() => void>())
   const [manager] = useState(
     () =>
       new SessionManager(
         () => window.wellqIdentity,
         () => {
+          privateResources.forEach((clear) => clear())
           void client.cancelQueries()
           client.clear()
         },
@@ -83,6 +89,47 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   const connectionState = useSyncExternalStore(network.subscribe, network.getSnapshot)
   const connection = connectionState.status
   const [approvedRecovery, setApprovedRecovery] = useState(0)
+  const [approval] = useState(() => ({ version: 0 }))
+  const [upload] = useState(
+    () =>
+      new UploadController(
+        uploadApi(
+          createHttp(
+            import.meta.env.VITE_API_BASE_URL || '/api/v1',
+            () => manager.getSnapshot().session?.accessToken,
+            (token) => manager.invalidate(token),
+            (status) => {
+              // Let the upload retain the received HTTP error/Retry-After before
+              // connectivity effects suspend further work on this operation.
+              if (status === 'unavailable') window.setTimeout(() => network.report(status), 0)
+              else network.report(status)
+            },
+          ),
+        ),
+        () => {
+          const current = manager.getSnapshot(),
+            connection = network.getSnapshot()
+          return (
+            mode === 'api' &&
+            current.phase === 'authenticated' &&
+            current.session?.role === 'patient' &&
+            current.session.expiresAt * 1000 > Date.now() &&
+            ['clinical:read', 'clinical:write'].every((permission) =>
+              current.session?.permissions.includes(permission),
+            ) &&
+            connection.status === 'online' &&
+            approval.version === connection.recovery
+          )
+        },
+      ),
+  )
+  useEffect(() => {
+    privateResources.add(upload.clear)
+    return () => {
+      privateResources.delete(upload.clear)
+      upload.clear()
+    }
+  }, [privateResources, upload])
   const renewedExpiry = useRef<number | null>(null)
   useEffect(() => network.start(), [network])
   useEffect(() => {
@@ -103,9 +150,29 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       // Mark stale without dispatching reads before fresh identity/permissions are available.
       await client.invalidateQueries({ refetchType: 'none' })
       const valid = await manager.verify(true)
-      if (valid && version === network.getSnapshot().recovery) setApprovedRecovery(version)
+      if (valid && version === network.getSnapshot().recovery) {
+        approval.version = version
+        setApprovedRecovery(version)
+      }
     })
-  }, [connection, connectionState.recovery, approvedRecovery, manager, client, recovery, network])
+  }, [
+    connection,
+    connectionState.recovery,
+    approvedRecovery,
+    manager,
+    client,
+    recovery,
+    network,
+    approval,
+  ])
+  useEffect(() => {
+    if (
+      connection !== 'online' ||
+      identity.phase !== 'authenticated' ||
+      approvedRecovery !== connectionState.recovery
+    )
+      upload.suspend()
+  }, [connection, identity.phase, approvedRecovery, connectionState.recovery, upload])
   useEffect(() => {
     const session = identity.session
     if (!session) return
@@ -156,16 +223,18 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   const setDemoRole = useCallback(
     (next: Role) => {
       if (mode === 'demo') {
+        upload.clear()
         void client.cancelQueries()
         client.clear()
         setRole(next)
       }
     },
-    [client],
+    [client, upload],
   )
   return (
     <Context.Provider
       value={{
+        upload,
         mode,
         role: identity.session?.role || role,
         session: identity.session,
@@ -182,12 +251,18 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
         setDemoRole,
         reloadIdentity: () => {
           void manager.verify(true, true).then((valid) => {
-            if (valid) setApprovedRecovery(network.getSnapshot().recovery)
+            if (valid) {
+              approval.version = network.getSnapshot().recovery
+              setApprovedRecovery(approval.version)
+            }
           })
         },
         signIn: () => {
           void manager.signIn().then((valid) => {
-            if (valid) setApprovedRecovery(network.getSnapshot().recovery)
+            if (valid) {
+              approval.version = network.getSnapshot().recovery
+              setApprovedRecovery(approval.version)
+            }
           })
         },
         signOut: () => {

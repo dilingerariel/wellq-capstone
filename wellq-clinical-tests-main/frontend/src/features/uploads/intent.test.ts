@@ -46,6 +46,6 @@ describe('future signed upload preparation without network or persistence', () =
     ).rejects.toMatchObject({ name: 'AbortError' })
     await expect(
       prepareUploadIntent(file('text/html'), metadata, keys, new AbortController().signal),
-    ).rejects.toThrow('Unsupported document')
+    ).rejects.toThrow('uploadInvalidFile')
   })
 })

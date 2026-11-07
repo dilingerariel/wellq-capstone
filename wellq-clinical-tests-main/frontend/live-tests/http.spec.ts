@@ -4,6 +4,8 @@ const fixture = JSON.parse(process.env.WELLQ_HTTP_FIXTURE || '{}') as {
   patient: string
   patientSession: PortalSession
   clinicianSession: PortalSession
+  uploadSession: PortalSession
+  pdfBytes: string
 }
 // No route interception. The backend verifies signed test claims and Mongo relationships.
 test('patient reads FastAPI documents, both cursor pages, detail and catalog', async ({ page }) => {
@@ -26,6 +28,51 @@ test('patient reads FastAPI documents, both cursor pages, detail and catalog', a
   await page.getByRole('link', { name: 'Catálogo de marcadores', exact: true }).click()
   await expect(page.getByText('cholesterol_total', { exact: true })).toBeVisible()
   await expect(page.getByText('Entorno de demostración', { exact: false })).toHaveCount(0)
+})
+test('real browser bytes reach signed test storage; FastAPI worker verifies a single upload', async ({
+  page,
+}) => {
+  await page.addInitScript((session) => {
+    window.wellqIdentity = { getSession: async () => session }
+  }, fixture.uploadSession)
+  await page.goto('/upload')
+  await page.getByLabel('Seleccionar documento', { exact: true }).setInputFiles({
+    name: 'synthetic-browser.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from(fixture.pdfBytes, 'base64'),
+  })
+  await page.getByLabel('Título del documento', { exact: true }).fill('SYNTHETIC BROWSER UPLOAD')
+  await page.getByLabel('Fecha del examen', { exact: true }).fill('2026-01-01')
+  const transitions: string[] = []
+  page.on('response', async (response) => {
+    if (response.url().endsWith('/status') && response.status() === 200) {
+      const body = await response.json()
+      transitions.push(body.status)
+    }
+  })
+  await page.getByRole('button', { name: 'Enviar documento', exact: true }).evaluate((button) => {
+    ;(button as HTMLButtonElement).click()
+    ;(button as HTMLButtonElement).click()
+  })
+  await expect(
+    page.getByText(
+      'Documento verificado y disponible. La revisión clínica es un paso independiente.',
+      { exact: true },
+    ),
+  ).toBeVisible()
+  await expect(
+    page.getByText(
+      'El servidor confirmó que puedes prescindir de la copia original para esta carga.',
+      { exact: false },
+    ),
+  ).toBeVisible()
+  expect(transitions).toContain('processing')
+  expect(transitions).toContain('ready_for_review')
+  const safe = await page.evaluate(
+    () =>
+      !JSON.stringify({ ...localStorage, ...sessionStorage }).includes('SYNTHETIC BROWSER UPLOAD'),
+  )
+  expect(safe).toBe(true)
 })
 test('clinician reads authorized patient, server refuses unrelated patient', async ({ page }) => {
   await page.addInitScript((session) => {

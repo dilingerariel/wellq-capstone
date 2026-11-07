@@ -8,6 +8,39 @@ export const uploadMetadata = z.object({
   ai_consent: z.boolean(),
   notes: z.string().max(2000).optional(),
 })
+export type UploadMetadata = z.infer<typeof uploadMetadata>
+export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024
+const mimeByExtension: Record<string, string> = {
+  pdf: 'application/pdf',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  heic: 'image/heic',
+}
+export function validateUploadFile(file: File) {
+  const name = file.name.normalize('NFC')
+  const parts = name.toLowerCase().split('.')
+  const mime = mimeByExtension[parts.at(-1) || '']
+  if (
+    !name ||
+    name.length > 255 ||
+    /[/\\:<>"|?*\p{Cc}\u202a-\u202e\u2066-\u2069]/u.test(name) ||
+    /[. ]$/.test(name) ||
+    !parts.slice(0, -1).some(Boolean) ||
+    parts
+      .slice(1, -1)
+      .some((p) =>
+        ['exe', 'com', 'bat', 'cmd', 'ps1', 'vbs', 'js', 'msi', 'scr', 'dll', 'hta', 'sh'].includes(
+          p,
+        ),
+      ) ||
+    !mime ||
+    (file.type && file.type !== mime)
+  )
+    throw new Error('uploadInvalidFile')
+  if (!file.size || file.size > MAX_UPLOAD_BYTES) throw new Error('uploadInvalidSize')
+  return { name, mime }
+}
 export interface UploadOperationKeys {
   clientUploadId: string
   initiateKey: string
@@ -29,12 +62,7 @@ export async function prepareUploadIntent(
 ) {
   signal.throwIfAborted()
   const validated = uploadMetadata.parse(metadata)
-  if (
-    !file.size ||
-    file.name.length > 255 ||
-    !['application/pdf', 'image/jpeg', 'image/png', 'image/heic'].includes(file.type)
-  )
-    throw new Error('Unsupported document')
+  const { name, mime } = validateUploadFile(file)
   if (Object.values(keys).some((value) => value.length < 8 || value.length > 200))
     throw new Error('Invalid operation keys')
   const bytes = await file.arrayBuffer()
@@ -44,8 +72,8 @@ export async function prepareUploadIntent(
   const body: InitiateUploadRequest = {
     ...validated,
     client_upload_id: keys.clientUploadId,
-    file_name: file.name,
-    mime_type: file.type,
+    file_name: name,
+    mime_type: mime,
     size_bytes: file.size,
     sha256: Array.from(new Uint8Array(digest), (value) => value.toString(16).padStart(2, '0')).join(
       '',

@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { ShieldCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useRuntime } from '../../app/runtime'
 export function UploadPreparation() {
   const { t } = useTranslation()
+  const { mode } = useRuntime()
   return (
     <section className="panel upload-preparation">
       <h2>
@@ -15,7 +18,10 @@ export function UploadPreparation() {
           ),
         )}
       </ol>
-      <p>{t('uploadPreparationPending')}</p>
+      <p>{t(mode === 'demo' ? 'uploadDemoBlocked' : 'uploadMemoryHelp')}</p>
+      <Link className="button primary" to="/upload">
+        {t('uploadTitle')}
+      </Link>
     </section>
   )
 }

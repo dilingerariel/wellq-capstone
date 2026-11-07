@@ -2,6 +2,8 @@
 
 Integración actual: [configuración de identidad y prueba HTTP real](INTEGRATION.md). La identidad productiva requiere un proveedor aprobado; el entorno aislado usa una autoridad sintética y FastAPI/MongoDB reales. Las validaciones históricas siguientes conservan su alcance original.
 
+Carga implementada en `/upload`: [flujo, recuperación y requisitos de almacenamiento](UPLOAD.md). Incluye initiate, PUT de bytes, complete y sondeo; continúa bloqueada sin una sesión de paciente autorizada y nunca simula envíos en demo.
+
 Primera implementación React del portal. Rama `feature/wellq-react-frontend`, basada en `20fa09c`. Sin cambios de lógica clínica ni de infraestructura. Se retira únicamente el HTML de demostración no servido por FastAPI.
 
 ## Ejecutar en Windows
@@ -77,7 +79,7 @@ Sin host de identidad, el modo API muestra el bloqueo. Nunca cae automáticament
 
 Prefijo común `/api/v1`. Los contratos se generan desde `../backend/docs/openapi.json`; `npm.cmd run contracts:generate` actualiza tipos y `contracts:check` detecta divergencias. `items` del listado es abierto en OpenAPI: se comprueba en runtime el formato `ClinicalTestResponse` que realmente serializa la ruta. Las secciones clínicas abiertas no se presentan como tipos más precisos que el servidor.
 
-Todavía **no implementados**: carga, PUT firmado, confirmación, edición, validación clínica, descarga, series, scores y exportación. Se muestran como pendientes, sin botones de éxito ficticio. La futura carga debe usar SHA-256 real, `required_headers`, sesión de subida, consentimiento, claves idempotentes estables, confirmación y sondeo; nunca simular progreso o eliminación segura del archivo. Scores y PDF deben provenir del servidor.
+Todavía **no implementados**: confirmación de extracción, edición clínica, validación profesional, descarga, series, scores y exportación. La carga ya usa SHA-256 real, `required_headers`, sesión de subida, consentimiento, claves idempotentes, complete y sondeo; la disponibilidad productiva depende de identidad/almacenamiento/worker autorizados. Scores y PDF deben provenir del servidor.
 
 ## HTML histórico y despliegue
 
@@ -102,7 +104,7 @@ Las fuentes académicas también mencionan administrador/auditor: no se implemen
 
 Las versiones exactas se fijan en `package.json` y `package-lock.json`. Los overrides de minimatch 11.0.1 afectan únicamente a herramientas de lint; corrigen GHSA-g3hv-75wg-m249 sin ejecutar `audit fix --force` ni degradar ESLint. Revalidar al actualizar herramientas. Documentación oficial consultada: [Vite](https://vite.dev/guide/), [React Router](https://reactrouter.com/start/declarative/installation), [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview).
 
-Siguiente módulo: conectar el proveedor aprobado de identidad y después implementar la carga real mediante URL firmada, confirmación y sondeo. Las lecturas patient/clinician y el aislamiento se comprueban ahora contra FastAPI/MongoDB reales con una autoridad sintética de integración; esto no acredita un SSO externo.
+Siguiente paso: conectar el proveedor aprobado de identidad y el almacenamiento/worker productivos y comprobar allí la carga ya implementada. Lecturas y carga se verifican contra FastAPI/MongoDB reales con autoridad sintética y almacenamiento de pruebas explícito; esto no acredita un SSO ni un GCS productivos.
 
 ## Evolución: identidad, red y shell offline
 

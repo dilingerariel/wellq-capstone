@@ -19,6 +19,7 @@ import { usePreferences } from '../hooks/usePreferences'
 import { PatientScope } from '../features/exams/PatientScope'
 import { ContinuityBanner, ConnectionIndicator } from '../components/Continuity'
 import { SessionControls, SessionGate } from '../features/session/SessionControls'
+import { UploadActivity } from '../features/uploads/UploadActivity'
 
 export function PortalLayout() {
   const { t, i18n } = useTranslation()
@@ -41,9 +42,11 @@ export function PortalLayout() {
   const home = runtime.role === 'clinician' ? '/clinical' : '/patient'
   const title = location.pathname.startsWith('/exams')
     ? 'exams'
-    : location.pathname === '/catalog'
-      ? 'catalog'
-      : 'overview'
+    : location.pathname === '/upload'
+      ? 'uploadTitle'
+      : location.pathname === '/catalog'
+        ? 'catalog'
+        : 'overview'
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -84,6 +87,12 @@ export function PortalLayout() {
               <Files size={19} aria-hidden="true" />
               {t('exams')}
             </NavLink>
+            {runtime.role === 'patient' && (
+              <NavLink to="/upload" onClick={() => setOpen(false)}>
+                <Files size={19} aria-hidden="true" />
+                {t('uploadTitle')}
+              </NavLink>
+            )}
           </nav>
           <span className="nav-group-label">{t('resources')}</span>
           <nav aria-label={t('resources')}>
@@ -186,6 +195,7 @@ export function PortalLayout() {
               <SessionGate />
             ) : (
               <PatientScope key={`${runtime.role}:${runtime.boundary}`}>
+                <UploadActivity />
                 <Outlet />
               </PatientScope>
             )}

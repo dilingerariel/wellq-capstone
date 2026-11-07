@@ -4,6 +4,40 @@ import { createHttp } from './http'
 import { apiSource } from './clinical'
 afterEach(() => vi.unstubAllGlobals())
 describe('HTTP boundary', () => {
+  it('sends typed POST metadata and idempotency, retaining only allowlisted extraction machine codes', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('{"ok":true}'))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            detail: { code: 'EXTRACTION_NOT_READY', message: 'synthetic-private-note' },
+          }),
+          { status: 409 },
+        ),
+      )
+    vi.stubGlobal('fetch', fetch)
+    const http = createHttp('/api/v1', () => 'synthetic-api-session', vi.fn())
+    await http('/clinical-tests/uploads/initiate', z.object({ ok: z.boolean() }), undefined, {
+      body: { title: 'Synthetic' },
+      key: 'synthetic-operation-key',
+    })
+    expect(fetch.mock.calls[0]?.[1]).toMatchObject({
+      method: 'POST',
+      body: '{"title":"Synthetic"}',
+      credentials: 'omit',
+      redirect: 'error',
+      headers: {
+        'Idempotency-Key': 'synthetic-operation-key',
+        Authorization: ['Bearer', 'synthetic-api-session'].join(' '),
+      },
+    })
+    await expect(http('/clinical-tests/synthetic/extraction', z.unknown())).rejects.toMatchObject({
+      status: 409,
+      code: 'EXTRACTION_NOT_READY',
+      message: 'EXTRACTION_NOT_READY',
+    })
+  })
   it.each([400, 401, 403, 404, 409, 422, 429, 500, 503])(
     'preserves status %s without reflecting sensitive response bodies',
     async (status) => {
