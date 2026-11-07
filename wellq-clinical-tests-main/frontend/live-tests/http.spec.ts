@@ -5,6 +5,7 @@ const fixture = JSON.parse(process.env.WELLQ_HTTP_FIXTURE || '{}') as {
   patientSession: PortalSession
   clinicianSession: PortalSession
   uploadSession: PortalSession
+  clinicalSession: PortalSession
   pdfBytes: string
 }
 // No route interception. The backend verifies signed test claims and Mongo relationships.
@@ -29,6 +30,7 @@ test('patient reads FastAPI documents, both cursor pages, detail and catalog', a
   await expect(page.getByText('cholesterol_total', { exact: true })).toBeVisible()
   await expect(page.getByText('Entorno de demostración', { exact: false })).toHaveCount(0)
 })
+
 test('real browser bytes reach signed test storage; FastAPI worker verifies a single upload', async ({
   page,
 }) => {
@@ -122,4 +124,54 @@ test('clinician reads authorized patient, server refuses unrelated patient', asy
   await forbidden
   await expect(page.getByRole('link', { name: /^SYNTHETIC HTTP DOCUMENT/ })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Cerrar sesión', exact: true })).toBeVisible()
+})
+
+test('clinician review, corrections and rejection persist through real FastAPI', async ({
+  page,
+}) => {
+  await page.addInitScript((session) => {
+    window.wellqIdentity = { getSession: async () => session }
+  }, fixture.clinicalSession)
+  await page.goto('/exams')
+  await page.getByLabel('ID del paciente autorizado', { exact: true }).fill(fixture.patient)
+  await page.getByRole('button', { name: 'Consultar paciente', exact: true }).click()
+  await page.getByLabel('Estado del documento', { exact: true }).selectOption('ready_for_review')
+  await page.getByRole('link', { name: 'SYNTHETIC BROWSER UPLOAD', exact: true }).click()
+  await page.getByRole('link', { name: 'Revisión y validación clínica', exact: true }).click()
+  await expect(page.getByLabel('Valor glucose', { exact: true })).toHaveValue('95')
+  await page
+    .getByLabel('Nota privada de revisión', { exact: true })
+    .fill('SYNTHETIC PRIVATE REVIEW')
+  await page.getByRole('button', { name: 'Preparar revisión', exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Confirmar revisión del documento', exact: true })
+    .evaluate((button) => {
+      ;(button as HTMLButtonElement).click()
+      ;(button as HTMLButtonElement).click()
+    })
+  await expect(page.getByText('El servidor registró la operación.', { exact: false })).toBeVisible()
+  await page.getByRole('button', { name: 'Consultar nuevamente', exact: true }).click()
+  await expect(page.getByLabel('Nota privada de revisión', { exact: true })).toBeDisabled()
+  await page.getByLabel('Valor glucose', { exact: true }).fill('96')
+  await page
+    .getByLabel('Motivo de corrección glucose', { exact: true })
+    .fill('synthetic transcription correction')
+  await page
+    .getByLabel('Nota clínica de validación', { exact: true })
+    .fill('SYNTHETIC CLINICAL NOTE')
+  await page.getByRole('button', { name: 'Preparar validación', exact: true }).click()
+  await page.getByRole('button', { name: 'Confirmar validación clínica', exact: true }).click()
+  await expect(page.getByText('Validado por un profesional', { exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'Exámenes', exact: true }).click()
+  await page.getByLabel('Estado del documento', { exact: true }).selectOption('ready_for_review')
+  await page.getByRole('link', { name: 'SYNTHETIC CLINICAL REJECTION', exact: true }).click()
+  await page.getByRole('link', { name: 'Revisión y validación clínica', exact: true }).click()
+  await page.getByRole('button', { name: 'Cargar estado actual', exact: true }).click()
+  await expect(page.getByLabel('Valor glucose', { exact: true })).toHaveValue('95')
+  await page
+    .getByLabel('Nota clínica de validación', { exact: true })
+    .fill('SYNTHETIC REJECTION NOTE')
+  await page.getByRole('button', { name: 'Preparar rechazo', exact: true }).click()
+  await page.getByRole('button', { name: 'Confirmar rechazo clínico', exact: true }).click()
+  await expect(page.getByText('Extracción rechazada', { exact: true })).toBeVisible()
 })

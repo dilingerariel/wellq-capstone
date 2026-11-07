@@ -23,6 +23,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlencode, urlsplit
 
 import jwt
+from clinical_live import CLONE, check_clinical
 from cryptography.hazmat.primitives import serialization
 
 FRONT = Path(__file__).resolve().parents[1]
@@ -135,11 +136,11 @@ assert len(data)==d['file']['size_bytes']==p['size']
 assert d['file']['verified_at'] and d['file']['generation']
 assert db.audit_events.count_documents({'client_id':p['tenant'],'resource_id':d['clinical_test_id']})>0
 ext=db.clinical_test_extractions.find_one({'client_id':p['tenant'],'extraction_id':d['extraction']['extraction_id']})
-assert ext['status']=='confirmed' and ext['document']['collection_date']=='2026-01-02'
+assert ext['status']=='clinically_validated' and ext['document']['collection_date']=='2026-01-02'
 marker=next(m for panel in ext['panels'] for m in panel['markers'] if m['marker_code']=='glucose')
-assert marker['value_raw']=='95' and marker['edited'] is True
+assert marker['value_raw']=='96' and marker['edited'] is True
 assert ext['proposal']['panels'][0]['markers'][0]['value_raw']=='90'
-assert db.clinical_markers.count_documents({'client_id':p['tenant'],'extraction_id':ext['extraction_id'],'value_raw':'95','invalidated_at':None})==1
+assert db.clinical_markers.count_documents({'client_id':p['tenant'],'extraction_id':ext['extraction_id'],'value_raw':'96','invalidated_at':None})==1
 assert db.audit_events.count_documents({'client_id':p['tenant'],'resource_id':ext['extraction_id'],'event':'extraction_confirmed'})==1
 print(json.dumps({'bytes_verified':True,'server_worker_verified':True,'single_document':True,'byte_count':len(data),'corrections_persisted':True,'proposal_preserved':True,'single_confirmation':True}))
 """
@@ -259,6 +260,7 @@ def main():
         "tenant": "synthetic-http-" + uuid.uuid4().hex,
         "patient": "synthetic-patient-" + uuid.uuid4().hex,
         "clinician": "synthetic-clinician-" + uuid.uuid4().hex,
+        "reject":str(uuid.uuid4()),"race":str(uuid.uuid4()),"second_clinician":"synthetic-clinician-"+uuid.uuid4().hex,
     }
 
     def session(
@@ -531,7 +533,7 @@ def main():
                 self.respond(response, True)
 
             def do_PATCH(self):
-                if not re.fullmatch(r"/api/v1/clinical-tests/[^/]+/extraction", self.path):
+                if not re.fullmatch(r"/api/v1/clinical-tests/[^/]+/(extraction|review)", self.path):
                     self.send_error(404)
                     return
                 size = int(self.headers.get('Content-Length', '0'))
@@ -541,12 +543,14 @@ def main():
                 body = self.rfile.read(size)
                 headers = {key:self.headers[key] for key in ('Authorization','Content-Type','Idempotency-Key') if key in self.headers}
                 response = forward(self.path,headers,'PATCH',body)
-                if response['status']==200: confirmations.append((self.path,headers,body))
+                if response['status']==200 and self.path.endswith('/extraction'):
+                    confirmations.append((self.path,headers,body))
+                    assert container_python(api,CLONE,fixture)['synthetic_clones']==2
                 self.respond(response)
 
             def do_POST(self):
                 if not re.fullmatch(
-                    r"/api/v1/clinical-tests/uploads/(initiate|[^/]+/(complete|refresh-url))",
+                    r"/api/v1/clinical-tests/(uploads/(initiate|[^/]+/(complete|refresh-url))|[^/]+/extraction/validate)",
                     self.path,
                 ):
                     self.send_error(404)
@@ -594,6 +598,7 @@ def main():
                 **fixture,
                 "patientSession": patient,
                 "clinicianSession": clinician,
+                "clinicalSession":session('clinician',permissions=['clinical:read','clinical:review','extractions:validate']),
                 "uploadSession": session(
                     permissions=["clinical:read", "clinical:write", "extractions:confirm"]
                 ),
@@ -625,6 +630,7 @@ def main():
         )
         print(output.encode("ascii", "backslashreplace").decode())
         assert browser.returncode == 0, "Real HTTP browser checks failed"
+        clinical_proof=check_clinical(forward,session,fixture,api,container_python)
         assert len(confirmations)==1, 'Exactly one browser confirmation required'
         confirm_path, confirm_headers, confirm_body=confirmations[0]
         assert forward(confirm_path,confirm_headers,'PATCH',confirm_body)['status']==200, 'Idempotent replay failed'
@@ -659,6 +665,7 @@ def main():
             "synthetic_documents_appended": 7,
             "clinical_api_mutations": "one synthetic upload; no real patient data",
             "upload_proof": upload_proof,
+            "clinical_proof":clinical_proof,
             "storage_transfer": transfer_evidence,
             "external_storage_ai_scanner": "filesystem signed HTTP test storage, scanner and annotated PDF extraction doubles; no production provider certified",
             "browser_passed": True,

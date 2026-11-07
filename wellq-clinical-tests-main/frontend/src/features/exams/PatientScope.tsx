@@ -12,7 +12,7 @@ const schema = z.object({ patient: z.string().trim().min(1).max(200).regex(/^\S+
 const Context = createContext({ patientId: '' })
 export function PatientScope({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
-  const { role, mode, session, canRequest } = useRuntime()
+  const { role, mode, session, canRequest, clinician } = useRuntime()
   const [selected, setSelected] = useState('')
   const client = useQueryClient()
   const navigate = useNavigate()
@@ -42,6 +42,8 @@ export function PatientScope({ children }: { children: ReactNode }) {
               onSubmit={handleSubmit(async (v) => {
                 if (canRequest) {
                   if (v.patient !== selected) {
+                    if (clinician.hasWork() && !window.confirm(t('clinicalDiscard'))) return
+                    clinician.clear()
                     const scope = {
                       predicate: (query: { queryKey: readonly unknown[] }) =>
                         ['exams', 'exam'].includes(String(query.queryKey[0])),

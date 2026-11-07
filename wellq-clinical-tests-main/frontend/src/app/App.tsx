@@ -27,6 +27,9 @@ function Home() {
   const { role } = useRuntime()
   return <Navigate replace to={role === 'clinician' ? '/clinical' : '/patient'} />
 }
+const ClinicianPage = lazy(() =>
+  import('../features/clinician/ClinicianPage').then((m) => ({ default: m.ClinicianPage })),
+)
 function RoleGuard({ role, children }: { role: Role; children: ReactNode }) {
   const runtime = useRuntime()
   const { t } = useTranslation()
@@ -76,6 +79,14 @@ export function App() {
           />
           <Route path="exams" element={<ExamsPage />} />
           <Route path="exams/:id" element={<ExamDetailPage />} />
+          <Route
+            path="exams/:id/clinical-review"
+            element={
+              <RoleGuard role="clinician">
+                <ClinicianPage />
+              </RoleGuard>
+            }
+          />
           <Route
             path="exams/:id/extraction"
             element={

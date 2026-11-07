@@ -64,6 +64,11 @@ export function ExamDetailPage() {
         <StatusBadge status={exam.status} />
       </div>
       <section className="panel detail-panel">
+        {role === 'clinician' && mode === 'api' && (
+          <Link className="button primary" to={`/exams/${encodeURIComponent(id)}/clinical-review`}>
+            {t('clinicalWorkTitle')}
+          </Link>
+        )}
         {role === 'patient' && mode === 'api' && (
           <Link className="button secondary" to={`/exams/${encodeURIComponent(id)}/extraction`}>
             {t('reviewTitle')}

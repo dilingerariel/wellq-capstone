@@ -6,6 +6,7 @@ export class ApiError extends Error {
     public readonly status: number,
     public readonly code: string,
     public readonly retryAfter: string | null = null,
+    public readonly issues: { marker_code: string; code: string }[] = [],
   ) {
     super(code)
     this.name = 'ApiError'
@@ -33,7 +34,7 @@ export function createHttp(
     path: string,
     schema: z.ZodType<T>,
     signal?: AbortSignal,
-    mutation?: { body: unknown; key: string; method?: 'POST' | 'PATCH' },
+    mutation?: { body: unknown; key?: string; method?: 'POST' | 'PATCH' },
   ): Promise<T> => {
     const accessToken = token()
     const controller = new AbortController()
@@ -50,7 +51,10 @@ export function createHttp(
         headers: {
           Accept: 'application/json',
           ...(mutation
-            ? { 'Content-Type': 'application/json', 'Idempotency-Key': mutation.key }
+            ? {
+                'Content-Type': 'application/json',
+                ...(mutation.key ? { 'Idempotency-Key': mutation.key } : {}),
+              }
             : {}),
           ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
@@ -59,6 +63,7 @@ export function createHttp(
       if (!response.ok) {
         if (response.status === 401) unauthorized(accessToken)
         let code = 'REQUEST_FAILED'
+        let issues: { marker_code: string; code: string }[] = []
         // Only bounded machine codes are retained; never reflect clinical error text.
         if (response.status === 409 || response.status === 422)
           try {
@@ -81,16 +86,39 @@ export function createHttp(
                     'VALUE_INVALID_FORMAT',
                     'VALUE_IMPLAUSIBLE',
                     'RETRYABLE_CONFLICT',
+                    'DOCUMENT_NOT_READY',
+                    'NOT_CONFIRMED',
+                    'INVALID_MARKER_CORRECTIONS',
+                    'INVALID_VALIDATION_STATUS',
                   ]),
+                  errors: z
+                    .array(
+                      z.object({
+                        marker_code: z.string().max(200),
+                        code: z.enum([
+                          'DUPLICATE_CORRECTION',
+                          'MARKER_NOT_IN_EXAM',
+                          'UNKNOWN_MARKER',
+                          'UNIT_NOT_SUPPORTED',
+                          'VALUE_INVALID_FORMAT',
+                          'VALUE_IMPLAUSIBLE',
+                        ]),
+                      }),
+                    )
+                    .max(1000)
+                    .optional(),
                 }),
               })
               .safeParse(await response.json())
-            if (error.success) code = error.data.detail.code
+            if (error.success) {
+              code = error.data.detail.code
+              issues = error.data.detail.errors || []
+            }
           } catch {
             if (combined.aborted) throw combined.reason
           }
         report(response.status >= 500 ? 'unavailable' : 'online')
-        throw new ApiError(response.status, code, response.headers.get('Retry-After'))
+        throw new ApiError(response.status, code, response.headers.get('Retry-After'), issues)
       }
       let body: unknown
       try {

@@ -1,5 +1,7 @@
 # Identidad y HTTP real
 
+El trabajo del profesional se describe en [CLINICIAN.md](CLINICIAN.md): revisión y validación separadas, con pruebas HTTP reales de permisos, notas privadas, correcciones, rechazo y concurrencia. También se documentan los límites de versión/idempotencia y de lectura tras rechazo del contrato actual.
+
 La confirmación de paciente está descrita en [REVIEW.md](REVIEW.md). El harness actual también pide consentimiento IA sintético, ejecuta extracción con el proveedor de PDF anotado y verifica correcciones/confirmación reales; las referencias anteriores a «no se pide IA» describen la entrega previa de carga, no la cobertura actual.
 
 ## Autoridad pendiente

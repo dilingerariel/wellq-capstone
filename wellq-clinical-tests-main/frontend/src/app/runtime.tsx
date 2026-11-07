@@ -20,10 +20,13 @@ import { uploadApi } from '../features/uploads/api'
 import { createHttp } from '../services/http'
 import { ReviewController } from '../features/review/controller'
 import { reviewApi } from '../features/review/model'
+import { ClinicianController } from '../features/clinician/controller'
+import { clinicianApi } from '../features/clinician/model'
 
 const mode = import.meta.env.VITE_DATA_MODE || 'demo'
 if (mode !== 'demo' && mode !== 'api') throw new Error('VITE_DATA_MODE must be demo or api')
 interface Runtime {
+  clinician: ClinicianController
   review: ReviewController
   upload: UploadController
   mode: 'demo' | 'api'
@@ -159,16 +162,57 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
         () => manager.verify(true),
       ),
   )
+  const [clinician] = useState(
+    () =>
+      new ClinicianController(
+        clinicianApi(
+          createHttp(
+            import.meta.env.VITE_API_BASE_URL || '/api/v1',
+            () => manager.getSnapshot().session?.accessToken,
+            (token) => manager.invalidate(token),
+            (status) => {
+              if (status === 'unavailable') window.setTimeout(() => network.report(status), 0)
+              else network.report(status)
+            },
+          ),
+        ),
+        () => {
+          const current = manager.getSnapshot(),
+            net = network.getSnapshot()
+          return {
+            allowed:
+              mode === 'api' &&
+              current.phase === 'authenticated' &&
+              current.session?.role === 'clinician' &&
+              current.session.expiresAt * 1000 > Date.now() &&
+              current.session.permissions.includes('clinical:read') &&
+              net.status === 'online' &&
+              approval.version === net.recovery,
+            clinician: current.session?.resourceId || '',
+            permissions: current.session?.permissions || [],
+          }
+        },
+        () => manager.verify(true),
+        () => {
+          void client.resetQueries({
+            predicate: (q) => ['exam', 'exams'].includes(String(q.queryKey[0])),
+          })
+        },
+      ),
+  )
   useEffect(() => {
+    privateResources.add(clinician.clear)
     privateResources.add(review.clear)
     privateResources.add(upload.clear)
     return () => {
       privateResources.delete(upload.clear)
       privateResources.delete(review.clear)
+      privateResources.delete(clinician.clear)
+      clinician.clear()
       review.clear()
       upload.clear()
     }
-  }, [privateResources, upload, review])
+  }, [privateResources, upload, review, clinician])
   const renewedExpiry = useRef<number | null>(null)
   useEffect(() => network.start(), [network])
   useEffect(() => {
@@ -211,9 +255,60 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       approvedRecovery !== connectionState.recovery
     ) {
       upload.suspend()
-      if (identity.phase !== 'loading' || connection !== 'online') review.suspend()
+      if (identity.phase !== 'loading' || connection !== 'online') {
+        review.suspend()
+        clinician.suspend()
+      }
     }
-  }, [connection, identity.phase, approvedRecovery, connectionState.recovery, upload, review])
+  }, [
+    connection,
+    identity.phase,
+    approvedRecovery,
+    connectionState.recovery,
+    upload,
+    review,
+    clinician,
+  ])
+  useEffect(() => {
+    if (
+      mode !== 'api' ||
+      connection !== 'online' ||
+      identity.phase !== 'authenticated' ||
+      !approvedRecovery ||
+      approvedRecovery !== connectionState.recovery
+    )
+      return
+    const version = approvedRecovery,
+      boundary = identity.boundary,
+      token = identity.session?.accessToken
+    // Observer options can still be disabled while React commits recovery approval.
+    // Defer stale reads until those options are enabled; join any read already running.
+    const timer = window.setTimeout(() => {
+      const current = manager.getSnapshot(),
+        net = network.getSnapshot()
+      if (
+        current.phase === 'authenticated' &&
+        current.boundary === boundary &&
+        current.session?.accessToken === token &&
+        net.status === 'online' &&
+        net.recovery === version &&
+        approval.version === version
+      )
+        void client.refetchQueries({ type: 'active', stale: true }, { cancelRefetch: false })
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [
+    connection,
+    identity.phase,
+    identity.boundary,
+    identity.session?.accessToken,
+    approvedRecovery,
+    connectionState.recovery,
+    manager,
+    network,
+    client,
+    approval,
+  ])
   useEffect(() => {
     const session = identity.session
     if (!session) return
@@ -275,6 +370,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        clinician,
         review,
         upload,
         mode,

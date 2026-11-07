@@ -1,6 +1,18 @@
 .review-page {
   min-width: 0;
 }
+.review-page textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  resize: vertical;
+}
 .review-section {
   margin-block: 1.25rem;
   padding: 1.25rem;
