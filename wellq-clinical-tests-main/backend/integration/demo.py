@@ -91,7 +91,7 @@ def scenario(raw,name,incomplete=False):
                 latest=ctx.req('GET','/clinical-tests/'+init['clinical_test_id']+'/extraction');assert latest.status_code==200
                 assert latest.json()['status']=='clinically_validated'
                 review=ctx.req('PATCH','/clinical-tests/'+init['clinical_test_id']+'/review',role='clinician',
-                               json={'review_status':'reviewed','review_note':'NOTA DE REVISION PRIVADA FICTICIA'})
+                               json={'expected_version':ctx.req('GET','/clinical-tests/'+init['clinical_test_id'],role='clinician').json()['clinical_version'],'review_status':'reviewed','review_note':'NOTA DE REVISION PRIVADA FICTICIA'})
                 assert review.status_code==200
                 public=ctx.req('GET','/clinical-tests/'+init['clinical_test_id']);assert public.status_code==200
                 assert 'NOTA DE REVISION PRIVADA' not in public.text

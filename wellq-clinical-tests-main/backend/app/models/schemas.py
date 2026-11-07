@@ -92,6 +92,7 @@ class EditClinicalTestRequest(RequestModel):
     appointment_id: Optional[str] = None
 
 class ReviewRequest(RequestModel):
+    expected_version: str | None = Field(None, pattern="^[a-f0-9]{64}$")
     review_status: Literal["reviewed"] = "reviewed"  # Solo "reviewed" en v1
     review_note: Optional[str] = Field(None, max_length=2000)
 
@@ -145,6 +146,7 @@ class ReviewInfo(BaseModel):
     reviewed_by: Optional[str] = None
 
 class ClinicalTestResponse(BaseModel):
+    clinical_version: str | None = None
     clinical_test_id: str
     patient_id: str
     title: str

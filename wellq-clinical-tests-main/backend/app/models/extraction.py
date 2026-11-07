@@ -117,6 +117,7 @@ class DocumentMetadata(BaseModel):
     report_date: Optional[str] = None
 
 class ExtractionResponse(BaseModel):
+    clinical_version: str | None = None
     schema_version: str = "1.0"
     clinical_test_id: str
     extraction_id: str
@@ -168,6 +169,7 @@ class MarkerCorrection(BaseModel):
 
 class ClinicianValidationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    expected_version: str | None = Field(None, pattern="^[a-f0-9]{64}$")
     validation_status: Literal["validated", "rejected"] = "validated"  # validated | rejected
     marker_corrections: Optional[List[MarkerCorrection]] = Field(default_factory=list, max_length=1000)
     clinical_note: Optional[str] = None

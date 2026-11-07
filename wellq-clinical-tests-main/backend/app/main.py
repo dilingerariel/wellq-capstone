@@ -48,7 +48,8 @@ async def identity_scope(request: Request, call_next):
 
 @app.exception_handler(PyMongoError)
 async def database_error(request, exc):
-    return JSONResponse(status_code=409 if isinstance(exc, DuplicateKeyError) else 503,
+    conflict = isinstance(exc, DuplicateKeyError) or exc.has_error_label("TransientTransactionError")
+    return JSONResponse(status_code=409 if conflict else 503,
         content={"detail": {"code": "RETRYABLE_CONFLICT", "message": "Retry with the same idempotency key"}},
         headers={"Retry-After": "2"})
 

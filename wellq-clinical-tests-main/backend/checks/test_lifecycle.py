@@ -42,7 +42,7 @@ def test_confirm_validate_report_export_delete(env, fake_storage, sample_pdf):
     hc = headers(env, role="clinician", identity="doctor-test")
     correction = {"marker_code": "glucose", "value_raw": "95", "unit_raw": "mg/dL", "reason": "synthetic test correction"}
     response = c.post(path + "/extraction/validate", headers=hc,
-        json={"marker_corrections": [correction], "clinical_note": "PRIVATE-NOTE-SENTINEL"})
+        json={"expected_version": c.get(path, headers=hc).json()["clinical_version"], "marker_corrections": [correction], "clinical_note": "PRIVATE-NOTE-SENTINEL"})
     assert response.status_code == 200, response.text
     patient = c.get(path + "/extraction", headers=headers(env))
     assert "PRIVATE-NOTE-SENTINEL" not in patient.text

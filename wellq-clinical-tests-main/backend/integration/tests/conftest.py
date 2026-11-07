@@ -129,6 +129,7 @@ class Context:
         return init, ext
 
     def validate(self, init, **body):
+        body.setdefault("expected_version", self.req("GET", "/clinical-tests/" + init["clinical_test_id"], role="clinician").json().get("clinical_version"))
         return self.req("POST", "/clinical-tests/" + init["clinical_test_id"] + "/extraction/validate", role="clinician", json=body)
 
     def patient_url(self, resource):

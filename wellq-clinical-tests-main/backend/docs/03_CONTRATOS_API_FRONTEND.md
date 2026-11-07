@@ -186,7 +186,7 @@ ENDPOINT #11: PATCH /api/v1/clinical-tests/{clinical_test_id}/review - Revisión
 
 Body: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewRequest"}}}}
 
-Respuestas declaradas (ademas de errores de dominio/autorizacion): {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClinicalTestResponse"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}
+Respuestas declaradas (ademas de errores de dominio/autorizacion): {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClinicalTestResponse"}}}}, "401": {"description": "Authentication required (WWW-Authenticate: Bearer)", "headers": {"WWW-Authenticate": {"schema": {"type": "string"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "403": {"description": "Role, relationship, permission or capability denied", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "404": {"description": "Resource or publishable score unavailable", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "409": {"description": "State, idempotency, source or retryable write conflict", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "422": {"description": "Invalid request; detail is an object with code and optional errors", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "429": {"description": "Rate limit (Retry-After where applicable)", "headers": {"Retry-After": {"schema": {"type": "string"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "503": {"description": "Dependency unavailable (Retry-After for database failures)", "headers": {"Retry-After": {"schema": {"type": "string"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "428": {"description": "CLINICAL_VERSION_REQUIRED: GET current version before writing"}}
 
 ### GET /api/v1/patients/{patient_id}/lab-score
 
@@ -323,7 +323,7 @@ Validación clínica de los valores confirmados por el paciente.
 
 Body: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClinicianValidationRequest"}}}}
 
-Respuestas declaradas (ademas de errores de dominio/autorizacion): {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ExtractionResponse"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}
+Respuestas declaradas (ademas de errores de dominio/autorizacion): {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ExtractionResponse"}}}}, "401": {"description": "Authentication required (WWW-Authenticate: Bearer)", "headers": {"WWW-Authenticate": {"schema": {"type": "string"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "403": {"description": "Role, relationship, permission or capability denied", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "404": {"description": "Resource or publishable score unavailable", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "409": {"description": "State, idempotency, source or retryable write conflict", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "422": {"description": "Invalid request; detail is an object with code and optional errors", "headers": {}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "429": {"description": "Rate limit (Retry-After where applicable)", "headers": {"Retry-After": {"schema": {"type": "string"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "503": {"description": "Dependency unavailable (Retry-After for database failures)", "headers": {"Retry-After": {"schema": {"type": "string"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}, "428": {"description": "CLINICAL_VERSION_REQUIRED: GET current version before writing"}}
 
 ## DTO y validaciones exactas publicados
 
@@ -404,6 +404,17 @@ Cada bloque corresponde al esquema OpenAPI generado. Las restricciones de reglas
 ```json
 {
   "properties": {
+    "clinical_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Clinical Version"
+    },
     "clinical_test_id": {
       "type": "string",
       "title": "Clinical Test Id"
@@ -496,6 +507,18 @@ Cada bloque corresponde al esquema OpenAPI generado. Las restricciones de reglas
 ```json
 {
   "properties": {
+    "expected_version": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expected Version"
+    },
     "validation_status": {
       "type": "string",
       "enum": [
@@ -911,6 +934,17 @@ Cada bloque corresponde al esquema OpenAPI generado. Las restricciones de reglas
 ```json
 {
   "properties": {
+    "clinical_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Clinical Version"
+    },
     "schema_version": {
       "type": "string",
       "title": "Schema Version",
@@ -2384,6 +2418,18 @@ Cada bloque corresponde al esquema OpenAPI generado. Las restricciones de reglas
 ```json
 {
   "properties": {
+    "expected_version": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expected Version"
+    },
     "review_status": {
       "type": "string",
       "const": "reviewed",
@@ -2808,3 +2854,15 @@ No se modifico frontend: retirar firma HS256; implementar PUT/hash reales, encab
 
 ## Limitaciones
 Contrato local verificado con dobles en checks. No se valido identidad o infraestructura externa. Esquemas extensibles no permiten generar tipos precisos de todas las secciones de reportes. No hay contrato nuevo de planes comerciales ni endpoints de consentimiento revocable.
+
+
+### Precondición de integridad clínica
+
+GET `/clinical-tests/{id}` y GET `/clinical-tests/{id}/extraction` incluyen `clinical_version` (huella opaca de 64 caracteres hexadecimales del documento y de la extracción vigente). El listado no sustituye la lectura del detalle para preparar una mutación. PATCH `/clinical-tests/{id}/review` y POST `/clinical-tests/{id}/extraction/validate` reciben `expected_version`, obtenido del detalle sobre el que se preparó la operación. La comparación ocurre dentro de la transacción antes de los cambios; una carrera Mongo aborta la operación completa, incluida su auditoría.
+
+- Versión obsoleta: 409 `CLINICAL_VERSION_CONFLICT`. Conflicto transitorio Mongo: 409 `RETRYABLE_CONFLICT`. Consultar estado actual; no reproducir automáticamente la mutación.
+- Versión omitida: 428 `CLINICAL_VERSION_REQUIRED`, sin cambios. Formato inválido: 422. Los clientes anteriores conservan lecturas, pero deben actualizarse para nuevas escrituras clínicas. Omitir la versión no habilita una escritura insegura.
+- Revisión ya aplicada por el mismo profesional y con la misma nota: 200 sin nuevas escrituras de dominio ni auditoría, incluso si la versión ya cambió. Otra nota o revisor: 409. Validación/rechazo no incorporan replay idempotente; ante resultado incierto consultar, sin atribuir automáticamente el resultado.
+- GET de extracción permite `rejected` al clínico con relación y scope vigentes, conservando tenant y privacidad de notas. No habilita corrección ni validación posterior al rechazo. La política del paciente no cambia.
+
+Campos aditivos, sin migración de datos. OpenAPI documenta los dos campos y 428; React conserva las versiones en RAM y bloquea snapshots mezclados, cambios concurrentes y servidores que no ofrecen la precondición.
