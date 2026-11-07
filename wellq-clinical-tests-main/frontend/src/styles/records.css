@@ -1,0 +1,245 @@
+.records-page {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.records-page .page-heading {
+  margin-bottom: 0;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.records-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.records-tabs a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+}
+.records-tabs a.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.records-section {
+  padding: 24px;
+  min-width: 0;
+}
+.records-section h2 {
+  margin-top: 0;
+}
+.records-section p,
+.records-table td,
+.records-section li,
+.records-inspector {
+  overflow-wrap: anywhere;
+}
+.records-filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+.records-filters label {
+  flex: 1 1 180px;
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+.records-filters input,
+.records-filters select,
+.records-inspector select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+.records-filters input[type='date'] {
+  max-width: 100%;
+}
+.records-metrics {
+  margin: 0;
+}
+.records-metrics .metric {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+.records-metrics .metric > span {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.metric .records-version {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.records-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.records-score-grid .metric {
+  display: grid;
+  gap: 8px;
+}
+.records-score-grid .metric strong {
+  font-size: 30px;
+}
+.records-figure {
+  margin: 24px 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 8px;
+  min-width: 0;
+  background: var(--canvas);
+}
+.records-figure figcaption {
+  padding: 0 8px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.records-figure figcaption span {
+  display: block;
+  margin-top: 5px;
+  font-weight: 400;
+}
+.records-chart {
+  width: 100%;
+  height: 280px;
+  min-width: 0;
+  margin-top: 16px;
+}
+.records-chart svg {
+  overflow: visible;
+}
+.records-chart .recharts-tooltip-wrapper {
+  max-width: min(280px, 75vw);
+  white-space: normal;
+}
+.records-inspector {
+  display: grid;
+  gap: 8px;
+}
+.records-inspector label {
+  display: grid;
+  gap: 8px;
+}
+.records-table-wrap {
+  width: 100%;
+  margin-top: 22px;
+  min-width: 0;
+}
+.records-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+.records-table caption {
+  text-align: left;
+  color: var(--muted);
+  padding: 12px 0;
+}
+.records-table th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--table-head);
+}
+.records-table td,
+.records-table th {
+  padding: 14px 10px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.records-table small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.records-table a {
+  color: var(--accent-text);
+}
+.records-exam {
+  border-left: 3px solid var(--accent);
+  padding: 8px 16px;
+  margin: 16px 0;
+  background: var(--canvas);
+  border-radius: 6px;
+}
+.records-export {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.records-snapshots {
+  display: grid;
+  gap: 12px;
+  padding-left: 20px;
+}
+@media (max-width: 767px) {
+  .records-metrics {
+    grid-template-columns: 1fr;
+  }
+  .records-section {
+    padding: 18px 12px;
+  }
+  .records-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .records-table,
+  .records-table tbody,
+  .records-table tr,
+  .records-table td {
+    display: block;
+    width: 100%;
+  }
+  .records-table tr {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .records-table td {
+    padding: 10px 12px;
+  }
+  .records-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .records-filters label {
+    flex-basis: 100%;
+  }
+  .records-filters button,
+  .records-export button {
+    width: 100%;
+  }
+  .records-figure {
+    padding: 12px 0;
+  }
+}

@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   ChevronRight,
   FlaskConical,
+  TrendingUp,
+  FileText,
 } from 'lucide-react'
 import { useRuntime } from '../app/runtime'
 import { usePreferences } from '../hooks/usePreferences'
@@ -40,13 +42,18 @@ export function PortalLayout() {
     previousPath.current = location.pathname
   }, [location.pathname])
   const home = runtime.role === 'clinician' ? '/clinical' : '/patient'
-  const title = location.pathname.startsWith('/exams')
-    ? 'exams'
-    : location.pathname === '/upload'
-      ? 'uploadTitle'
-      : location.pathname === '/catalog'
-        ? 'catalog'
-        : 'overview'
+  const title =
+    location.pathname === '/history'
+      ? 'recordsHistoryNav'
+      : location.pathname === '/reports'
+        ? 'recordsReportsNav'
+        : location.pathname.startsWith('/exams')
+          ? 'exams'
+          : location.pathname === '/upload'
+            ? 'uploadTitle'
+            : location.pathname === '/catalog'
+              ? 'catalog'
+              : 'overview'
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -87,6 +94,18 @@ export function PortalLayout() {
               <Files size={19} aria-hidden="true" />
               {t('exams')}
             </NavLink>
+            {runtime.role === 'clinician' && (
+              <>
+                <NavLink to="/history" onClick={() => setOpen(false)}>
+                  <TrendingUp size={19} aria-hidden="true" />
+                  {t('recordsHistoryNav')}
+                </NavLink>
+                <NavLink to="/reports" onClick={() => setOpen(false)}>
+                  <FileText size={19} aria-hidden="true" />
+                  {t('recordsReportsNav')}
+                </NavLink>
+              </>
+            )}
             {runtime.role === 'patient' && (
               <NavLink to="/upload" onClick={() => setOpen(false)}>
                 <Files size={19} aria-hidden="true" />

@@ -24,6 +24,8 @@ from urllib.parse import urlencode, urlsplit
 
 import jwt
 from clinical_live import CLONE, check_clinical
+from records_live import check_records, check_stale_export
+from export_concurrency_live import check_export_concurrency
 from current_backend import create_api
 from cryptography.hazmat.primitives import serialization
 
@@ -275,7 +277,7 @@ def main():
     }
 
     def session(
-        role="patient", resource=None, permissions=None, tenant=None, expired=False
+        role="patient", resource=None, permissions=None, tenant=None, expired=False, capabilities=None
     ):
         now = int(time.time())
         resource = resource or fixture[role]
@@ -287,7 +289,7 @@ def main():
             role + "_id": resource,
             "client_id": tenant or fixture["tenant"],
             "permissions": grants,
-            "capabilities": [],
+            "capabilities": capabilities or [],
             "iss": env["JWT_ISSUER"],
             "aud": env["JWT_AUDIENCE"],
             "iat": now - 120 if expired else now - 1,
@@ -301,7 +303,7 @@ def main():
             "resourceId": resource,
             "tenantId": claims["client_id"],
             "permissions": grants,
-            "capabilities": [],
+            "capabilities": capabilities or [],
             "expiresAt": claims["exp"],
         }
 
@@ -390,6 +392,8 @@ def main():
             checks.append({"check": label, "status": expected})
             return json.loads(base64.b64decode(response["body"]))
 
+        absent_score=check('reporting-score-before-validation','/api/v1/patients/'+fixture['patient']+'/lab-score?history=true',clinician,404)
+        assert absent_score['detail']['code']=='NO_SCORE_AVAILABLE'
         listing = check("patient-list", "/api/v1/clinical-tests?limit=6", patient, 200)
         assert len(listing["items"]) == 6 and listing["next_cursor"]
         second = check(
@@ -460,6 +464,8 @@ def main():
                 worker_results.append(False)
 
         confirmations = []
+        report_exports = []
+        report_downloads = {"count":0,"authorization_seen":False}
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *args):
                 pass
@@ -503,6 +509,13 @@ def main():
                             + target.query
                         )
                         body = json.dumps(document).encode()
+                if not storage and "application/json" in response["type"]:
+                    document=json.loads(body)
+                    if isinstance(document,dict) and document.get('download_url'):
+                        target=urlsplit(document['download_url'])
+                        assert target.netloc=='objects-int:8080' and target.path.startswith('/object/private/lab-reports/')
+                        document['download_url']='http://127.0.0.1:'+str(bridge.server_port)+target.path+'?'+target.query
+                        body=json.dumps(document).encode()
                 self.send_response(response["status"])
                 self.cors()
                 self.send_header("Content-Type", response["type"])
@@ -561,7 +574,7 @@ def main():
 
             def do_POST(self):
                 if not re.fullmatch(
-                    r"/api/v1/clinical-tests/(uploads/(initiate|[^/]+/(complete|refresh-url))|[^/]+/extraction/validate)",
+                    r"/api/v1/(clinical-tests/(uploads/(initiate|[^/]+/(complete|refresh-url))|[^/]+/extraction/validate)|patients/[^/]+/lab-report/export)",
                     self.path,
                 ):
                     self.send_error(404)
@@ -570,16 +583,11 @@ def main():
                 if not 0 < size <= 65536:
                     self.send_error(413)
                     return
-                response = forward(
-                    self.path,
-                    {
-                        key: self.headers[key]
-                        for key in ("Authorization", "Content-Type", "Idempotency-Key")
-                        if key in self.headers
-                    },
-                    "POST",
-                    self.rfile.read(size),
-                )
+                request_body=self.rfile.read(size)
+                request_headers={key:self.headers[key] for key in ('Authorization','Content-Type','Idempotency-Key') if key in self.headers}
+                response=forward(self.path,request_headers,'POST',request_body)
+                if self.path.endswith('/lab-report/export') and response['status']==200:
+                    report_exports.append((self.path,request_headers,request_body))
                 self.respond(response)
                 if self.path.endswith("/complete") and response["status"] == 200:
                     worker = threading.Thread(target=process_upload, daemon=True)
@@ -587,6 +595,13 @@ def main():
                     worker.start()
 
             def do_GET(self):
+                if self.path.startswith('/object/private/lab-reports/'):
+                    report_downloads['authorization_seen'] |= bool(self.headers.get('Authorization'))
+                    assert not self.headers.get('Authorization')
+                    response=forward(self.path,{},storage=True)
+                    if response['status']==200:report_downloads['count']+=1
+                    self.respond(response,True)
+                    return
                 if not (
                     self.path.startswith("/api/v1/")
                     or self.path in ("/health", "/ready")
@@ -609,6 +624,7 @@ def main():
                 **fixture,
                 "patientSession": patient,
                 "clinicianSession": clinician,
+                "recordsSession":session('clinician',permissions=['clinical:read','reports:export'],capabilities=['report_export']),
                 "clinicalSession":session('clinician',permissions=['clinical:read','clinical:review','extractions:validate']),
                 "uploadSession": session(
                     permissions=["clinical:read", "clinical:write", "extractions:confirm"]
@@ -641,7 +657,10 @@ def main():
         )
         print(output.encode("ascii", "backslashreplace").decode())
         assert browser.returncode == 0, "Real HTTP browser checks failed"
+        records_proof=check_records(forward,session,fixture,api,container_python,report_exports,report_downloads)
+        export_concurrency_proof=check_export_concurrency(forward,session,fixture,api,container_python)
         clinical_proof=check_clinical(forward,session,fixture,api,container_python)
+        assert check_stale_export(forward,report_exports)
         assert len(confirmations)==1, 'Exactly one browser confirmation required'
         confirm_path, confirm_headers, confirm_body=confirmations[0]
         assert forward(confirm_path,confirm_headers,'PATCH',confirm_body)['status']==200, 'Idempotent replay failed'
@@ -677,6 +696,10 @@ def main():
             "clinical_api_mutations": "one synthetic upload; no real patient data",
             "upload_proof": upload_proof,
             "clinical_proof":clinical_proof,
+            "records_proof":records_proof,
+            "export_concurrency_proof":export_concurrency_proof,
+            "score_absent_before_validation":True,
+            "export_source_change_denied":True,
             "storage_transfer": transfer_evidence,
             "external_storage_ai_scanner": "filesystem signed HTTP test storage, scanner and annotated PDF extraction doubles; no production provider certified",
             "browser_passed": True,
