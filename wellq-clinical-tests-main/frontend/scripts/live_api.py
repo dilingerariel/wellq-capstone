@@ -117,6 +117,7 @@ class Scoped:
  clinical_tests=Collection(raw.clinical_tests)
  def __getitem__(self,name): return self.clinical_tests if name=='clinical_tests' else raw[name]
 worked=run_once(Scoped(),'upload')
+if worked: run_once(Scoped(),'extraction')
 print(json.dumps({'worked':worked}))
 """
 
@@ -133,7 +134,14 @@ assert hashlib.sha256(data).hexdigest()==p['sha256']==d['file']['sha256']
 assert len(data)==d['file']['size_bytes']==p['size']
 assert d['file']['verified_at'] and d['file']['generation']
 assert db.audit_events.count_documents({'client_id':p['tenant'],'resource_id':d['clinical_test_id']})>0
-print(json.dumps({'bytes_verified':True,'server_worker_verified':True,'single_document':True,'byte_count':len(data)}))
+ext=db.clinical_test_extractions.find_one({'client_id':p['tenant'],'extraction_id':d['extraction']['extraction_id']})
+assert ext['status']=='confirmed' and ext['document']['collection_date']=='2026-01-02'
+marker=next(m for panel in ext['panels'] for m in panel['markers'] if m['marker_code']=='glucose')
+assert marker['value_raw']=='95' and marker['edited'] is True
+assert ext['proposal']['panels'][0]['markers'][0]['value_raw']=='90'
+assert db.clinical_markers.count_documents({'client_id':p['tenant'],'extraction_id':ext['extraction_id'],'value_raw':'95','invalidated_at':None})==1
+assert db.audit_events.count_documents({'client_id':p['tenant'],'resource_id':ext['extraction_id'],'event':'extraction_confirmed'})==1
+print(json.dumps({'bytes_verified':True,'server_worker_verified':True,'single_document':True,'byte_count':len(data),'corrections_persisted':True,'proposal_preserved':True,'single_confirmation':True}))
 """
 
 SEED = """
@@ -426,7 +434,7 @@ def main():
         worker_results = []
         pdf = container_python(
             api,
-            "import io,json,base64;from reportlab.pdfgen import canvas;b=io.BytesIO();c=canvas.Canvas(b);c.drawString(20,700,'SYNTHETIC BROWSER UPLOAD - NO PATIENT DATA');c.save();print(json.dumps({'bytes':base64.b64encode(b.getvalue()).decode()}))",
+            "import io,json,base64;from reportlab.pdfgen import canvas;b=io.BytesIO();c=canvas.Canvas(b);c.drawString(20,750,'SYNTHETIC BROWSER UPLOAD - NO PATIENT DATA');p={'schema_version':'1.0','document_type':'blood_panel','language':'es','page_count':1,'collection_date':'2026-01-01','panels':[{'panel_code':'metabolic','panel_name_raw':'SYNTHETIC PANEL','specimen':'blood','markers':[{'marker_code':'glucose','raw_name':'SYNTHETIC glucose','value_raw':'90','unit_raw':'mg/dL','confidence':dict.fromkeys(['value','unit','reference','name'],0.6),'page':1,'evidence':'Synthetic annotation'}]}]};c.drawString(10,700,'WQINT:'+base64.b64encode(json.dumps(p).encode()).decode());c.save();print(json.dumps({'bytes':base64.b64encode(b.getvalue()).decode()}))",
         )["bytes"]
         pdf_bytes = base64.b64decode(pdf)
 
@@ -434,9 +442,11 @@ def main():
             try:
                 time.sleep(1)
                 worker_results.append(container_python(api, WORKER, fixture)["worked"])
-            except CommandFailure:
+            except CommandFailure as error:
+                print('Scoped test worker failed: '+str(error), flush=True)
                 worker_results.append(False)
 
+        confirmations = []
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *args):
                 pass
@@ -520,6 +530,20 @@ def main():
                     transfer_evidence["byte_count"] += len(data)
                 self.respond(response, True)
 
+            def do_PATCH(self):
+                if not re.fullmatch(r"/api/v1/clinical-tests/[^/]+/extraction", self.path):
+                    self.send_error(404)
+                    return
+                size = int(self.headers.get('Content-Length', '0'))
+                if not 0 < size <= 65536:
+                    self.send_error(413)
+                    return
+                body = self.rfile.read(size)
+                headers = {key:self.headers[key] for key in ('Authorization','Content-Type','Idempotency-Key') if key in self.headers}
+                response = forward(self.path,headers,'PATCH',body)
+                if response['status']==200: confirmations.append((self.path,headers,body))
+                self.respond(response)
+
             def do_POST(self):
                 if not re.fullmatch(
                     r"/api/v1/clinical-tests/uploads/(initiate|[^/]+/(complete|refresh-url))",
@@ -571,7 +595,7 @@ def main():
                 "patientSession": patient,
                 "clinicianSession": clinician,
                 "uploadSession": session(
-                    permissions=["clinical:read", "clinical:write"]
+                    permissions=["clinical:read", "clinical:write", "extractions:confirm"]
                 ),
                 "pdfBytes": pdf,
             }
@@ -601,6 +625,13 @@ def main():
         )
         print(output.encode("ascii", "backslashreplace").decode())
         assert browser.returncode == 0, "Real HTTP browser checks failed"
+        assert len(confirmations)==1, 'Exactly one browser confirmation required'
+        confirm_path, confirm_headers, confirm_body=confirmations[0]
+        assert forward(confirm_path,confirm_headers,'PATCH',confirm_body)['status']==200, 'Idempotent replay failed'
+        changed=json.loads(confirm_body);changed['marker_edits'][0]['value_raw']='96'
+        assert forward(confirm_path,confirm_headers,'PATCH',json.dumps(changed).encode())['status']==409, 'Changed replay must conflict'
+        changed['extraction_id']=str(uuid.uuid4())
+        assert forward(confirm_path,confirm_headers,'PATCH',json.dumps(changed).encode())['status']==409, 'Stale version must conflict'
         for worker in worker_threads:
             worker.join(timeout=30)
         assert worker_results and all(worker_results), (
@@ -629,7 +660,7 @@ def main():
             "clinical_api_mutations": "one synthetic upload; no real patient data",
             "upload_proof": upload_proof,
             "storage_transfer": transfer_evidence,
-            "external_storage_ai_scanner": "filesystem signed HTTP test storage and scanner double; GCS/antivirus/AI production not certified; AI not requested",
+            "external_storage_ai_scanner": "filesystem signed HTTP test storage, scanner and annotated PDF extraction doubles; no production provider certified",
             "browser_passed": True,
             "no_published_docker_ports": True,
         }

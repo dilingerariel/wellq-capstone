@@ -43,6 +43,7 @@ test('real browser bytes reach signed test storage; FastAPI worker verifies a si
   })
   await page.getByLabel('Título del documento', { exact: true }).fill('SYNTHETIC BROWSER UPLOAD')
   await page.getByLabel('Fecha del examen', { exact: true }).fill('2026-01-01')
+  await page.getByRole('checkbox').check()
   const transitions: string[] = []
   page.on('response', async (response) => {
     if (response.url().endsWith('/status') && response.status() === 200) {
@@ -59,7 +60,7 @@ test('real browser bytes reach signed test storage; FastAPI worker verifies a si
       'Documento verificado y disponible. La revisión clínica es un paso independiente.',
       { exact: true },
     ),
-  ).toBeVisible()
+  ).toBeVisible({ timeout: 45000 })
   await expect(
     page.getByText(
       'El servidor confirmó que puedes prescindir de la copia original para esta carga.',
@@ -73,6 +74,31 @@ test('real browser bytes reach signed test storage; FastAPI worker verifies a si
       !JSON.stringify({ ...localStorage, ...sessionStorage }).includes('SYNTHETIC BROWSER UPLOAD'),
   )
   expect(safe).toBe(true)
+  await page.getByRole('link', { name: 'Revisar extracción', exact: true }).click()
+  await expect(page.getByLabel('Valor glucose', { exact: true })).toHaveValue('90')
+  await page.getByLabel('Valor glucose', { exact: true }).fill('95')
+  await page.getByLabel('Fecha de toma de muestra', { exact: true }).fill('2026-01-02')
+  const identity = page.getByLabel('He comprobado que este documento me corresponde.', {
+    exact: true,
+  })
+  if (await identity.isVisible()) await identity.check()
+  const low = page.getByLabel('He revisado el marcador glucose marcado con baja confianza.', {
+    exact: true,
+  })
+  if (await low.isVisible()) await low.check()
+  await page.getByRole('button', { name: 'Revisar cambios', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Cambios que se enviarán' })).toBeVisible()
+  await page
+    .getByRole('button', { name: 'Confirmar datos revisados', exact: true })
+    .evaluate((button) => {
+      ;(button as HTMLButtonElement).click()
+      ;(button as HTMLButtonElement).click()
+    })
+  await expect(
+    page.getByText('Confirmación registrada por el servidor. No equivale a validación clínica.', {
+      exact: true,
+    }),
+  ).toBeVisible()
 })
 test('clinician reads authorized patient, server refuses unrelated patient', async ({ page }) => {
   await page.addInitScript((session) => {

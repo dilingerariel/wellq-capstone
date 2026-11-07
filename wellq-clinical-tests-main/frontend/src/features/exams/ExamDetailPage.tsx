@@ -11,7 +11,7 @@ import { usePatientScope } from './PatientScope'
 import { ApiError } from '../../services/http'
 export function ExamDetailPage() {
   const { id = '' } = useParams()
-  const { source, canRequest } = useRuntime()
+  const { source, canRequest, role, mode } = useRuntime()
   const { patientId } = usePatientScope()
   const { t, i18n } = useTranslation()
   const query = useQuery({
@@ -64,6 +64,11 @@ export function ExamDetailPage() {
         <StatusBadge status={exam.status} />
       </div>
       <section className="panel detail-panel">
+        {role === 'patient' && mode === 'api' && (
+          <Link className="button secondary" to={`/exams/${encodeURIComponent(id)}/extraction`}>
+            {t('reviewTitle')}
+          </Link>
+        )}
         <h2>
           <FileText size={19} aria-hidden="true" />
           {t('documentInfo')}

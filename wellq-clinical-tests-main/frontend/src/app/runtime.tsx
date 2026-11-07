@@ -18,10 +18,13 @@ import { ReadRecovery } from '../services/synchronization'
 import { UploadController } from '../features/uploads/controller'
 import { uploadApi } from '../features/uploads/api'
 import { createHttp } from '../services/http'
+import { ReviewController } from '../features/review/controller'
+import { reviewApi } from '../features/review/model'
 
 const mode = import.meta.env.VITE_DATA_MODE || 'demo'
 if (mode !== 'demo' && mode !== 'api') throw new Error('VITE_DATA_MODE must be demo or api')
 interface Runtime {
+  review: ReviewController
   upload: UploadController
   mode: 'demo' | 'api'
   role: Role
@@ -123,13 +126,49 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
         },
       ),
   )
+  const [review] = useState(
+    () =>
+      new ReviewController(
+        reviewApi(
+          createHttp(
+            import.meta.env.VITE_API_BASE_URL || '/api/v1',
+            () => manager.getSnapshot().session?.accessToken,
+            (token) => manager.invalidate(token),
+            (status) => {
+              if (status === 'unavailable') window.setTimeout(() => network.report(status), 0)
+              else network.report(status)
+            },
+          ),
+        ),
+        () => {
+          const current = manager.getSnapshot(),
+            net = network.getSnapshot()
+          return {
+            patient: current.session?.resourceId || '',
+            allowed:
+              mode === 'api' &&
+              current.phase === 'authenticated' &&
+              current.session?.role === 'patient' &&
+              current.session.expiresAt * 1000 > Date.now() &&
+              current.session.permissions.includes('clinical:read') &&
+              net.status === 'online' &&
+              approval.version === net.recovery,
+            confirm: !!current.session?.permissions.includes('extractions:confirm'),
+          }
+        },
+        () => manager.verify(true),
+      ),
+  )
   useEffect(() => {
+    privateResources.add(review.clear)
     privateResources.add(upload.clear)
     return () => {
       privateResources.delete(upload.clear)
+      privateResources.delete(review.clear)
+      review.clear()
       upload.clear()
     }
-  }, [privateResources, upload])
+  }, [privateResources, upload, review])
   const renewedExpiry = useRef<number | null>(null)
   useEffect(() => network.start(), [network])
   useEffect(() => {
@@ -170,9 +209,11 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       connection !== 'online' ||
       identity.phase !== 'authenticated' ||
       approvedRecovery !== connectionState.recovery
-    )
+    ) {
       upload.suspend()
-  }, [connection, identity.phase, approvedRecovery, connectionState.recovery, upload])
+      if (identity.phase !== 'loading' || connection !== 'online') review.suspend()
+    }
+  }, [connection, identity.phase, approvedRecovery, connectionState.recovery, upload, review])
   useEffect(() => {
     const session = identity.session
     if (!session) return
@@ -234,6 +275,7 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        review,
         upload,
         mode,
         role: identity.session?.role || role,

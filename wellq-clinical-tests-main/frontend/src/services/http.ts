@@ -33,7 +33,7 @@ export function createHttp(
     path: string,
     schema: z.ZodType<T>,
     signal?: AbortSignal,
-    mutation?: { body: unknown; key: string },
+    mutation?: { body: unknown; key: string; method?: 'POST' | 'PATCH' },
   ): Promise<T> => {
     const accessToken = token()
     const controller = new AbortController()
@@ -41,7 +41,7 @@ export function createHttp(
     const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal
     try {
       const response = await fetch(`${base.replace(/\/$/, '')}${path}`, {
-        method: mutation ? 'POST' : 'GET',
+        method: mutation ? mutation.method || 'POST' : 'GET',
         body: mutation ? JSON.stringify(mutation.body) : undefined,
         signal: combined,
         cache: 'no-store',
@@ -60,12 +60,28 @@ export function createHttp(
         if (response.status === 401) unauthorized(accessToken)
         let code = 'REQUEST_FAILED'
         // Only bounded machine codes are retained; never reflect clinical error text.
-        if (response.status === 409)
+        if (response.status === 409 || response.status === 422)
           try {
             const error = z
               .object({
                 detail: z.object({
-                  code: z.enum(['EXTRACTION_NOT_READY', 'INVALID_CLINICAL_DATE']),
+                  code: z.enum([
+                    'EXTRACTION_NOT_READY',
+                    'INVALID_CLINICAL_DATE',
+                    'EXTRACTION_SUPERSEDED',
+                    'IDEMPOTENCY_CONFLICT',
+                    'INVALID_EXTRACTION_STATE',
+                    'IDENTITY_CONFIRMATION_REQUIRED',
+                    'LOW_CONFIDENCE_REVIEW_REQUIRED',
+                    'INVALID_MARKER_EDIT',
+                    'INCOMPLETE_MARKER_EDIT',
+                    'REFERENCE_UNIT_MISMATCH',
+                    'UNKNOWN_MARKER',
+                    'UNIT_NOT_SUPPORTED',
+                    'VALUE_INVALID_FORMAT',
+                    'VALUE_IMPLAUSIBLE',
+                    'RETRYABLE_CONFLICT',
+                  ]),
                 }),
               })
               .safeParse(await response.json())

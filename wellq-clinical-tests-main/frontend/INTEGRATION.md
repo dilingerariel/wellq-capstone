@@ -1,5 +1,7 @@
 # Identidad y HTTP real
 
+La confirmación de paciente está descrita en [REVIEW.md](REVIEW.md). El harness actual también pide consentimiento IA sintético, ejecuta extracción con el proveedor de PDF anotado y verifica correcciones/confirmación reales; las referencias anteriores a «no se pide IA» describen la entrega previa de carga, no la cobertura actual.
+
 ## Autoridad pendiente
 
 El diseño delega la identidad en la plataforma principal de WellQ; las fuentes consultadas no eligen una marca de proveedor. En este checkout no hay SDK, registro de cliente ni host de identidad productivo conectado al portal. Tampoco hay un `.env` operativo del backend con autoridad confiable. No es seguro arrancarlo con los valores predeterminados de MongoDB. No se inició ni se reconfiguró la instancia local de desarrollo.

@@ -1,0 +1,31 @@
+# Revisión y confirmación humana
+
+Ruta paciente `/exams/:id/extraction`, accesible desde el detalle y desde una carga cuya extracción devuelve `awaiting_confirmation`. Modo API exclusivamente; demo informa el requisito sin fabricar propuestas. GET del documento verifica identidad, propiedad y disponibilidad; GET de extracción devuelve la propuesta vigente. Pendiente (`409 EXTRACTION_NOT_READY`), fallo/ilegible, propuesta y confirmación se muestran por separado. Consultar nuevamente es una acción explícita.
+
+## Contrato y límites
+
+`features/review/model.ts` valida las respuestas y construye `PatientConfirmationRequest` contra los tipos OpenAPI generados. Se editan fechas de muestra/informe, tipo de documento y valor/unidad de marcadores numéricos mapeados y únicos. Referencias y procedencia se muestran como datos del servidor; las referencias existentes acompañan una corrección para conservar su unidad/fuente. No se editan códigos, confianza, puntuaciones ni diagnósticos. Agregar/eliminar marcadores y editar referencias quedan fuera de esta interfaz. Fechas existentes no se pueden borrar: el servidor solo aplica fechas no vacías. Las conversiones/unidades y plausibilidad siguen siendo responsabilidad del catálogo de FastAPI.
+
+Cada cambio real produce `document_edits` o `marker_edits` (op `update`), con `extraction_id`, `action=confirm`, `acknowledged_marker_codes` y `identity_confirmed` cuando las banderas lo exigen. Se revisa un resumen antes de la confirmación explícita. La sesión requiere `clinical:read` y, para confirmar, `extractions:confirm`; no se amplían permisos. El servidor conserva la autorización definitiva.
+
+El controlador revalida identidad y vuelve a leer documento/extracción antes de enviar PATCH con `Idempotency-Key`. Compara ID, contenido y `updated_at` del documento. Una propuesta diferente bloquea el envío y conserva el borrador; cargar la actual exige aceptar perder las correcciones locales. No existe ETag/If-Match de extracción en el contrato: la comprobación definitiva del ID vigente y la transacción pertenecen al backend. El cliente no promete bloquear cambios arbitrarios de datos efectuados fuera de esa API.
+
+Solo hay un envío en curso. Si la respuesta es incierta, se congelan cuerpo y clave: un reintento explícito revalida y reproduce exactamente esa operación. Una extracción ya confirmada tras respuesta perdida solo se acredita para este envío mediante la respuesta idempotente del PATCH; no se infiere éxito de un GET ajeno. Los rechazos 422 permiten corregir; 409 bloquea conflictos; 429 respeta `Retry-After`; 401 limpia sesión. Se manejan 403/404/500/503 y timeout sin mostrar mensajes clínicos internos ni reproducir escrituras automáticamente.
+
+Descarte y reprocesamiento no tienen controles habilitados ni llamadas desde este módulo. El descarte actual guarda hash y clave, pero no se añadió su flujo de UX/pruebas. El reprocesamiento sigue comparando solo la última clave en `extraction.reprocess_idempotency_key`, sin huella del cuerpo (`confirm_reprocess_confirmed`), y puede responder igual para cuerpos distintos. Antes de habilitarlo hace falta resolver ese contrato/idempotencia y comprobarlo por separado; aquí no se modifica el servidor.
+
+## Continuidad y privacidad
+
+Un único borrador activo vive en RAM fuera de la ruta, junto con la propuesta original y el envío incierto. Navegar conserva los cambios. Cambiar de documento requiere volver al borrador o descartarlo expresamente. Offline permite editar una propuesta recibida pero bloquea confirmación. Reconectar revalida identidad y nunca ejecuta PATCH automáticamente. Sesión nula, expirada, logout o cambio de sujeto/tenant/permisos limpia todo sin aceptar resultados tardíos. Cerrar o recargar pierde el borrador; se informa y se solicita aviso nativo al abandonar cuando existe un borrador.
+
+No se almacenan datos clínicos en localStorage, IndexedDB ni caché PWA. Se conserva la política de caché pública del shell. El resumen y los campos usan React sin HTML sin sanear. ES/EN y temas existentes, formularios verticales, tarjetas de marcadores y controles táctiles.
+
+## Pruebas
+
+Resultado local de esta entrega: typecheck, lint, formato, contratos y build aprobados; 72 pruebas Vitest, 44 escenarios Playwright y tres escenarios de navegador contra FastAPI real aprobados. Se verificaron los diez anchos, Axe en claro/oscuro, ES/EN, teclado/tacto, horizontal, reflow, offline, sesiones, conflictos y reintento idempotente. La prueba HTTP incluyó 15 controles directos de lecturas/permisos más tres comprobaciones de replay/conflicto de confirmación. El escáner de los cambios no encontró secretos y npm audit informó cero vulnerabilidades conocidas. Los 368 archivos versionados fuera del frontend conservaron sus bytes. Los tres contenedores de integración quedaron detenidos y sin puertos publicados.
+
+`npm.cmd run test` cubre payloads reales, reconocimientos, validación, doble envío, respuesta perdida/clave estable, offline, límites temporales, cambios de sesión y conflictos tanto de ID como de contenido. `test:browser` añade la matriz de diez anchos, edición/confirmación, Axe, navegación con borrador, desconexión/reconexión, 422 y cambio de identidad. Se usan datos sintéticos e interceptaciones identificadas para fallos controlados.
+
+`test:live` reutiliza el proyecto aislado y protegido descrito en INTEGRATION.md: navegador sin interceptaciones → FastAPI real → Mongo autenticado. Una carga con consentimiento usa los workers de producto restringidos al tenant sintético y el proveedor de PDF anotado de integración. React modifica glucose de 90 a 95 y la fecha de muestra, reconoce identidad/baja confianza y confirma. El harness comprueba persistencia, propuesta original conservada, un marcador activo y un evento de confirmación; repite la misma clave/cuerpo (200), cambia el cuerpo (409) y usa versión obsoleta (409). No acredita un proveedor IA/SSO, GCS ni antivirus productivo. No se cambian los fuentes del backend, documentos académicos ni configuración productiva.
+
+Para producción siguen pendientes el host de identidad aprobado con `extractions:confirm`, infraestructura privada y proveedores configurados/aprobados conforme a INTEGRATION.md y UPLOAD.md. No introducir claves en React ni variables VITE.

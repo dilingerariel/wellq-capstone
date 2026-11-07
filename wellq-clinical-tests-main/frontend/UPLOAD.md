@@ -1,5 +1,7 @@
 # Carga de documentos desde React
 
+La revisión y confirmación posterior se implementa en [REVIEW.md](REVIEW.md), con correcciones enviadas por PATCH. Esta página conserva la responsabilidad de carga y verificación del archivo.
+
 Ruta `/upload`, disponible para pacientes. El modo demo permite revisar el formulario y validar una selección, pero no envía archivos. El modo API necesita una sesión del host aprobado con `clinical:read` y `clinical:write`; el backend vuelve a verificar cada permiso y propietario. El profesional no puede iniciar este flujo de paciente.
 
 ## Contrato implementado

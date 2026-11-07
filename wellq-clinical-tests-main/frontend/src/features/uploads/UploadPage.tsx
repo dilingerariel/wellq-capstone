@@ -240,6 +240,14 @@ export function UploadPage() {
                     {t('uploadViewDocument')}
                   </Link>
                 )}
+                {state.extraction === 'awaiting_confirmation' && (
+                  <Link
+                    className="button primary"
+                    to={`/exams/${encodeURIComponent(state.status.clinical_test_id)}/extraction`}
+                  >
+                    {t('reviewTitle')}
+                  </Link>
+                )}
               </>
             )}
             {state.phase === 'poll-limit' && (
