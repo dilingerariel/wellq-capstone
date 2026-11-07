@@ -75,6 +75,11 @@ export function createHttp(
                   code: z.enum([
                     'NO_SCORE_AVAILABLE',
                     'EXPORT_SOURCE_CHANGED',
+                    'EXPORT_VERSION_REQUIRED',
+                    'EXPORT_IN_PROGRESS',
+                    'EXPORT_ATTEMPT_EXPIRED',
+                    'EXPORT_ATTEMPT_FAILED',
+                    'PDF_GENERATION_FAILED',
                     'STORAGE_ERROR',
                     'PDF_ENGINE_UNAVAILABLE',
                     'CLINICAL_VERSION_REQUIRED',

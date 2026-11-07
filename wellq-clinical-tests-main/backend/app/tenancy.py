@@ -26,6 +26,21 @@ class TenantCollection:
         doc["client_id"] = self.client_id
         return doc
 
+    @contextmanager
+    def source_write(self):
+        from app.services.report_version import SOURCE_COLLECTIONS, SOURCE_KEY
+        if self._collection.name not in SOURCE_COLLECTIONS:
+            yield
+            return
+        # Standalone facade writes are transactional too; nested writes reuse
+        # the caller's session. Raw worker leases only change job bookkeeping.
+        db = TenantDatabase(self._collection.database, self.client_id)
+        with db.atomic():
+            db.request_limits.update_one({"key": SOURCE_KEY}, {"$inc": {"revision": 1}}, upsert=True)
+            db.lab_report_exports.update_many({"state": {"$in": ["pending", "committed"]}},
+                                              {"$set": {"state": "stale"}})
+            yield
+
     def find(self, query=None, *args, **kwargs):
         return self._collection.find(self.query(query), *args, **self.options(kwargs))
 
@@ -39,10 +54,12 @@ class TenantCollection:
         return self._collection.distinct(key, self.query(query), **self.options(kwargs))
 
     def insert_one(self, document, **kwargs):
-        return self._collection.insert_one(self.document(document), **self.options(kwargs))
+        with self.source_write():
+            return self._collection.insert_one(self.document(document), **self.options(kwargs))
 
     def insert_many(self, documents, **kwargs):
-        return self._collection.insert_many([self.document(d) for d in documents], **self.options(kwargs))
+        with self.source_write():
+            return self._collection.insert_many([self.document(d) for d in documents], **self.options(kwargs))
 
     def update(self, update):
         if self._collection.name in {"score_snapshots", "clinical_result_history", "audit_events", "audit_logs"}:
@@ -65,15 +82,20 @@ class TenantCollection:
             scoped = {**deepcopy(query), "client_id": self.client_id}
         else:
             scoped = self.query(query)
-        return self._collection.update_one(scoped, update, **self.options(kwargs))
+        with self.source_write():
+            return self._collection.update_one(scoped, update, **self.options(kwargs))
 
     def update_many(self, query, update, **kwargs):
         if kwargs.get("upsert"):
             raise ValueError("Bulk upsert denied")
-        return self._collection.update_many(self.query(query), self.update(update), **self.options(kwargs))
+        update = self.update(update)
+        with self.source_write():
+            return self._collection.update_many(self.query(query), update, **self.options(kwargs))
 
     def find_one_and_update(self, query, update, **kwargs):
-        return self._collection.find_one_and_update(self.query(query), self.update(update), **self.options(kwargs))
+        update = self.update(update)
+        with self.source_write():
+            return self._collection.find_one_and_update(self.query(query), update, **self.options(kwargs))
 
 class TenantDatabase:
     def __init__(self, database, client_id):

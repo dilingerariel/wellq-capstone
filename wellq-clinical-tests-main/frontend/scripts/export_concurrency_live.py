@@ -38,10 +38,11 @@ def check_export_concurrency(forward, session, fixture, api, container_python):
     changed = json.dumps({**json.loads(prior['metadata']), 'synthetic_export_probe': 'SYNTHETIC INTERVENING SOURCE'})
     key = 'synthetic-aba-' + uuid.uuid4().hex
     export_headers = {**headers, 'Idempotency-Key': key}
-    body = json.dumps({'window_months': 12, 'include_series': True}).encode()
     try:
         assert container_python(api, METADATA, {**args, **prior, 'mode': 'change', 'metadata': changed})['updated']
         assert report() != original
+        body = json.dumps({'window_months': 12, 'include_series': True,
+                           'expected_source_version': report()['source_version']}).encode()
         created = forward(base + '/export', export_headers, 'POST', body)
         assert created['status'] == 200
         assert json.loads(base64.b64decode(created['body']))['replayed'] is False

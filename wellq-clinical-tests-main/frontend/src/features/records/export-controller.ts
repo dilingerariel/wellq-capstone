@@ -19,6 +19,7 @@ type Phase =
   | 'downloading'
   | 'downloaded'
   | 'stale'
+  | 'failed'
   | 'error'
 interface State {
   patient: string
@@ -33,7 +34,13 @@ export class ReportExportController {
   private listeners = new Set<() => void>()
   private generation = 0
   private flight?: AbortController
-  private plan?: { patient: string; params: ReportParams; fingerprint: string; key: string }
+  private plan?: {
+    patient: string
+    params: ReportParams
+    version: string
+    fingerprint: string
+    key: string
+  }
   constructor(
     private api: ReportingApi,
     private allowed: () => boolean,
@@ -75,16 +82,26 @@ export class ReportExportController {
     if (g !== this.generation) return
     const a = error instanceof ApiError ? error : null
     const stale = a?.code === 'EXPORT_SOURCE_CHANGED'
+    const terminal = [
+      'EXPORT_ATTEMPT_FAILED',
+      'EXPORT_ATTEMPT_EXPIRED',
+      'IDEMPOTENCY_CONFLICT',
+      'STORAGE_ERROR',
+      'PDF_GENERATION_FAILED',
+      'PDF_ENGINE_UNAVAILABLE',
+    ].includes(a?.code || '')
     const seconds = a?.retryAfter && /^\d+$/.test(a.retryAfter) ? Number(a.retryAfter) * 1000 : 0
     const wait = seconds || (a?.retryAfter ? Math.max(0, Date.parse(a.retryAfter) - Date.now()) : 0)
     this.set({
       phase: stale
         ? 'stale'
-        : a?.code === 'DOWNLOAD_EXPIRED'
-          ? 'pending'
-          : a && [403, 404, 422].includes(a.status)
-            ? 'error'
-            : 'uncertain',
+        : terminal
+          ? 'failed'
+          : ['DOWNLOAD_EXPIRED', 'EXPORT_IN_PROGRESS'].includes(a?.code || '')
+            ? 'pending'
+            : a && [403, 404, 422, 428].includes(a.status)
+              ? 'error'
+              : 'uncertain',
       error:
         a?.code === 'REQUEST_FAILED'
           ? `reviewHttp${a.status}`
@@ -94,7 +111,12 @@ export class ReportExportController {
     })
   }
   async prepare(patient: string, params: ReportParams, displayed: Report) {
-    if (this.flight || Date.now() < this.state.retryAt || this.state.phase === 'stale') return
+    if (
+      this.flight ||
+      Date.now() < this.state.retryAt ||
+      ['stale', 'failed'].includes(this.state.phase)
+    )
+      return
     const g = this.generation,
       c = new AbortController()
     this.flight = c
@@ -117,11 +139,19 @@ export class ReportExportController {
       this.plan ??= {
         patient,
         params: structuredClone(params),
+        version: before.source_version,
         fingerprint: hash,
         key: crypto.randomUUID(),
       }
-      const result = await this.api.export(patient, this.plan.params, this.plan.key, c.signal)
+      const result = await this.api.export(
+        patient,
+        { ...this.plan.params, expected_source_version: this.plan.version },
+        this.plan.key,
+        c.signal,
+      )
       this.ensure(g)
+      if (result.source_version !== this.plan.version)
+        throw new ApiError(409, 'EXPORT_SOURCE_CHANGED')
       if (result.patient_id !== patient) throw new ApiError(403, 'RECORD_PATIENT_MISMATCH')
       const after = await this.api.report(patient, params, c.signal)
       this.ensure(g)
@@ -158,9 +188,15 @@ export class ReportExportController {
       this.ensure(g)
       // Replay binds these bytes to the persisted full server source, including
       // fields omitted by the display projection. No new export key is created.
-      const checked = await this.api.export(plan.patient, plan.params, plan.key, c.signal)
+      const checked = await this.api.export(
+        plan.patient,
+        { ...plan.params, expected_source_version: plan.version },
+        plan.key,
+        c.signal,
+      )
       this.ensure(g)
       if (
+        checked.source_version !== plan.version ||
         !checked.replayed ||
         checked.patient_id !== plan.patient ||
         checked.export_id !== result.export_id ||

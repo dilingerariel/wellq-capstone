@@ -24,6 +24,8 @@ function setup() {
   let current = reportSchema.parse(syntheticReport()),
     allowed = true
   const result = exportSchema.parse({
+    source_version: 'rpt1:1:' + 'a'.repeat(64),
+    verified_at: '2026-11-01T12:00:00Z',
     export_id: 'synthetic-export',
     patient_id: 'synthetic-patient',
     status: 'ready',
@@ -140,6 +142,11 @@ it('single flight generates once and downloads only after an explicit action and
   expect(save).toHaveBeenCalledOnce()
   expect(api.export).toHaveBeenCalledTimes(2)
   expect(api.export.mock.calls[0]?.[2]).toBe(api.export.mock.calls[1]?.[2])
+  expect(api.export.mock.calls[0]?.[1]).toEqual({
+    ...reportParams,
+    expected_source_version: report.source_version,
+  })
+  expect(api.export.mock.calls[1]?.[1]).toEqual(api.export.mock.calls[0]?.[1])
   expect(c.getSnapshot().phase).toBe('downloaded')
 })
 it('retains the exact idempotency key after timeout and pending signer; never retries automatically', async () => {
@@ -214,7 +221,7 @@ it('expires private links and renews them with the existing key', async () => {
   await c.prepare('synthetic-patient', reportParams, report)
   expect(api.export.mock.calls[0]?.[2]).toBe(api.export.mock.calls[1]?.[2])
 })
-it.each(['export_id', 'sha256', 'size_bytes', 'replayed'] as const)(
+it.each(['export_id', 'sha256', 'size_bytes', 'replayed', 'source_version'] as const)(
   'rejects changed export proof %s before saving any bytes',
   async (field) => {
     const { c, api, report, result, save } = setup()
@@ -230,6 +237,37 @@ it.each(['export_id', 'sha256', 'size_bytes', 'replayed'] as const)(
     expect(c.getSnapshot().phase).toBe('stale')
   },
 )
+it.each(['EXPORT_ATTEMPT_FAILED', 'EXPORT_ATTEMPT_EXPIRED', 'STORAGE_ERROR'])(
+  'requires explicit refresh after terminal export failure %s',
+  async (code) => {
+    const { c, api, report, save } = setup()
+    api.export.mockRejectedValueOnce(new ApiError(409, code))
+    await c.prepare('synthetic-patient', reportParams, report)
+    await c.prepare('synthetic-patient', reportParams, report)
+    expect(c.getSnapshot().phase).toBe('failed')
+    expect(api.export).toHaveBeenCalledOnce()
+    expect(save).not.toHaveBeenCalled()
+    c.clear()
+    await c.prepare('synthetic-patient', reportParams, report)
+    expect(api.export.mock.calls[0]?.[2]).not.toBe(api.export.mock.calls[1]?.[2])
+  },
+)
+it('rejects a server proof for a different source version before enabling download', async () => {
+  const { c, api, report, result, read } = setup()
+  api.export.mockResolvedValueOnce({ ...result, source_version: 'rpt1:2:' + 'b'.repeat(64) })
+  await c.prepare('synthetic-patient', reportParams, report)
+  expect(c.getSnapshot().phase).toBe('stale')
+  expect(read).not.toHaveBeenCalled()
+})
+it('honors Retry-After for a pending reservation without automatically sending a mutation', async () => {
+  const { c, api, report } = setup()
+  api.export.mockRejectedValueOnce(new ApiError(409, 'EXPORT_IN_PROGRESS', '1'))
+  await c.prepare('synthetic-patient', reportParams, report)
+  expect(c.getSnapshot().retryAt).toBeGreaterThan(Date.now())
+  expect(c.getSnapshot().phase).toBe('pending')
+  await c.prepare('synthetic-patient', reportParams, report)
+  expect(api.export).toHaveBeenCalledOnce()
+})
 it('clears data and ignores delayed export replies on identity/patient cancellation', async () => {
   const { c, api, report, result, revoke } = setup()
   let resolve!: (v: typeof result) => void

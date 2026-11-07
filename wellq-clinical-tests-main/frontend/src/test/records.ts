@@ -1,5 +1,6 @@
 // Synthetic API fixtures only. Never imported by the application.
 export const syntheticReport = (patient = 'synthetic-patient') => ({
+  source_version: 'rpt1:1:' + 'a'.repeat(64),
   generated_at: '2026-11-01T12:00:00Z',
   header: {
     patient_id: patient,

@@ -556,7 +556,7 @@ function Records({ patient, view }: { patient: string; view: 'history' | 'report
                     disabled={
                       !canExport ||
                       busy ||
-                      exported.phase === 'stale' ||
+                      ['stale', 'failed'].includes(exported.phase) ||
                       report.isError ||
                       report.isFetching ||
                       now < exported.retryAt

@@ -27,6 +27,7 @@ from clinical_live import CLONE, check_clinical
 from records_live import check_records, check_stale_export
 from export_concurrency_live import check_export_concurrency
 from current_backend import create_api
+from atomic_pdf_live import check_atomic_pdf
 from cryptography.hazmat.primitives import serialization
 
 FRONT = Path(__file__).resolve().parents[1]
@@ -64,11 +65,12 @@ def inspect(name):
     return json.loads(command(["docker", "inspect", name]))[0]
 
 
-def container_python(name, code, data=None):
+def container_python(name, code, data=None, timeout=40):
     return json.loads(
         command(
             ["docker", "exec", "-i", name, "python", "-B", "-c", code],
             json.dumps(data).encode() if data is not None else None,
+            timeout=timeout,
         )
     )
 
@@ -661,6 +663,7 @@ def main():
         export_concurrency_proof=check_export_concurrency(forward,session,fixture,api,container_python)
         clinical_proof=check_clinical(forward,session,fixture,api,container_python)
         assert check_stale_export(forward,report_exports)
+        atomic_pdf_proof=check_atomic_pdf(session,fixture,api,container_python)
         assert len(confirmations)==1, 'Exactly one browser confirmation required'
         confirm_path, confirm_headers, confirm_body=confirmations[0]
         assert forward(confirm_path,confirm_headers,'PATCH',confirm_body)['status']==200, 'Idempotent replay failed'
@@ -698,6 +701,7 @@ def main():
             "clinical_proof":clinical_proof,
             "records_proof":records_proof,
             "export_concurrency_proof":export_concurrency_proof,
+            "atomic_pdf_proof":atomic_pdf_proof,
             "score_absent_before_validation":True,
             "export_source_change_denied":True,
             "storage_transfer": transfer_evidence,

@@ -31,6 +31,7 @@ class MarkerSeriesResponse(BaseModel):
 
 
 class LabReportResponse(BaseModel):
+    source_version: str
     generated_at: str
     header: dict[str, Any]
     score: Optional[dict[str, Any]]
@@ -43,6 +44,8 @@ class LabReportResponse(BaseModel):
 
 
 class LabReportExportResponse(BaseModel):
+    source_version: str
+    verified_at: str
     export_id: str
     patient_id: str
     status: Literal["ready", "download_pending"]

@@ -104,6 +104,8 @@ async function setup(
         }
       } else
         body = {
+          source_version: 'rpt1:1:' + 'a'.repeat(64),
+          verified_at: '2026-11-01T12:00:00Z',
           export_id: 'synthetic-export',
           patient_id: 'synthetic-patient',
           status: controls.signer ? 'download_pending' : 'ready',
@@ -266,7 +268,7 @@ test('offline keeps prior measurements, renews reads without replay and erases d
   await page.evaluate(() => window.dispatchEvent(new Event('records-revoke')))
   await expect(page.getByRole('table')).toHaveCount(0)
 })
-test('pending signer and storage failure retain the same request key; a stale report blocks downloads', async ({
+test('pending signer retains the same request key; a stale report blocks downloads', async ({
   page,
 }) => {
   const controls = await setup(page)
@@ -354,7 +356,7 @@ test('incompatible units are separate charts and empty series never retain inven
   await expect(page.getByRole('application')).toHaveCount(0)
   await expect(page.getByRole('table')).toHaveCount(0)
 })
-test('storage failure is visible and recovery requires explicit same-key export', async ({
+test('storage failure is terminal and recovery requires refresh and an explicit new export', async ({
   page,
 }) => {
   const controls = await setup(page)
@@ -362,18 +364,18 @@ test('storage failure is visible and recovery requires explicit same-key export'
   controls.status = 502
   await page.getByRole('button', { name: 'Generar PDF', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('almacenamiento')
+  await expect(page.getByRole('status').filter({ hasText: 'El intento falló' })).toBeVisible()
   await page.getByRole('button', { name: 'Comprobar conexión', exact: true }).click()
-  const retry = page.getByRole('button', {
-    name: 'Reintentar la misma exportación / renovar enlace',
-    exact: true,
-  })
-  await expect(retry).toBeEnabled()
+  const generate = page.getByRole('button', { name: 'Generar PDF', exact: true })
+  await expect(generate).toBeDisabled()
   expect(controls.exports).toHaveLength(1)
-  await retry.click()
+  await page.getByRole('button', { name: 'Actualizar datos clínicos', exact: true }).click()
+  await expect(generate).toBeEnabled()
+  await generate.click()
   await expect(
     page.getByRole('button', { name: 'Descargar PDF verificado', exact: true }),
   ).toBeEnabled()
-  expect(controls.exports[0]!.key).toBe(controls.exports[1]!.key)
+  expect(controls.exports[0]!.key).not.toBe(controls.exports[1]!.key)
 })
 
 test('source change during storage download discards bytes before the browser can save them', async ({

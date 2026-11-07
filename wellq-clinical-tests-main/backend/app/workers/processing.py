@@ -95,8 +95,9 @@ def run_once(raw_db, kind="upload", now=None):
             changes["extraction.status"] = "extraction_failed" if status == "failed" else "queued"
         # A commit may have succeeded even when its acknowledgement was lost.
         # Never downgrade a committed 'done' job back to pending in that case.
-        db.clinical_tests.update_one({"_id": doc["_id"], field + ".lease_token": token,
-                                     field + ".status": "running"}, {"$set": changes})
+        recovery = {"_id": doc["_id"], field + ".lease_token": token, field + ".status": "running"}
+        if db.clinical_tests.find_one(recovery):
+            db.clinical_tests.update_one(recovery, {"$set": changes})
     return True
 
 def main():
