@@ -19,6 +19,7 @@ class TokenPayload:
     clinician_id: Optional[str] = None
     permissions: frozenset[str] = field(default_factory=frozenset)
     capabilities: frozenset[str] = field(default_factory=frozenset)
+    expires_at: int | None = None
 
 def unauthorized():
     return HTTPException(401, detail={"code": "UNAUTHORIZED", "message": "Invalid authentication"},
@@ -52,7 +53,7 @@ def verify_token(token: str) -> TokenPayload:
             if not isinstance(p[name], list) or any(not isinstance(x, str) for x in p[name]):
                 raise ValueError("Invalid grants")
         return TokenPayload(p["sub"], role, p["client_id"], p.get("patient_id"), p.get("clinician_id"),
-                            frozenset(p["permissions"]), frozenset(p["capabilities"]))
+                            frozenset(p["permissions"]), frozenset(p["capabilities"]), p["exp"])
     except (jwt.InvalidTokenError, ValueError, TypeError, KeyError):
         raise unauthorized()
 

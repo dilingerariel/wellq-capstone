@@ -59,7 +59,9 @@ const examSchema = z.object({
   validation_status: nullable,
   review_status: nullable,
 })
+const sourceVersion = z.string().regex(/^rpt1:[0-9]+:[a-f0-9]{64}$/)
 export const reportSchema = z.object({
+  source_version: sourceVersion,
   longitudinal: z
     .object({
       marker_series: z.array(
@@ -148,6 +150,8 @@ export const reportSchema = z.object({
 })
 export const exportSchema = z
   .object({
+    source_version: sourceVersion,
+    verified_at: z.iso.datetime(),
     export_id: text,
     patient_id: text,
     status: z.enum(['ready', 'download_pending']),
@@ -187,6 +191,7 @@ export type ReportParams = Required<
   Pick<LabReportExportRequest, 'window_months' | 'include_series'>
 > &
   Pick<LabReportExportRequest, 'clinical_test_id'>
+export type ExportBody = ReportParams & { expected_source_version: string }
 export const reportParams: ReportParams = { window_months: 12, include_series: true }
 export function fingerprint(report: Report) {
   const { generated_at: _generated, ...data } = report
@@ -232,7 +237,7 @@ export function reportingApi(http: ReturnType<typeof createHttp>) {
         throw new ApiError(403, 'RECORD_PATIENT_MISMATCH')
       return result
     },
-    export: (id: string, body: ReportParams, key: string, signal: AbortSignal) =>
+    export: (id: string, body: ExportBody, key: string, signal: AbortSignal) =>
       http(`${path(id)}/lab-report/export`, exportSchema, signal, { body, key }),
   }
 }

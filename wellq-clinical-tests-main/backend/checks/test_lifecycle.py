@@ -1,11 +1,19 @@
 import copy
 import hashlib
-import pytest
 from datetime import datetime
-from app.services.extractor import extraction_engine, ExtractionEngine, ExtractionUnavailable, ProviderOutput
+
+import pytest
+from conftest import export_precondition
+from test_processing import complete, headers, initiate
+
+from app.services.extractor import (
+    ExtractionEngine,
+    ExtractionUnavailable,
+    ProviderOutput,
+    extraction_engine,
+)
 from app.services.file_validation import scanner
 from app.workers.processing import run_once
-from test_processing import initiate, complete, headers
 
 OUTPUT = {"schema_version": "1.0", "document_type": "blood_panel", "language": "es", "page_count": 1,
           "collection_date": datetime.utcnow().strftime("%Y-%m-%d"), "panels": [{"panel_code": "metabolic_panel",
@@ -56,9 +64,9 @@ def test_confirm_validate_report_export_delete(env, fake_storage, sample_pdf):
     assert c.get(base + "/lab-score", headers=headers(env)).status_code == 403
     report = c.get(base + "/lab-report", headers=hc)
     assert report.status_code == 200 and report.json()["results"]["panels"][0]["rows"][0]["value"] == 95
-    export = c.post(base + "/lab-report/export", headers=hc, json={"include_series": True})
+    export = c.post(base + "/lab-report/export", headers=hc, json=export_precondition(env, hc, include_series=True))
     assert export.status_code == 200, export.text
-    repeated = c.post(base + "/lab-report/export", headers=hc, json={"include_series": True})
+    repeated = c.post(base + "/lab-report/export", headers=hc, json=export_precondition(env, hc, include_series=True))
     assert repeated.status_code == 200 and repeated.json()["export_id"] == export.json()["export_id"]
     exported = env["db"].lab_report_exports.find_one({})
     data = fake_storage[exported["object_key"]][0]

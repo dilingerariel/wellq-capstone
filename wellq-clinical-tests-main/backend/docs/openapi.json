@@ -1936,7 +1936,7 @@
     "/api/v1/patients/{patient_id}/lab-report": {
       "get": {
         "summary": "Get Lab Report",
-        "description": "ENDPOINT #19: GET /api/v1/patients/{patient_id}/lab-report  (§9.5.1)\nPayload completo del reporte, resuelto en servidor (el portal no recalcula nada).\n  - con clinical_test_id  -> modo \"exam\": solo los marcadores de ese documento\n  - sin clinical_test_id  -> modo \"aggregate\": último valor de cada marcador dentro de window_months\ninclude_snapshot=true incluye el desglose de contribuciones por pilar.\ninclude_series=true incluye series de marcadores y de pilares.",
+        "description": "Authorized snapshot of a selected exam or a 1-60 month aggregate.\n\nsource_version binds the complete source, including omitted series/snapshot\ndetails, independently of generated_at. Send it unchanged as the export's\nexpected_source_version; an obsolete/missing precondition fails closed.",
         "operationId": "get_lab_report_api_v1_patients__patient_id__lab_report_get",
         "security": [
           {
@@ -2114,7 +2114,7 @@
     "/api/v1/patients/{patient_id}/lab-report/export": {
       "post": {
         "summary": "Export Lab Report",
-        "description": "ENDPOINT #20: POST /api/v1/patients/{patient_id}/lab-report/export  (§9.5.4)\nGenera el PDF en servidor con el mismo payload del endpoint 19, lo guarda en un prefijo privado\ny devuelve una URL firmada de corta duración. Idempotente por (clínico, paciente, Idempotency-Key).\nCada exportación nueva queda registrada en audit_events.",
+        "description": "Versioned export. Legacy requests without a source precondition return 428.\n\nReservation and publication are fenced Mongo transactions; external PDF\ngeneration/upload/signing happen between transactions and are not rolled back.",
         "operationId": "export_lab_report_api_v1_patients__patient_id__lab_report_export_post",
         "security": [
           {
@@ -2211,8 +2211,15 @@
             }
           },
           "409": {
-            "description": "State, idempotency, source or retryable write conflict",
-            "headers": {},
+            "description": "Source changed, in progress, expired, failed or idempotency conflict",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Present for pending reservation or retryable Mongo conflict"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -2258,6 +2265,16 @@
                 }
               }
             },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Source version precondition required",
             "content": {
               "application/json": {
                 "schema": {
@@ -4167,6 +4184,20 @@
             "type": "boolean",
             "title": "Include Series",
             "default": true
+          },
+          "expected_source_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 110,
+                "pattern": "^rpt1:[0-9]+:[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Source Version",
+            "description": "Required precondition from GET lab-report.source_version; omitted/null returns 428, obsolete returns 409. Keep unchanged for same-key retries."
           }
         },
         "additionalProperties": false,
@@ -4175,6 +4206,14 @@
       },
       "LabReportExportResponse": {
         "properties": {
+          "source_version": {
+            "type": "string",
+            "title": "Source Version"
+          },
+          "verified_at": {
+            "type": "string",
+            "title": "Verified At"
+          },
           "export_id": {
             "type": "string",
             "title": "Export Id"
@@ -4253,6 +4292,8 @@
         },
         "type": "object",
         "required": [
+          "source_version",
+          "verified_at",
           "export_id",
           "patient_id",
           "status",
@@ -4269,6 +4310,10 @@
       },
       "LabReportResponse": {
         "properties": {
+          "source_version": {
+            "type": "string",
+            "title": "Source Version"
+          },
           "generated_at": {
             "type": "string",
             "title": "Generated At"
@@ -4338,6 +4383,7 @@
         },
         "type": "object",
         "required": [
+          "source_version",
           "generated_at",
           "header",
           "score",

@@ -1,4 +1,5 @@
 from app.models.reporting import MarkerSeriesResponse, LabReportResponse, LabReportExportResponse
+from app.models.errors import ErrorResponse
 from app.services.clinical_version import clinical_version, require_clinical_version
 from app.services import uploads
 import logging
@@ -11,11 +12,9 @@ from pydantic import BaseModel, Field, ConfigDict
 from bson import ObjectId
 from typing import Optional, List
 from xml.sax.saxutils import escape as _xml_escape
-import uuid
 import time
 import base64
 import calendar
-import hashlib
 import io
 import json
 from datetime import datetime, date as _date
@@ -827,6 +826,40 @@ def _result_row(m: dict, prev: Optional[dict], info: dict) -> dict:
 @router.get("/patients/{patient_id}/lab-report", response_model=LabReportResponse)
 async def get_lab_report(
     patient_id: str,
+    clinical_test_id: str | None = None,
+    window_months: int = Query(12, ge=1, le=60),
+    include_series: bool = False,
+    include_snapshot: bool = False,
+    user: TokenPayload = Depends(get_current_user),
+    db: Database = Depends(get_database),
+):
+    """Authorized snapshot of a selected exam or a 1-60 month aggregate.
+
+    source_version binds the complete source, including omitted series/snapshot
+    details, independently of generated_at. Send it unchanged as the export's
+    expected_source_version; an obsolete/missing precondition fails closed.
+    """
+    from app.services.report_version import publication_stamp, version
+    try:
+        with db.atomic():
+            report = await _report_payload(patient_id, clinical_test_id, window_months,
+                                           True, True, user, db)
+            report["source_version"] = version(db, report, publication_stamp())
+            if not include_series:
+                report["longitudinal"] = None
+            if not include_snapshot and report.get("score"):
+                for pillar in report["score"]["pillars"].values():
+                    pillar.pop("contributions", None)
+            return report
+    except HTTPException as exc:
+        if exc.status_code == 403:
+            # The inner read transaction aborted: preserve the denial outside it.
+            _audit_denied_access(db, "lab-report", patient_id, user, "report_access_denied")
+        raise
+
+
+async def _report_payload(
+    patient_id: str,
     clinical_test_id: Optional[str] = None,
     window_months: int = Query(12, ge=1, le=60),
     include_series: bool = False,
@@ -1089,6 +1122,8 @@ class LabReportExportRequest(BaseModel):
     clinical_test_id: Optional[str] = None
     window_months: int = Field(12, ge=1, le=60)
     include_series: bool = True
+    expected_source_version: str | None = Field(None, pattern=r"^rpt1:[0-9]+:[a-f0-9]{64}$", max_length=110,
+        description="Required precondition from GET lab-report.source_version; omitted/null returns 428, obsolete returns 409. Keep unchanged for same-key retries.")
 
 
 def _f(v) -> str:
@@ -1160,6 +1195,9 @@ def _build_lab_report_pdf(report: dict, patient_id: str, clinician_id: str) -> b
         return t
 
     story = [P("Reporte de laboratorio", title)]
+    if report.get("source_version"):
+        story.append(P(f"Version de fuente: {report['source_version']}"))
+        story.append(P("Instantanea fechada. Su verificacion no garantiza vigencia continua."))
     hdr = report.get("header") or {}
     win = hdr.get("window") or {}
     story.append(P(f"Paciente: {patient_id} | Modo: {hdr.get('mode')} | Ventana: {win.get('months')} meses "
@@ -1330,8 +1368,11 @@ def _export_response(rec: dict, replayed: bool) -> dict:
     }
 
 
-@router.post("/patients/{patient_id}/lab-report/export", response_model=LabReportExportResponse)
-@atomic_write
+@router.post("/patients/{patient_id}/lab-report/export", response_model=LabReportExportResponse,
+    responses={428: {"model": ErrorResponse, "description": "Source version precondition required"},
+               409: {"model": ErrorResponse, "description": "Source changed, in progress, expired, failed or idempotency conflict",
+                     "headers": {"Retry-After": {"schema": {"type": "string"},
+                         "description": "Present for pending reservation or retryable Mongo conflict"}}}})
 async def export_lab_report(
     patient_id: str,
     body: Optional[LabReportExportRequest] = None,
@@ -1339,106 +1380,11 @@ async def export_lab_report(
     user: TokenPayload = Depends(get_current_user),
     db: Database = Depends(get_database),
 ):
+    """Versioned export. Legacy requests without a source precondition return 428.
+
+    Reservation and publication are fenced Mongo transactions; external PDF
+    generation/upload/signing happen between transactions and are not rolled back.
     """
-    ENDPOINT #20: POST /api/v1/patients/{patient_id}/lab-report/export  (§9.5.4)
-    Genera el PDF en servidor con el mismo payload del endpoint 19, lo guarda en un prefijo privado
-    y devuelve una URL firmada de corta duración. Idempotente por (clínico, paciente, Idempotency-Key).
-    Cada exportación nueva queda registrada en audit_events.
-    """
-    body = body or LabReportExportRequest()
-    params = body.dict()
-
-    # Mismo payload que consume el portal (incluye el control de acceso y su auditoría de denegados)
-    report = await get_lab_report(
-        patient_id=patient_id,
-        clinical_test_id=body.clinical_test_id,
-        window_months=body.window_months,
-        include_series=body.include_series,
-        include_snapshot=True,
-        user=user,
-        db=db,
-    )
-    clinician_id = user.clinician_id
-
-    source_hash = hashlib.sha256(json.dumps({k: v for k, v in report.items() if k != "generated_at"},
-                                            sort_keys=True, default=str).encode()).hexdigest()
-    publication = {"allowed": scoring_engine.publication_allowed(),
-                   "catalog_hash": catalog_service.content_hash(),
-                   "scoring_version": scoring_engine.scoring_version}
-    # Idempotencia
-    existing = db.lab_report_exports.find_one(
-        {"patient_id": patient_id, "clinician_id": clinician_id, "idempotency_key": idempotency_key}
-    )
-    if existing:
-        if existing.get("params") != params:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail={"code": "IDEMPOTENCY_CONFLICT",
-                        "message": "El Idempotency-Key ya se usó con parámetros distintos"}
-            )
-        if existing.get("payload_sha256") != source_hash or existing.get("publication") != publication:
-            raise HTTPException(409, detail={"code": "EXPORT_SOURCE_CHANGED", "message": "Use a new idempotency key for current data"})
-        return _export_response(existing, replayed=True)
-
-    # Generar PDF
-    try:
-        pdf = _build_lab_report_pdf(report, patient_id, clinician_id)
-    except ImportError:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"code": "PDF_ENGINE_UNAVAILABLE",
-                    "message": "Falta 'reportlab' en el servidor: agrégalo a requirements.txt y reconstruye la imagen"}
-        )
-
-    export_id = f"lrx_{uuid.uuid4().hex[:12]}"
-    object_key = f"private/lab-reports/{hashlib.sha256(db.client_id.encode()).hexdigest()}/{export_id}.pdf"
-    try:
-        storage_mode = _store_export_pdf(object_key, pdf)
-    except Exception as e:
-        logger.warning("Clinical dependency error; details withheld")
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail={"code": "STORAGE_ERROR", "message": "No se pudo guardar el PDF en el almacenamiento"}
-        )
-
-    now = datetime.utcnow()
-    payload_for_hash = {k: v for k, v in report.items() if k != "generated_at"}
-    trace = report.get("traceability") or {}
-    rec = {
-        "export_id": export_id,
-        "patient_id": patient_id,
-        "clinician_id": clinician_id,
-        "idempotency_key": idempotency_key,
-        "params": params,
-        "object_key": object_key,
-        "storage": storage_mode,
-        "file_name": f"lab-report_{patient_id}_{now.strftime('%Y%m%d')}.pdf",
-        "size_bytes": len(pdf),
-        "sha256": hashlib.sha256(pdf).hexdigest(),
-        "payload_sha256": hashlib.sha256(
-            json.dumps(payload_for_hash, sort_keys=True, default=str).encode("utf-8")).hexdigest(),
-        "catalog_version": trace.get("catalog_version"),
-        "scoring_version": trace.get("scoring_version"),
-        "publication": publication,
-        "created_at": now,
-    }
-    db.lab_report_exports.insert_one(dict(rec))
-
-    # Auditoría de la exportación (sujeto, momento, recurso y resultado)
-    try:
-        db.audit_events.insert_one({
-            "event": "lab_report_export",
-            "resource": "lab-report",
-            "patient_id": patient_id,
-            "actor_role": user.role,
-            "actor_id": clinician_id,
-            "export_id": export_id,
-            "object_key": object_key,
-            "sha256": rec["sha256"],
-            "result": "success",
-            "occurred_at": now,
-        })
-    except Exception as e:
-        logger.warning("Clinical dependency error; details withheld")
-
-    return _export_response(rec, replayed=False)
+    from app.services.report_export import export
+    return await export(patient_id, body or LabReportExportRequest(), idempotency_key, user, db,
+                        get_lab_report, _build_lab_report_pdf, _store_export_pdf, _export_response)

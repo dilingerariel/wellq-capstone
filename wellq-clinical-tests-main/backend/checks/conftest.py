@@ -19,6 +19,14 @@ from app.tenancy import TenantDatabase
 from app.dependencies.auth import current_identity
 from app.services.storage import storage_service
 
+
+def export_precondition(env, headers, **params):
+    """Upgrade a test client explicitly; never patch all requests or bypass 428."""
+    query = {k: v for k, v in params.items() if k in {"clinical_test_id", "window_months"}}
+    response = env["client"].get("/api/v1/patients/patient-test/lab-report", headers=headers, params=query)
+    assert response.status_code == 200
+    return {**params, "expected_source_version": response.json()["source_version"]}
+
 @pytest.fixture
 def env(monkeypatch):
     monkeypatch.setattr(socket, "create_connection", lambda *a, **k: (_ for _ in ()).throw(AssertionError("Network forbidden in checks")))

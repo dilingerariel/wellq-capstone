@@ -1,5 +1,5 @@
 // Generated from backend/docs/openapi.json. Do not edit.
-// Source SHA-256: 0df77701e75d7c40bd45a75b8d9128a5ed56b09963f99a7b88f30051dd3410b9
+// Source SHA-256: 6485022d0f0a6111a1f7806d2333d31dce6f225367e0390853ecb16b506d5b2f
 export type CatalogItemResponse = { "catalog_version"?: string; "clinically_validated"?: boolean; "marker_code": string; "name": string; "panel_code": string; "specimen": string; "canonical_unit": string; "supported_units": Array<string>; "pillars": Array<string>; "typical_range": { [key: string]: unknown } }
 
 export type ClinicalTestResponse = { "clinical_version"?: string | null; "clinical_test_id": string; "patient_id": string; "title": string; "test_type": TestType; "test_date": string; "notes"?: string | null; "case_id"?: string | null; "appointment_id"?: string | null; "file": FileInfo; "status": UploadStatus; "review": ReviewInfo; "created_at": string; "updated_at": string }
@@ -40,11 +40,11 @@ export type InitiateUploadRequest = { "client_upload_id": string; "file_name": s
 
 export type InitiateUploadResponse = { "upload_id": string; "clinical_test_id": string; "status"?: UploadStatus; "upload": SignedUrlResponse }
 
-export type LabReportExportRequest = { "clinical_test_id"?: string | null; "window_months"?: number; "include_series"?: boolean }
+export type LabReportExportRequest = { "clinical_test_id"?: string | null; "window_months"?: number; "include_series"?: boolean; "expected_source_version"?: string | null }
 
-export type LabReportExportResponse = { "export_id": string; "patient_id": string; "status": "ready" | "download_pending"; "file_name": string; "download_url": string | null; "expires_at": string | null; "size_bytes": number; "sha256": string; "storage": string; "replayed": boolean; "generated_at": string; "error_code"?: string | null }
+export type LabReportExportResponse = { "source_version": string; "verified_at": string; "export_id": string; "patient_id": string; "status": "ready" | "download_pending"; "file_name": string; "download_url": string | null; "expires_at": string | null; "size_bytes": number; "sha256": string; "storage": string; "replayed": boolean; "generated_at": string; "error_code"?: string | null }
 
-export type LabReportResponse = { "generated_at": string; "header": { [key: string]: unknown }; "score": { [key: string]: unknown } | null; "flags": Array<{ [key: string]: unknown }>; "results": { [key: string]: unknown }; "longitudinal": { [key: string]: unknown } | null; "imaging_findings": Array<{ [key: string]: unknown }>; "traceability": { [key: string]: unknown }; "actions": { [key: string]: string } }
+export type LabReportResponse = { "source_version": string; "generated_at": string; "header": { [key: string]: unknown }; "score": { [key: string]: unknown } | null; "flags": Array<{ [key: string]: unknown }>; "results": { [key: string]: unknown }; "longitudinal": { [key: string]: unknown } | null; "imaging_findings": Array<{ [key: string]: unknown }>; "traceability": { [key: string]: unknown }; "actions": { [key: string]: string } }
 
 export type LabScoreResponse = { "current_snapshot": ScoreSnapshotModel; "history"?: Array<ScoreSnapshotModel> | null }
 

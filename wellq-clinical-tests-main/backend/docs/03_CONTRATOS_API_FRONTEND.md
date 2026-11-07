@@ -2866,3 +2866,16 @@ GET `/clinical-tests/{id}` y GET `/clinical-tests/{id}/extraction` incluyen `cli
 - GET de extracción permite `rejected` al clínico con relación y scope vigentes, conservando tenant y privacidad de notas. No habilita corrección ni validación posterior al rechazo. La política del paciente no cambia.
 
 Campos aditivos, sin migración de datos. OpenAPI documenta los dos campos y 428; React conserva las versiones en RAM y bloquea snapshots mezclados, cambios concurrentes y servidores que no ofrecen la precondición.
+
+### Precondición atómica de exportación PDF
+
+GET `/patients/{id}/lab-report` entrega `source_version` opaca, ligada al tenant, revisión monotónica de fuentes y hash del reporte completo/política de publicación. Es estable entre proyecciones de series/snapshot y no incorpora `generated_at`; los filtros de examen/ventana sí forman parte de su significado. POST `/patients/{id}/lab-report/export` exige `expected_source_version` leída de ese GET y `Idempotency-Key`. Omitida/nula: **428** `EXPORT_VERSION_REQUIRED`; malformada: **422**; obsoleta: **409** `EXPORT_SOURCE_CHANGED`. Clientes antiguos deben actualizarse: no existe exportación insegura por compatibilidad. OpenAPI y tipos TS se regeneran juntos.
+
+La reserva, el commit del artefacto y la publicación final usan transacciones MongoDB snapshot/majority con CAS sobre la revisión compartida; generación/carga/firma ocurren fuera. Las escrituras de fuentes mediante la fachada incrementan revisión e invalidan `pending`/`committed` en la misma transacción. Una nueva exportación no modifica la revisión. El ámbito conservador es todo el tenant. No se migran ni modifican snapshots previos.
+
+- `pending`: 409 `EXPORT_IN_PROGRESS`, `Retry-After: 1`; reintento manual con igual clave, versión y filtros. Mongo transitorio: `RETRYABLE_CONFLICT`, sin replay automático.
+- `failed` o lease vencido: 409 `EXPORT_ATTEMPT_FAILED`/`EXPORT_ATTEMPT_EXPIRED`; refrescar y solicitar explícitamente otro intento. Nunca reintentar automáticamente una carga con resultado externo ambiguo.
+- `stale`: 409 `EXPORT_SOURCE_CHANGED`, sin enlace. Cambiar parámetros/versión de una clave ya registrada: 409 `IDEMPOTENCY_CONFLICT`.
+- `committed`: 200 `ready` o `download_pending`; requiere `source_version` y `verified_at`. El firmador puede recuperarse con la misma clave sin duplicar PDF ni auditoría de éxito. Una URL solo sale después del commit de la verificación final; la sesión expirada y la relación clínica revocada impiden publicarla.
+
+Los objetos cargados antes de un conflicto permanecen privados y referenciados por el intento para reconciliación revisada, sin borrado automático. Los fallos se auditan fuera de la transacción abortada. Un enlace ya emitido puede seguir válido hasta su expiración aunque cambie la fuente; `verified_at` expresa una comprobación puntual. Una escritura administrativa que eluda la fachada o una política externa modificada entre procesos necesita control adicional. Se conserva el bloqueo PDF productivo del portal y no se habilita ningún despliegue. Arquitectura, compatibilidad y límites operativos: `frontend/HISTORY.md`, sección Exportación y continuidad.

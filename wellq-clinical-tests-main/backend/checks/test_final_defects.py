@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 
 import pytest
+from conftest import export_precondition
 from pydantic import ValidationError
 from pypdf import PdfReader
 
@@ -121,6 +122,7 @@ def test_f06_signer_failure_must_not_report_ready(monkeypatch):
     result = _export_response(rec, False)
     assert result["status"] == "download_pending" and result["download_url"] is None
     assert result["error_code"] == "DOWNLOAD_URL_UNAVAILABLE"
+    result.update(source_version="rpt1:1:" + "a" * 64, verified_at="2026-11-05T00:00:00Z")
     assert LabReportExportResponse.model_validate(result).status == "download_pending"
 
 
@@ -175,7 +177,7 @@ def test_f01_all_publication_surfaces_and_patient_denials(env, fake_storage, sam
     if not approved:
         assert report["flags"] == [] and report["longitudinal"]["pillar_series"] == []
         assert row["subscore_blank_reason"] == "CATALOG_NOT_APPROVED"
-    export = c.post(base + "/lab-report/export", headers=hc, json={"include_series": True})
+    export = c.post(base + "/lab-report/export", headers=hc, json=export_precondition(env, hc, include_series=True))
     assert export.status_code == 200 and export.json()["status"] == "ready"
     record = env["db"].lab_report_exports.find_one({})
     assert fake_storage[record["object_key"]][0].startswith(b"%PDF")
@@ -204,7 +206,7 @@ def test_f01_legacy_scores_never_gain_approval_by_toggling_settings(env, fake_st
     assert report["score"] is None and report["flags"] == []
     assert report["longitudinal"]["pillar_series"] == []
     assert report["results"]["panels"][0]["rows"][0]["subscore"] is None
-    exported = c.post(base + "/lab-report/export", headers=hc, json={"include_series": True})
+    exported = c.post(base + "/lab-report/export", headers=hc, json=export_precondition(env, hc, include_series=True))
     assert exported.status_code == 200
     obj = env["db"].lab_report_exports.find_one({})["object_key"]
     text = "\n".join(p.extract_text() for p in PdfReader(io.BytesIO(fake_storage[obj][0])).pages)
@@ -224,9 +226,10 @@ def test_f01_history_filters_unapproved_snapshots_and_old_export(env, fake_stora
     hc = clinician(env); base = "/api/v1/patients/patient-test"
     score = env["client"].get(base + "/lab-score?history=true", headers=hc)
     assert score.status_code == 200 and score.json()["history"] == []
-    assert env["client"].post(base + "/lab-report/export", headers=hc, json={}).status_code == 200
+    export_body = export_precondition(env, hc)
+    assert env["client"].post(base + "/lab-report/export", headers=hc, json=export_body).status_code == 200
     env["monkeypatch"].setattr(settings, "CATALOG_CLINICALLY_APPROVED", False)
-    replay = env["client"].post(base + "/lab-report/export", headers=hc, json={})
+    replay = env["client"].post(base + "/lab-report/export", headers=hc, json=export_body)
     assert replay.status_code == 409 and replay.json()["detail"]["code"] == "EXPORT_SOURCE_CHANGED"
 
 
@@ -385,13 +388,14 @@ def test_f06_signer_recovers_with_same_export_and_no_duplicate_events(env, fake_
     def broken(**kwargs):
         raise RuntimeError("test outage")
     env["monkeypatch"].setattr(storage_service, "generate_download_url", broken)
-    first = env["client"].post(path, headers=hc, json={})
+    export_body = export_precondition(env, hc)
+    first = env["client"].post(path, headers=hc, json=export_body)
     assert first.status_code == 200 and first.json()["status"] == "download_pending"
     record = env["db"].lab_report_exports.find_one({})
     assert fake_storage[record["object_key"]][0].startswith(b"%PDF")
     events = list(env["db"].audit_events.find({"event": "lab_report_export"}))
     env["monkeypatch"].setattr(storage_service, "generate_download_url", signer)
-    replay = env["client"].post(path, headers=hc, json={})
+    replay = env["client"].post(path, headers=hc, json=export_body)
     assert replay.status_code == 200 and replay.json()["status"] == "ready"
     assert replay.json()["export_id"] == first.json()["export_id"] and replay.json()["replayed"]
     assert replay.json()["download_url"]
@@ -402,7 +406,7 @@ def test_f06_signer_recovers_with_same_export_and_no_duplicate_events(env, fake_
 def test_f06_ready_without_url_is_invalid_dto():
     with pytest.raises(ValidationError):
         LabReportExportResponse(export_id="test", patient_id="test", status="ready", file_name="test.pdf",
-            download_url=None, expires_at=None, size_bytes=1, sha256="test", storage="gcs", replayed=False, generated_at="test")
+            download_url=None, expires_at=None, size_bytes=1, sha256="test", storage="gcs", replayed=False, generated_at="test", source_version="rpt1:1:" + "a" * 64, verified_at="test")
 
 
 def test_f07_concurrent_discards_with_memory_transaction_model(env, fake_storage, sample_pdf):

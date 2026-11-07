@@ -178,11 +178,21 @@ def test_lost_commit_ack_does_not_requeue_completed_job(env, fake_storage, sampl
     env["monkeypatch"].setattr(scanner, "scan", lambda data: None)
     complete(env, init, body)
     original = TenantDatabase.atomic
+    from contextvars import ContextVar
+    depth = ContextVar("memory_transaction_depth", default=0)
     @contextmanager
     def commit_then_lose_ack(self):
-        with original(self):
-            yield
-        raise RuntimeError("Simulated lost commit acknowledgement")
+        # Nested facade writes reuse the outer real session; only the actual
+        # outer commit can lose an acknowledgement. The memory model has none.
+        previous = depth.get()
+        marker = depth.set(previous + 1)
+        try:
+            with original(self):
+                yield
+        finally:
+            depth.reset(marker)
+        if previous == 0:
+            raise RuntimeError("Simulated lost commit acknowledgement")
     env["monkeypatch"].setattr(TenantDatabase, "atomic", commit_then_lose_ack)
     assert run_once(env["raw"])
     stored = env["db"].clinical_tests.find_one({})
