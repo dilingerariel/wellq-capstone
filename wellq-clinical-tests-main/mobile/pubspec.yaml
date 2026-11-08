@@ -1,0 +1,25 @@
+name: wellq_mobile
+description: Synthetic patient-only WellQ mobile foundation.
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  drift: ^2.35.3
+  http: ^1.6.0
+  crypto: ^3.0.8
+  uuid: ^4.6.0
+  path_provider: ^2.1.6
+  file_picker: ^13.3.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/synthetic.pdf

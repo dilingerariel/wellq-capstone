@@ -1,0 +1,2 @@
+# Preserve the exact reviewed bytes, offsets and SHA-256 on Windows checkouts.
+*.pdf binary

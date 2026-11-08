@@ -1,7 +1,10 @@
 # Base verificada para Flutter + Dart + Drift
 
-No se ha creado Flutter ni cambiado contratos. El cliente móvil será independiente
-de React y accederá a FastAPI, nunca directamente a MongoDB. Los contratos vigentes
+La fase 1 está implementada en [mobile](../mobile/README.md): paciente Flutter,
+Drift sintético y flujo HTTP real verificado desde Dart nativo en Windows. Android
+requiere todavía ejecutar un dispositivo o AVD; consultar allí el estado de build
+y pruebas. El cliente es independiente de React y accede a FastAPI, nunca directamente
+a MongoDB. No se cambiaron contratos. Los contratos vigentes
 son `../backend/docs/openapi.json` y `src/types/api.generated.ts`; no copiar versiones
 anteriores ni inventar endpoints de login, refresh o sincronización.
 
@@ -86,12 +89,13 @@ El emulador documenta `10.0.2.2` como alias del loopback del host. Este puente
 rechaza Hosts distintos de los loopback permitidos, por lo que cambiar simplemente
 la URL a ese alias **no es una integración móvil verificada**. Para desarrollo,
 evaluar `adb reverse tcp:8765 tcp:8765` y URL `http://127.0.0.1:8765/api/v1` sin abrir
-MongoDB o listeners externos. No se ejecutó ADB ni se probó un emulador aquí.
+MongoDB o listeners externos. La fase 1 comprobó ADB sin dispositivos conectados;
+no hay AVD ni túnel Android verificado en este equipo.
 Android necesita permiso INTERNET y una excepción cleartext solo en el manifest
 debug si se usa HTTP local; producción exige HTTPS y autoridad real. Mantener los
-endpoints sintéticos/nonce fuera de builds release. La próxima intervención puede
-comenzar el cliente Dart/UI y el esquema Drift sintético; deberá implementar y
-probar el adaptador de identidad móvil, no firmar tokens en el dispositivo.
+endpoints sintéticos/nonce fuera de builds release. El cliente de fase 1 reutiliza
+en debug la autoridad de loopback con tokens en RAM y sin firmar en el dispositivo.
+La siguiente intervención debe verificar ese recorrido en Android antes de ampliarlo.
 
 Pendientes externos: SSO, GCS/IAM/firma/retención, antivirus real, proveedor IA,
 aprobación clínica, escritores fuera de la fachada transaccional y validación de
