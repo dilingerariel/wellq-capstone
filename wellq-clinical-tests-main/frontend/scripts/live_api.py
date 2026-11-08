@@ -97,7 +97,8 @@ for line in sys.stdin:
   except urllib.error.HTTPError as error: response=error
   with response:
    result={'status':response.status,'body':base64.b64encode(response.read()).decode(),
-    'type':response.headers.get('Content-Type','application/json')}
+    'type':response.headers.get('Content-Type','application/json'),
+    'headers':{k:response.headers[k] for k in ('Retry-After','WWW-Authenticate') if response.headers.get(k)}}
  except (OSError,urllib.error.URLError): result={'transport_failure':True}
  print(json.dumps(result),flush=True)
 """
@@ -240,9 +241,9 @@ def main():
     assert env["JWT_ISSUER"] == "https://identity.wellq-integration.invalid"
     assert env["JWT_AUDIENCE"] == "wellq-integration-only"
     original_api = api
-    api = create_api(command, before[api], BACK, project)
+    api, current_image = create_api(command, before[api], BACK, project)
     before[api] = inspect(api)
-    assert before[api]["Image"] == before[original_api]["Image"]
+    assert before[api]["Image"] == current_image
     assert not before[api]["HostConfig"]["PortBindings"]
     assert before[api]["HostConfig"]["ReadonlyRootfs"]
     source_mount = next(m for m in before[api]["Mounts"] if m["Destination"] == "/app/app")

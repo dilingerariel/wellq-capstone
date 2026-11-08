@@ -65,11 +65,14 @@ def test_f05_provider_future_date_failure_does_not_block_local_delete(ctx):
 
 def test_f06_pending_download_persists_and_replays_once(ctx):
     ctx.ready();control=ctx.raw['__integration_control'];path=ctx.patient_url('lab-report/export');headers=ctx.headers('clinician')
+    report=ctx.req('GET',ctx.patient_url('lab-report'),headers=headers)
+    assert report.status_code==200
+    body={'expected_source_version':report.json()['source_version']}
     control.replace_one({'_id':'faults'},{'_id':'faults','signer_unavailable':True},upsert=True)
-    first=ctx.req('POST',path,headers=headers,json={})
+    first=ctx.req('POST',path,headers=headers,json=body)
     assert first.status_code==200 and first.json()['status']=='download_pending' and first.json()['download_url'] is None
     control.delete_one({'_id':'faults'})
-    replay=ctx.req('POST',path,headers=headers,json={})
+    replay=ctx.req('POST',path,headers=headers,json=body)
     assert replay.status_code==200 and replay.json()['status']=='ready'
     assert replay.json()['export_id']==first.json()['export_id'] and replay.json()['replayed']
     assert ctx.raw.lab_report_exports.count_documents({'client_id':ctx.tenant})==1
