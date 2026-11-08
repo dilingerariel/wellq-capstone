@@ -242,16 +242,29 @@ def test_lab_report_validation_and_empty(ctx):
 
 def test_export_lab_report_endpoint_20(ctx):
     ctx.ready();path=ctx.patient_url('lab-report/export');headers=ctx.headers('clinician',key=uuid.uuid4().hex)
-    first=ctx.req('POST',path,headers=headers,json={});assert first.status_code==200
+    report=ctx.req('GET',ctx.patient_url('lab-report'),headers=headers);assert report.status_code==200
+    body={'expected_source_version':report.json()['source_version']}
+    first=ctx.req('POST',path,headers=headers,json=body);assert first.status_code==200
     exp=first.json();assert exp['status']=='ready' and not exp['replayed'] and exp['size_bytes']>0 and len(exp['sha256'])==64
     data=ctx.client.get(exp['download_url']).content
     assert data.startswith(b'%PDF') and len(data)==exp['size_bytes'] and hashlib.sha256(data).hexdigest()==exp['sha256']
     text='\n'.join(p.extract_text() for p in PdfReader(io.BytesIO(data)).pages)
     assert ctx.patient in text and ctx.doctor in text and 'no constituye un diagnóstico' in text
-    replay=ctx.req('POST',path,headers=headers,json={}).json();assert replay['export_id']==exp['export_id'] and replay['replayed']
-    assert ctx.req('POST',path,headers=headers,json={'window_months':6}).status_code==409
-    assert ctx.req('POST',path,role='clinician',json={}).json()['export_id']!=exp['export_id']
+    replay=ctx.req('POST',path,headers=headers,json=body).json();assert replay['export_id']==exp['export_id'] and replay['replayed']
+    assert ctx.req('POST',path,headers=headers,json={**body,'window_months':6}).status_code==409
+    assert ctx.req('POST',path,role='clinician',json=body).json()['export_id']!=exp['export_id']
     assert ctx.req('POST',path,json={}).status_code==403
+
+
+def test_export_version_preconditions_fail_closed(ctx):
+    init,_=ctx.ready();path=ctx.patient_url('lab-report/export')
+    assert ctx.req('POST',path,role='clinician',json={}).status_code==428
+    report=ctx.req('GET',ctx.patient_url('lab-report'),role='clinician');assert report.status_code==200
+    body={'expected_source_version':report.json()['source_version']}
+    assert ctx.req('PATCH','/clinical-tests/'+init['clinical_test_id'],json={'title':'SYNTHETIC UPDATED SOURCE'}).status_code==200
+    stale=ctx.req('POST',path,role='clinician',json=body)
+    assert stale.status_code==409 and stale.json()['detail']['code']=='EXPORT_SOURCE_CHANGED'
+    assert ctx.raw.lab_report_exports.count_documents({'client_id':ctx.tenant})==0
 
 
 def test_export_lab_report_validation(ctx):

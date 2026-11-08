@@ -38,8 +38,18 @@ function Invoke-IntegrationCompose {
     if ($LASTEXITCODE -ne 0) { throw ('Integration compose failed: ' + ($ComposeArgs -join ' ')) }
 }
 function Assert-IntegrationIsolation {
-    param([string]$ConfigEvidenceFile = (Join-Path $script:EvidenceRoot 'compose-resolved-redacted.json'))
+    param([string]$ConfigEvidenceFile = (Join-Path $script:EvidenceRoot 'compose-resolved-redacted.json'),
+          [string]$PrivateEvidenceDirectory)
     Load-IntegrationState
+    if ($PrivateEvidenceDirectory) {
+        $privatePath = [IO.Path]::GetFullPath($PrivateEvidenceDirectory)
+        if (-not $privatePath.StartsWith($script:RuntimeRoot+'\')) { throw 'Private test evidence must remain inside integration/.runtime' }
+        New-Item -ItemType Directory -Path $privatePath -Force | Out-Null
+        $overridePath = Join-Path $privatePath 'compose-evidence.json'
+        $override = @{services=@{'runner-int'=@{volumes=@(@{type='bind';source=$privatePath;target='/evidence'})}}} | ConvertTo-Json -Depth 10
+        [IO.File]::WriteAllText($overridePath,$override,(New-Object System.Text.UTF8Encoding($false)))
+        $script:ComposeArguments += @('-f',$overridePath)
+    }
     & docker info --format '{{.ServerVersion}}' | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Cannot access Docker Engine. No permission/system changes will be made.' }
     $resolved = & docker @script:ComposeArguments config --format json
