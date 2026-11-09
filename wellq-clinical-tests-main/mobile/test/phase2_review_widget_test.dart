@@ -43,7 +43,7 @@ void main() {
         );
         await t.pumpAndSettle();
         expect(find.textContaining('Coteja la propuesta'), findsNothing);
-        expect(find.text('Revisar y confirmar datos'), findsNothing);
+        expect(find.text('Revisar y confirmar'), findsNothing);
         expect(find.text('90 mg/dL'), findsOneWidget);
         expect(find.text('Pendiente de revisión profesional'), findsOneWidget);
         expect(find.text('ready_for_review'), findsNothing);
@@ -98,11 +98,14 @@ void main() {
           200,
           scrollable: find.byType(Scrollable).first,
         );
+        await t.pumpAndSettle();
+        await t.ensureVisible(find.widgetWithText(CheckboxListTile, label));
+        await t.pumpAndSettle();
         await t.tap(find.text(label));
         await t.pumpAndSettle();
       }
-      await t.ensureVisible(find.text('Revisar y confirmar datos'));
-      await t.tap(find.text('Revisar y confirmar datos'));
+      await t.ensureVisible(find.text('Revisar y confirmar'));
+      await t.tap(find.text('Revisar y confirmar'));
       await t.pumpAndSettle();
       expect(writes, 0);
       await t.tap(find.text('Confirmar acción'));
@@ -174,11 +177,9 @@ void main() {
         ),
       );
       await t.pumpAndSettle();
-      await t.ensureVisible(
-        find.widgetWithText(TextFormField, 'Valor glucose'),
-      );
+      await t.ensureVisible(find.byKey(const ValueKey('review/glucose/Valor')));
       await t.enterText(
-        find.widgetWithText(TextFormField, 'Valor glucose'),
+        find.byKey(const ValueKey('review/glucose/Valor')),
         '91',
       );
       for (final label in [
@@ -190,11 +191,14 @@ void main() {
           200,
           scrollable: find.byType(Scrollable).first,
         );
+        await t.pumpAndSettle();
+        await t.ensureVisible(find.widgetWithText(CheckboxListTile, label));
+        await t.pumpAndSettle();
         await t.tap(find.text(label));
         await t.pumpAndSettle();
       }
-      await t.ensureVisible(find.text('Revisar y confirmar datos'));
-      await t.tap(find.text('Revisar y confirmar datos'));
+      await t.ensureVisible(find.text('Revisar y confirmar'));
+      await t.tap(find.text('Revisar y confirmar'));
       await t.pumpAndSettle();
       expect(find.textContaining('90 mg/dL → 91 mg/dL'), findsOneWidget);
       expect(sent, isNull);
@@ -207,7 +211,7 @@ void main() {
         'value_raw': '91',
         'unit_raw': 'mg/dL',
       });
-      expect(find.text('Revisar y confirmar datos'), findsNothing);
+      expect(find.text('Revisar y confirmar'), findsNothing);
       await t.pumpWidget(const SizedBox.shrink());
       c.dispose();
       await db.close();

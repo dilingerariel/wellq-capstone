@@ -6,6 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import '../application/patient_controller.dart';
 import '../domain/models.dart';
 import '../domain/patient_labels.dart';
+import '../domain/patient_dates.dart';
+import 'patient_widgets.dart';
 import 'synthetic_pdf_screen.dart';
 import 'exam_screen.dart';
 import 'patient_dialogs.dart';
@@ -45,10 +47,17 @@ class _WellQAppState extends State<WellQApp> {
         appBarTheme: const AppBarTheme(foregroundColor: Color(0xff15374a)),
         inputDecorationTheme: const InputDecorationTheme(
           border: OutlineInputBorder(),
+          isDense: true,
+          contentPadding: EdgeInsets.all(12),
         ),
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
+          isDense: true,
+          contentPadding: EdgeInsets.all(12),
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xff57c9bf),
           brightness: Brightness.dark,
@@ -112,9 +121,9 @@ class _PatientShellState extends State<PatientShell>
   }
 
   Widget page(List<Widget> children) =>
-      ListView(padding: const EdgeInsets.all(20), children: children);
+      ListView(padding: const EdgeInsets.all(16), children: children);
   Widget heading(String title, String subtitle) => Padding(
-    padding: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.only(bottom: 12),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -122,9 +131,9 @@ class _PatientShellState extends State<PatientShell>
           title,
           style: Theme.of(
             context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Text(subtitle),
       ],
     ),
@@ -164,6 +173,11 @@ class _PatientShellState extends State<PatientShell>
                     context,
                   ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
+                if (signed && !c.online)
+                  TextButton(
+                    onPressed: c.busy ? null : c.reconcile,
+                    child: const Text('Comprobar conexión'),
+                  ),
               ],
             ),
           ),
@@ -183,16 +197,16 @@ class _PatientShellState extends State<PatientShell>
         Expanded(
           child: !signed
               ? welcome()
-              : switch (tab) {
-                  0 => dashboard(),
-                  1 => exams(),
-                  2 => UploadScreen(
-                    c: c,
-                    queued: () => setState(() => tab = 3),
-                  ),
-                  3 => pending(),
-                  _ => settings(),
-                },
+              : IndexedStack(
+                  index: tab,
+                  children: [
+                    dashboard(),
+                    exams(),
+                    UploadScreen(c: c, queued: () => setState(() => tab = 3)),
+                    pending(),
+                    settings(),
+                  ],
+                ),
         ),
       ],
     );
@@ -230,7 +244,10 @@ class _PatientShellState extends State<PatientShell>
                         destinations: [
                           for (var i = 0; i < 5; i++)
                             NavigationRailDestination(
-                              icon: Icon(icons[i]),
+                              icon: Icon(
+                                icons[i],
+                                key: ValueKey('patient-tab/$i'),
+                              ),
                               label: Text(labels[i]),
                             ),
                         ],
@@ -241,21 +258,9 @@ class _PatientShellState extends State<PatientShell>
                 : content,
           ),
           bottomNavigationBar: !wide && signed
-              ? NavigationBar(
-                  selectedIndex: tab,
-                  labelBehavior:
-                      box.maxWidth < 360 ||
-                          MediaQuery.textScalerOf(context).scale(12) > 18
-                      ? NavigationDestinationLabelBehavior.alwaysHide
-                      : NavigationDestinationLabelBehavior.onlyShowSelected,
-                  onDestinationSelected: (v) => setState(() => tab = v),
-                  destinations: [
-                    for (var i = 0; i < 5; i++)
-                      NavigationDestination(
-                        icon: Icon(icons[i]),
-                        label: i == 3 ? 'Cola' : labels[i],
-                      ),
-                  ],
+              ? PatientNavigation(
+                  selected: tab,
+                  onSelected: (v) => setState(() => tab = v),
                 )
               : null,
         );
@@ -264,7 +269,7 @@ class _PatientShellState extends State<PatientShell>
   }
 
   Widget welcome() => page([
-    const SizedBox(height: 24),
+    const SizedBox(height: 12),
     const Align(
       alignment: Alignment.centerLeft,
       child: CircleAvatar(
@@ -275,10 +280,10 @@ class _PatientShellState extends State<PatientShell>
     const SizedBox(height: 24),
     heading(
       'Tu salud, en orden',
-      'Consulta tus exámenes y acompaña cada paso de su carga.',
+      'Conecta el perfil de prueba para continuar.',
     ),
     const Text(
-      'Primera fase móvil. Identidad, IA, antivirus y almacenamiento sintéticos. No uses información médica real.',
+      'Tu cola local se conserva. Después de reiniciar necesitas verificar el mismo perfil para abrirla.',
     ),
     const SizedBox(height: 24),
     FilledButton.icon(
@@ -288,7 +293,7 @@ class _PatientShellState extends State<PatientShell>
     ),
     const SizedBox(height: 16),
     const Text(
-      'Requiere WellQ encendido en el host. No existe login productivo en esta versión.',
+      'Requiere WellQ disponible. Solo datos sintéticos; sin uso clínico.',
     ),
   ]);
   Widget dashboard() => page([
@@ -341,13 +346,32 @@ class _PatientShellState extends State<PatientShell>
   ]);
   Widget examCard(Exam exam) => Card.outlined(
     child: ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      minLeadingWidth: 24,
+      horizontalTitleGap: 12,
       leading: const Icon(Icons.description_outlined),
-      title: Text(exam.title.trim().isEmpty ? 'Examen sin título' : exam.title),
+      title: Text(
+        exam.title.trim().isEmpty ? 'Examen sin título' : exam.title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 4),
-        child: Text(
-          '${exam.date}${testTypeLabel(exam.testType) == null ? '' : ' · ${testTypeLabel(exam.testType)}'}\n${examLabel(exam.status, review: exam.reviewStatus)}',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${clinicalDate(exam.date)}${testTypeLabel(exam.testType) == null ? '' : ' · ${testTypeLabel(exam.testType)}'}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              examLabel(exam.status, review: exam.reviewStatus),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
       trailing: const Icon(Icons.chevron_right),
@@ -433,7 +457,7 @@ class _PatientShellState extends State<PatientShell>
       ),
   ]);
   Widget settings() => page([
-    heading('Tu espacio', 'Preferencias y límites de esta fase.'),
+    heading('Tu espacio', 'Preferencias de la aplicación.'),
     ListTile(
       leading: const Icon(Icons.palette_outlined),
       title: const Text('Cambiar tema claro / oscuro'),
@@ -549,9 +573,9 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(20),
+    padding: const EdgeInsets.all(16),
     children: [
-      Text('Nuevo documento', style: Theme.of(context).textTheme.titleLarge),
+      Text('Nuevo documento', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 8),
       const Text(
         'Usa el PDF sintético de prueba. No selecciones documentos médicos reales.',
@@ -563,7 +587,7 @@ class _UploadScreenState extends State<UploadScreen> {
           if (mounted) setState(() => bytes = data.buffer.asUint8List());
         },
         icon: const Icon(Icons.science_outlined),
-        label: const Text('Usar PDF sintético incluido'),
+        label: const Text('Usar PDF de prueba'),
       ),
       TextButton.icon(
         onPressed: selectPdf,
@@ -581,21 +605,30 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
           ),
           icon: const Icon(Icons.picture_as_pdf_outlined),
-          label: const Text('Ver documento seleccionado'),
+          label: const Text('Ver documento'),
         ),
       ],
       const SizedBox(height: 16),
-      TextField(
-        controller: title,
-        maxLength: 200,
-        decoration: const InputDecoration(labelText: 'Título del documento'),
+      LabeledField(
+        label: 'Título del documento',
+        child: TextField(
+          controller: title,
+          maxLength: 200,
+          decoration: const InputDecoration(),
+        ),
       ),
-      const SizedBox(height: 12),
-      TextField(
-        controller: date,
-        keyboardType: TextInputType.datetime,
-        decoration: const InputDecoration(
-          labelText: 'Fecha del examen (AAAA-MM-DD)',
+      LabeledField(
+        label: 'Fecha del examen',
+        child: TextField(
+          controller: date,
+          keyboardType: TextInputType.datetime,
+          decoration: const InputDecoration(hintText: 'AAAA-MM-DD'),
+        ),
+      ),
+      const Padding(
+        padding: EdgeInsets.only(top: 4),
+        child: Text(
+          'Fecha registrada del examen; puede diferir de la fecha de muestra del PDF.',
         ),
       ),
       CheckboxListTile(
@@ -635,9 +668,7 @@ class _UploadScreenState extends State<UploadScreen> {
         label: const Text('Guardar en pendientes'),
       ),
       const SizedBox(height: 12),
-      const Text(
-        'Guardar no envía el archivo. Inicia el envío explícitamente en Pendientes. Nunca se elimina el original.',
-      ),
+      const Text('Guardar no envía el archivo ni elimina el original.'),
     ],
   );
 }

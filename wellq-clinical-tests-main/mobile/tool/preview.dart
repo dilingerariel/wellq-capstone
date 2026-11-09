@@ -55,7 +55,7 @@ void main() {
       find.byType(WellQApp),
       matchesGoldenFile('../test_artifacts/widget-light.png'),
     );
-    await t.tap(find.byType(NavigationDestination).at(1));
+    await t.tap(find.byKey(const ValueKey('patient-tab/1')));
     await t.pumpAndSettle();
     await t.tap(find.byTooltip('Cambiar tema'));
     await t.pumpAndSettle();

@@ -1,4 +1,4 @@
-# WellQ móvil · fase 2
+# WellQ móvil · fase 2.1
 
 Aplicación Flutter de paciente, independiente de React. FastAPI y MongoDB son
 reales; identidad RS256, almacenamiento firmado, antivirus e IA son de pruebas.
@@ -27,10 +27,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Mobile.ps1 Devices
 powershell -NoProfile -ExecutionPolicy Bypass -File ..\..\WellQ.ps1 Start
 ```
 
-En esta intervención no hay emulador/AVD Android ni dispositivo Android conectado.
-El usuario comprobó previamente la fase 1 en Android 16: carga, procesamiento,
-confirmación y reapertura con FastAPI disponible. Esa observación no acredita
-recuperación offline ni valida el APK nuevo de fase 2.
+ADB identifica un teléfono Android físico conectado. El usuario ya comprobó
+la fase 2: visor, edición, confirmación y persistencia de una operación pendiente
+tras cierre completo sin conexión y posterior reautorización. Eso acredita
+persistencia; no permite abrir la cola después de reiniciar sin autenticación.
 Android Studio, una imagen AVD y su aceleración quedan pendientes; también puede
 usarse un teléfono propio con depuración USB autorizada. Después de crear/iniciar
 un AVD en Device Manager, comprobar su ID en Devices y ejecutar, sustituyendo el ID:
@@ -111,6 +111,24 @@ red no se inventa identidad offline: hay que reconectar antes de abrir datos pri
 Cerrar sesión explícitamente limpia también las operaciones locales tras advertirlo;
 las copias y documentos del servidor permanecen. No se promete trabajo en segundo plano.
 
+En 2.1 las pestañas conservan el formulario en memoria mientras la sesión sea
+vigente. Un error de red o 502 no elimina por sí mismo la identidad; «Comprobar
+conexión» revalida y consulta, sin enviar. El cierre completo pierde el token en
+RAM; la expiración y 401/403 bloquean el acceso. No hay autenticación local segura,
+por lo que se mantiene ese bloqueo y no se guarda un JWT para aparentar acceso offline.
+
+La barra usa «Docs.» y «Cola», con nombres completos para accesibilidad. Mide las
+etiquetas con el escalado real y mantiene iconos y acciones cuando no caben.
+Los títulos largos se limitan en tarjetas y aparecen completos en el detalle.
+Las etiquetas de formularios están fuera del borde y pueden ocupar varias líneas.
+
+Las fechas de examen y de muestra son independientes: no se igualan ni se copian
+automáticamente. Las fechas sin hora se muestran como DD/MM/AAAA sin desplazarlas.
+`confirmation.confirmed_at` se escribe con `datetime.utcnow()` en FastAPI; si no
+trae zona se interpreta como UTC, y si trae offset se respeta. Se presenta en hora
+local del dispositivo con offset visible, usando sus reglas de zona/DST, sin
+modificar el valor del backend.
+
 Para comprobar persistencia, guarda sin conexión y cierra la app **sin pulsar
 Cerrar sesión**. Con FastAPI aún apagado, vuelve a abrir: la pantalla exige
 reautorización y no debe mostrar información privada de una identidad recordada.
@@ -118,7 +136,7 @@ Arranca WellQ, restablece `Mobile.ps1 Reverse -Device ID`, conecta el mismo perf
 y comprueba los pendientes antes de pulsar Enviar. No confundas un examen leído
 desde FastAPI con una operación restaurada desde Drift. La prueba automatizada
 reabre el archivo SQLite y compara intención, bytes y claves; el cierre completo
-y reapertura offline en el teléfono queda pendiente.
+y reapertura offline se verificaron también en el teléfono con el APK 2.1.
 
 En una propuesta, un 409 recupera el estado actual para informar, bloquea nuevos
 envíos y exige consultar/revisar explícitamente antes de editar otra vez. Un 422
@@ -156,11 +174,12 @@ Fuentes: [Flutter](https://docs.flutter.dev/install),
 [Drift nativo](https://drift.simonbinder.eu/platforms/vm/),
 [Android emulador](https://developer.android.com/studio/run/emulator-networking-address).
 
-## Verificación de fase 2
+## Verificación
 
 - Flutter analyze sin incidencias y contratos OpenAPI coincidentes.
-- 55 pruebas unitarias/widgets aprobadas; dos integraciones se omiten por defecto.
-- Las dos integraciones HTTP se ejecutaron aparte: lectura, PUT/worker, edición
+- Fase 2.1: 75 pruebas aprobadas, incluidas las 55 anteriores; las dos integraciones
+  HTTP se omiten por defecto y no se contabilizan como aprobadas en esa suite.
+- En la fase 2 se ejecutaron aparte dos integraciones HTTP: lectura, PUT/worker, edición
   autorizada, confirmación y replay; además corte HTTP simulado en el cliente, reapertura SQLite,
   pérdida de respuesta tras PUT y recuperación real sin confirmar clínicamente.
 - Drift/SQLite probado en memoria y archivo con reinicio; aislamiento, errores,
@@ -170,11 +189,32 @@ Fuentes: [Flutter](https://docs.flutter.dev/install),
   áreas táctiles automáticos comprobados en casos representativos de ambos temas.
 - PDFium abrió/renderizó la página completa y el widget real pasó zoom, errores
   de integridad y regreso sin perder el formulario. Se valida el PDF sintético.
-- No hay dispositivo/AVD en esta intervención: no se ejecutó el APK de fase 2 ni
-  se validaron allí ADB reverse, TalkBack, selector nativo o ciclo de vida del SO.
+- Las comprobaciones físicas del APK 2.1 se registran por separado: no confundir
+  los widgets/HTTP en Windows con ejecución Android ni certificar TalkBack.
+- Android 16 físico, texto del sistema al 145 %: actualización con `install -r`
+  y SQLite/WAL/SHM idénticos antes del primer arranque; navegación sin etiquetas
+  partidas, borrador conservado entre pestañas y durante un corte del túnel USB.
+  El nuevo PDF sintético quedó en Drift con cero intentos, sobrevivió al cierre
+  completo y se recuperó tras reautorizar. El arranque sin conexión mantuvo el
+  bloqueo y reconectar no envió nada automáticamente. El pendiente anterior del
+  usuario permaneció con cero intentos; solo se envió la operación de esta prueba.
+- En ese Android se verificaron PDFium, zoom, vuelta al formulario, etiquetas de
+  referencia/fechas completas y confirmación explícita del nuevo PDF sintético.
+  La confirmación se mostró con fecha/hora local y `UTC-03:00`; muestra y examen
+  conservaron sus fechas independientes. Quedan pendientes TalkBack, teclado
+  externo, otros dispositivos y cortes prolongados hasta expiración en Android;
+  los controles de expiración/aislamiento se cubren con pruebas automatizadas.
 - APK debug ARM64 compilado: `build/app/outputs/flutter-apk/app-debug.apk`.
   Los previews opcionales de `tool/preview.dart` usan dobles explícitos de widgets,
   no constituyen evidencia de ejecución Android ni de integración HTTP.
-- Logs y comprobaciones de preservación: `C:\Dev\wellq-sync-backups\mobile-phase2`.
+- Logs y comprobaciones del cierre: `C:\Dev\wellq-sync-backups\mobile-phase2-polish`.
   La primera prueba HTTP encontró el estado transitorio `EXTRACTION_NOT_READY`;
   ahora espera esa respuesta concreta mediante lecturas, sin repetir mutaciones.
+- El puente persistente respondió 200 en ocho lecturas consecutivas de `/ready`.
+  No se reprodujo `LOCAL_TRANSPORT_ERROR` ni se acreditó su causa raíz. No se
+  modificó el puente ni se detuvieron servicios de integración o tareas concurrentes.
+
+Actualizar el APK 0.1.1 (build 2) con `adb install --no-streaming -r` y el mismo
+paquete/firma. No desinstalar, no usar `pm clear` y no borrar datos: Drift debe
+conservarse. Si Android pide confirmar la instalación, aceptarla en el teléfono;
+no desactivar protecciones generales. Conservar el respaldo privado de la entrega.

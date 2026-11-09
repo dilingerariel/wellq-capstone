@@ -4,6 +4,8 @@ import '../application/patient_controller.dart';
 import '../domain/models.dart';
 import '../domain/extraction_draft.dart';
 import '../domain/patient_labels.dart';
+import '../domain/patient_dates.dart';
+import 'patient_widgets.dart';
 import 'patient_dialogs.dart';
 import 'synthetic_pdf_screen.dart';
 
@@ -151,20 +153,29 @@ class _ExamScreenState extends State<ExamScreen> {
     String initial,
     ValueChanged<String> change, {
     TextInputType? keyboard,
-  }) => Padding(
-    padding: const EdgeInsets.only(top: 12),
+    String code = 'document',
+  }) => LabeledField(
+    key: ValueKey(
+      '${extraction?['extraction_id']}/${draft.hashCode}/$code/$label',
+    ),
+    label: label,
     child: TextFormField(
-      key: ValueKey('${extraction?['extraction_id']}/${draft.hashCode}/$label'),
+      key: ValueKey('review/$code/$label'),
       initialValue: initial,
       enabled: editable && !loading && !sending && frozen == null && !conflict,
       keyboardType: keyboard,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        hintText: keyboard == TextInputType.datetime ? 'AAAA-MM-DD' : null,
+        isDense: true,
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.all(12),
+      ),
       onChanged: change,
     ),
   );
   Widget marker(MarkerDraft m) => Card.outlined(
     child: Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -177,39 +188,68 @@ class _ExamScreenState extends State<ExamScreen> {
               ),
             ),
           if (editable) ...[
-            field('Valor ${m.code}', m.value, (v) => m.value = v),
-            field('Unidad ${m.code}', m.unit, (v) => m.unit = v),
+            LayoutBuilder(
+              builder: (context, box) {
+                final value = field(
+                  'Valor',
+                  m.value,
+                  (v) => m.value = v,
+                  code: m.code,
+                );
+                final unit = field(
+                  'Unidad',
+                  m.unit,
+                  (v) => m.unit = v,
+                  code: m.code,
+                );
+                return box.maxWidth >= 280 &&
+                        MediaQuery.textScalerOf(context).scale(14) <= 19
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: value),
+                          const SizedBox(width: 12),
+                          Expanded(child: unit),
+                        ],
+                      )
+                    : Column(children: [value, unit]);
+              },
+            ),
             ExpansionTile(
               tilePadding: EdgeInsets.zero,
               title: const Text('Referencia del documento'),
               children: [
                 field(
-                  'Límite inferior ${m.code}',
+                  'Límite inferior',
                   m.low,
                   (v) => m.low = v,
+                  code: m.code,
                   keyboard: const TextInputType.numberWithOptions(
                     decimal: true,
                     signed: true,
                   ),
                 ),
                 field(
-                  'Límite superior ${m.code}',
+                  'Límite superior',
                   m.high,
                   (v) => m.high = v,
+                  code: m.code,
                   keyboard: const TextInputType.numberWithOptions(
                     decimal: true,
                     signed: true,
                   ),
                 ),
                 field(
-                  'Unidad de referencia ${m.code}',
+                  'Unidad de referencia',
                   m.referenceUnit,
                   (v) => m.referenceUnit = v,
+                  code: m.code,
                 ),
                 field(
-                  'Texto de referencia ${m.code}',
+                  'Texto de referencia',
                   m.referenceText,
                   (v) => m.referenceText = v,
+                  code: m.code,
                 ),
               ],
             ),
@@ -232,13 +272,15 @@ class _ExamScreenState extends State<ExamScreen> {
     appBar: AppBar(title: const Text('Detalle del examen')),
     body: SafeArea(
       child: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         children: [
           Text(
             detail?['title'] as String? ?? widget.exam.title,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          Text(detail?['test_date'] as String? ?? widget.exam.date),
+          Text(
+            clinicalDate(detail?['test_date'] as String? ?? widget.exam.date),
+          ),
           Text(
             examLabel(
               detail?['status'] as String? ?? widget.exam.status,
@@ -253,7 +295,10 @@ class _ExamScreenState extends State<ExamScreen> {
               case final String type)
             Text(type),
           const SizedBox(height: 12),
-          const Text('Entorno sintético · Sin uso clínico'),
+          Text(
+            'Entorno sintético · Sin uso clínico',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           if (hasDocument)
             OutlinedButton.icon(
               icon: const Icon(Icons.picture_as_pdf_outlined),
@@ -301,7 +346,7 @@ class _ExamScreenState extends State<ExamScreen> {
               ),
               if ((extraction!['confirmation'] as Map?)?['confirmed_at']
                   case final String date)
-                Text('Confirmado: $date'),
+                Text('Confirmado: ${confirmationTime(date)}'),
             ] else
               const Text(
                 'Consulta el estado del examen. No se requiere una nueva confirmación.',
@@ -322,21 +367,18 @@ class _ExamScreenState extends State<ExamScreen> {
                 title: const Text('Fechas del documento'),
                 children: [
                   field(
-                    'Fecha de muestra (AAAA-MM-DD)',
+                    'Fecha de muestra',
                     draft!.collectionDate,
                     (v) => draft!.collectionDate = v,
                     keyboard: TextInputType.datetime,
                   ),
                   field(
-                    'Fecha de informe (AAAA-MM-DD)',
+                    'Fecha de informe',
                     draft!.reportDate,
                     (v) => draft!.reportDate = v,
                     keyboard: TextInputType.datetime,
                   ),
                 ],
-              ),
-              const Text(
-                'Añadir o quitar marcadores queda fuera de esta pantalla. No se modifica el catálogo.',
               ),
               CheckboxListTile(
                 value: identity,
@@ -362,7 +404,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     : null,
                 child: Text(
                   frozen == null
-                      ? 'Revisar y confirmar datos'
+                      ? 'Revisar y confirmar'
                       : 'Reintentar el mismo envío',
                 ),
               ),

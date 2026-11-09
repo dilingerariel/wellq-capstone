@@ -34,7 +34,7 @@ void main() {
           ..online = true;
     await t.pumpWidget(WellQApp(controller: c));
     await t.pumpAndSettle();
-    await t.tap(find.byType(NavigationDestination).at(2));
+    await t.tap(find.byKey(const ValueKey('patient-tab/2')));
     await t.pumpAndSettle();
     final title = find.byType(TextField).first;
     await t.ensureVisible(title);
@@ -115,22 +115,14 @@ void main() {
             'Pendientes',
             'Ajustes',
           ]) {
-            final destinations = find.byType(NavigationDestination);
-            if (destinations.evaluate().isNotEmpty) {
-              await t.tap(
-                destinations.at(
-                  [
-                    'Inicio',
-                    'Exámenes',
-                    'Cargar',
-                    'Pendientes',
-                    'Ajustes',
-                  ].indexOf(destination),
-                ),
-              );
-            } else {
-              await t.tap(find.text(destination).last);
-            }
+            final index = [
+              'Inicio',
+              'Exámenes',
+              'Cargar',
+              'Pendientes',
+              'Ajustes',
+            ].indexOf(destination);
+            await t.tap(find.byKey(ValueKey('patient-tab/$index')));
             await t.pumpAndSettle();
             expect(t.takeException(), isNull);
             expect(
@@ -227,8 +219,8 @@ void main() {
         await t.tap(find.text(text));
         await t.pumpAndSettle();
       }
-      await t.ensureVisible(find.text('Revisar y confirmar datos'));
-      await t.tap(find.text('Revisar y confirmar datos'));
+      await t.ensureVisible(find.text('Revisar y confirmar'));
+      await t.tap(find.text('Revisar y confirmar'));
       await t.pumpAndSettle();
       expect(writes, 0);
       await t.tap(find.text('Confirmar acción'));
@@ -261,7 +253,7 @@ void main() {
       ];
     await t.pumpWidget(WellQApp(controller: c));
     await t.pumpAndSettle();
-    await t.tap(find.text('Exámenes').last);
+    await t.tap(find.byKey(const ValueKey('patient-tab/1')));
     await t.pumpAndSettle();
     expect(find.text('SYNTHETIC PRIVATE TITLE'), findsOneWidget);
     await c.logout();
