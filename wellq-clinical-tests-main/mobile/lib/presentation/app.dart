@@ -11,6 +11,7 @@ import 'patient_widgets.dart';
 import 'synthetic_pdf_screen.dart';
 import 'exam_screen.dart';
 import 'patient_dialogs.dart';
+import 'exam_list.dart';
 export 'exam_screen.dart';
 
 // Centralized patient copy; Material widgets already localize to Spanish.
@@ -378,31 +379,7 @@ class _PatientShellState extends State<PatientShell>
       onTap: () => open(exam),
     ),
   );
-  Widget exams() => page([
-    heading(
-      'Mis exámenes',
-      c.online
-          ? 'Tus documentos y su estado actual.'
-          : 'Última lectura disponible. No confirma cambios del servidor.',
-    ),
-    if (c.exams.isEmpty)
-      const Padding(
-        padding: EdgeInsets.all(24),
-        child: Text(
-          'Sin exámenes en esta vista. Actualiza o carga el PDF sintético.',
-        ),
-      ),
-    for (final exam in c.exams) examCard(exam),
-    if (c.cursor != null)
-      OutlinedButton(
-        onPressed: c.busy ? null : () => c.refresh(more: true),
-        child: const Text('Cargar más'),
-      ),
-    TextButton(
-      onPressed: c.busy ? null : c.refresh,
-      child: const Text('Actualizar listado'),
-    ),
-  ]);
+  Widget exams() => ExamList(c: c, card: examCard);
   Widget pending() => page([
     heading(
       'Operaciones pendientes',
@@ -431,14 +408,17 @@ class _PatientShellState extends State<PatientShell>
               const SizedBox(height: 8),
               Text(phaseLabel(op.phase)),
               Text('Intentos de envío: ${op.attempts}'),
-              if (op.error != null)
-                const Text(
-                  'El último intento no terminó. Consulta el estado antes de reintentar.',
+              Text(
+                pendingHelp(
+                  op.phase,
+                  error: op.error,
+                  retryScheduled: op.payload['retry_at'] != null,
                 ),
+              ),
               if (op.canDelete)
                 const Text('Documento verificado. La copia local se conserva.'),
               const SizedBox(height: 8),
-              if (!op.finished && op.phase != 'conflict')
+              if (op.canResume)
                 FilledButton(
                   onPressed: c.busy ? null : () => c.resume(op),
                   child: Text(

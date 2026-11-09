@@ -281,6 +281,11 @@ void main() {
       await t.pumpAndSettle();
       await t.tap(find.byKey(const ValueKey('patient-tab/1')));
       await t.pumpAndSettle();
+      await t.scrollUntilVisible(
+        find.text(title),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(t.widget<Text>(find.text(title)).maxLines, 2);
       expect(t.widget<Text>(find.text(title)).overflow, TextOverflow.ellipsis);
       await t.tap(find.text(title));

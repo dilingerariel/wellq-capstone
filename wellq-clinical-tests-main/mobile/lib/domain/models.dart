@@ -130,6 +130,9 @@ class PendingUpload {
       k: initiate[k],
   };
   bool get finished => ['confirmed', 'rejected', 'failed'].contains(phase);
+  bool get canResume =>
+      !finished &&
+      !['conflict', 'processing', 'object_uploaded'].contains(phase);
   String serialize() => jsonEncode({
     'id': id,
     'scope': scope,
@@ -158,5 +161,22 @@ class PendingUpload {
     );
   }
 }
+
+// A local "confirmed" phase means verified reception, not patient confirmation.
+// Accept only actual UploadStatus values; commit nothing for an incoherent reply.
+String verifiedUploadPhase(Json response) => switch (response['status']) {
+  'ready_for_review' when response['local_file_can_be_deleted'] == true =>
+    'confirmed',
+  'ready_for_review' => throw const ApiFailure(
+    502,
+    'UNVERIFIED_READY_RESPONSE',
+  ),
+  'initiated' => 'bytes_pending',
+  'object_uploaded' ||
+  'processing' ||
+  'rejected' ||
+  'failed' => response['status'] as String,
+  _ => throw const ApiFailure(502, 'UNKNOWN_UPLOAD_STATUS'),
+};
 
 String phaseLabel(String phase) => uploadLabel(phase);

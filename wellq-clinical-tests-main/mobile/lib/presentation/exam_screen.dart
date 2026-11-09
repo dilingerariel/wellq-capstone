@@ -31,9 +31,11 @@ class _ExamScreenState extends State<ExamScreen> {
       extraction?['status'] == 'awaiting_confirmation' &&
       widget.c.session?.permissions.contains('extractions:confirm') == true;
   Future<void> load() async {
+    var detailRead = false;
     setState(() => loading = true);
     try {
       final d = await widget.c.detail(widget.exam.id);
+      detailRead = true;
       if (!mounted) return;
       final local = await widget.c.document(widget.exam.id);
       if (!mounted) return;
@@ -41,6 +43,20 @@ class _ExamScreenState extends State<ExamScreen> {
         detail = d;
         hasDocument = local != null;
       });
+      if (['rejected', 'failed'].contains(d['status'])) {
+        setState(() {
+          extraction = null;
+          draft = null;
+          frozen = null;
+          key = null;
+          error = null;
+          conflict = false;
+          latestStatus = null;
+          identity = false;
+          checked = false;
+        });
+        return;
+      }
       final x = await widget.c.extraction(widget.exam.id);
       final review = ExtractionDraft(x);
       if (!mounted) return;
@@ -57,17 +73,21 @@ class _ExamScreenState extends State<ExamScreen> {
       });
     } on ApiFailure catch (e) {
       if (mounted) {
-        setState(
-          () => error = e.status == 404
-              ? 'La extracción aún no está disponible. Consulta nuevamente.'
-              : e.message,
-        );
+        setState(() {
+          if (draft != null) conflict = true;
+          error = e.status == 404
+              ? detailRead
+                    ? 'La extracción aún no está disponible. Consulta nuevamente.'
+                    : 'El examen no está disponible o ya no existe en esta vista.'
+              : e.message;
+        });
       }
     } catch (_) {
       if (mounted) {
-        setState(
-          () => error = 'No se pudo leer la propuesta. Consulta nuevamente.',
-        );
+        setState(() {
+          if (draft != null) conflict = true;
+          error = 'No se pudo leer la propuesta. Consulta nuevamente.';
+        });
       }
     } finally {
       if (mounted) setState(() => loading = false);
@@ -281,19 +301,34 @@ class _ExamScreenState extends State<ExamScreen> {
           Text(
             clinicalDate(detail?['test_date'] as String? ?? widget.exam.date),
           ),
+          Text(examLabel(detail?['status'] as String? ?? widget.exam.status)),
           Text(
-            examLabel(
-              detail?['status'] as String? ?? widget.exam.status,
-              review:
-                  (detail?['review'] as Map?)?['status'] as String? ??
-                  widget.exam.reviewStatus,
-            ),
+            'Revisión profesional: ${(detail?['review'] as Map?)?['status'] == 'reviewed' ? 'completada' : 'pendiente o no informada'}',
           ),
           if (testTypeLabel(
                 detail?['test_type'] as String? ?? widget.exam.testType,
               )
               case final String type)
             Text(type),
+          if (detail?['file'] case final Map file) ...[
+            if (file['name'] case final String name) Text('Archivo: $name'),
+            if (file['size_bytes'] case final num size)
+              Text('Tamaño: ${size.toInt()} bytes'),
+          ],
+          if (detail?['notes'] case final String notes)
+            if (notes.isNotEmpty) Text('Tus notas: $notes'),
+          if ([
+            'initiated',
+            'object_uploaded',
+            'processing',
+          ].contains(detail?['status']))
+            const Text(
+              'El documento aún no termina de procesarse. Consulta el estado; no necesitas cargarlo otra vez.',
+            ),
+          if (['rejected', 'failed'].contains(detail?['status']))
+            const Text(
+              'Este documento no está disponible para confirmar. Se conserva la copia local; consulta el estado antes de preparar otro.',
+            ),
           const SizedBox(height: 12),
           Text(
             'Entorno sintético · Sin uso clínico',
@@ -317,6 +352,10 @@ class _ExamScreenState extends State<ExamScreen> {
                 ),
               ),
             ),
+          if (!hasDocument && !loading)
+            const Text(
+              'No hay una copia sintética verificada en este dispositivo. No se descargan documentos arbitrarios.',
+            ),
           if (loading || sending) const LinearProgressIndicator(),
           if (error != null)
             Semantics(
@@ -331,6 +370,10 @@ class _ExamScreenState extends State<ExamScreen> {
               'Estado actual del servidor: $latestStatus. Revisa la propuesta actual antes de continuar.',
             ),
           if (extraction != null) ...[
+            if (!editable && draft!.collectionDate.isNotEmpty)
+              Text('Fecha de muestra: ${clinicalDate(draft!.collectionDate)}'),
+            if (!editable && draft!.reportDate.isNotEmpty)
+              Text('Fecha de informe: ${clinicalDate(draft!.reportDate)}'),
             const SizedBox(height: 20),
             Text(
               extractionLabel(extraction!['status'] as String),

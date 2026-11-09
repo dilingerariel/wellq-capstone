@@ -1,9 +1,104 @@
-# WellQ móvil · fase 2.1
+# WellQ móvil · fase 3
+
+Estado: implementación funcional local; cierre de regresión Flutter pendiente
+por el bloqueo del runner en Control de aplicaciones de Windows.
 
 Aplicación Flutter de paciente, independiente de React. FastAPI y MongoDB son
 reales; identidad RS256, almacenamiento firmado, antivirus e IA son de pruebas.
 No hay login productivo, scores, portal profesional ni exportación PDF móvil.
 Los builds profile/release bloquean el uso y no abren SQLite ni identidad sintética.
+
+## Fase 3: gestión del paciente
+
+Base publicada: `3747afa72067f86a7e2fffd2b60666c1524c27a8`. Trabajo local en
+`feature/wellq-flutter-mobile-phase3`, versión `0.2.0+3`, sin merge ni push.
+
+Se contrastaron los cinco originales en Downloads con sus hashes anteriores:
+Documento Maestro `(2)`, Especificacion_Endpoints_Carga_Examenes_Medicos,
+WellQ_Clinical_Test_Upload_API_Specification `(4)` y `(5)` (idénticos entre sí), y
+Especificación Técnica de Estándares Transversales y Capacidades Comerciales.
+Las referencias relevantes son Maestro §10.1–10.4 (P1271–1309), especificación
+inglesa §7.1–7.4 y las reglas transversales de aislamiento/auditoría. El inventario
+original está en [la matriz de fuentes](../backend/docs/18_CUMPLIMIENTO_CINCO_ARCHIVOS_ORIGINALES.md).
+Los documentos son requisitos de referencia; el contrato ejecutable sigue siendo
+OpenAPI y no se amplió el backend para igualar ejemplos antiguos.
+
+| Capacidad | FastAPI / React | Flutter en esta fase |
+|---|---|---|
+| Documentos propios por fecha, filtros de estado/tipo y cursor | Soportados / existentes | Implementados; filtro aplicado solo tras respuesta correcta, sin mezclar páginas ni duplicar IDs |
+| Búsqueda de títulos y orden alternativo | Sin búsqueda textual ni orden ascendente global en la API | Búsqueda local y orden sobre documentos **ya cargados**, con alcance visible |
+| Metadatos, archivo, fechas, revisión y extracción | Soportados / existentes | Detalle estructurado; muestra/informe en propuestas de solo lectura; sin notas profesionales privadas |
+| Carga, edición y confirmación | Soportados / existentes | Se conservan los flujos anteriores, hash fijo, resumen humano e idempotencia |
+| Recepción y recuperación de estado | Soportadas | Reconectar consulta también el listado con sus filtros; no ofrece reenviar mientras el servidor procesa |
+| PDF original | Descarga autorizada en API | Visor de copia local del único PDF sintético; descarga remota pendiente |
+| Editar metadatos / eliminar examen | Soportados por API según versión/revisión | Pendientes; no se añadieron mutaciones parciales en esta fase |
+| Laboratorio en listado, búsqueda global y estado de extracción en cola | El DTO actual no los ofrece en el listado/estado de subida | Dependencia de contrato; no se inventan esos campos |
+| Login, dispositivos confiables, carga arbitraria y proveedores reales | Requieren servicios y controles productivos | Bloqueados; no están habilitados |
+
+En Docs, «Filtrar y ordenar» despliega los controles. Estado y tipo se consultan
+en FastAPI y se conservan al cargar más o actualizar. Cambiarlos inicia una nueva
+página; si falla la consulta se mantienen los filtros/resultados anteriores.
+La búsqueda ignora mayúsculas y busca palabras en títulos cargados; no busca
+documentos que aún estén en otra página. «Más antiguos» tampoco cambia el orden
+de paginación del servidor: solo ordena lo cargado. No se anuncia un total global.
+Sin red se pueden consultar/buscar los resultados en memoria de la sesión vigente;
+los filtros de servidor y cargar más requieren conexión. El cache predeterminado
+no se sobrescribe con un subconjunto filtrado.
+Abrir filtros o sus selectores cierra el enfoque de búsqueda para que el teclado
+no reaparezca encima del formulario al volver del menú.
+
+Una respuesta de recepción incoherente no termina una operación local. Las
+denegaciones tardías de una lectura/confirmación anterior no cierran la sesión de
+otro paciente/tenant. Rechazado, fallido y procesando tienen mensajes distintos;
+no son confirmación humana ni validación profesional. Consultar estados no envía.
+Los borradores de revisión siguen en RAM, no son una cola durable de confirmaciones.
+
+Validación actual: 25 comprobaciones de dominio Dart aprobadas, OpenAPI coincidente,
+análisis sin incidencias y APK debug compilado. Se añadieron pruebas Flutter de
+paginación, filtros, caché, respuestas tardías, detalle y reflow, pero **no se han
+ejecutado**: Windows bloquea `flutter_tester.exe` por Control de aplicaciones
+(eventos 3033/3077). No se cambiaron políticas, exclusiones ni el runner para
+eludirlo. Los 75 tests de fase 2.1 son antecedentes, no resultados de esta entrega.
+Las tres comprobaciones HTTP de contrato en Python aprobaron contra la integración
+real después de recuperar el puente; no sustituyen las pruebas HTTP Dart ni los widgets.
+El contenedor ClamAV adicional se detuvo limpiamente tras confirmar fin de la tarea,
+ausencia de conexiones y uso del doble de escáner por los servicios. No se eliminó.
+
+Android 16 físico, texto al 145 %: se instaló por actualización compatible, sin
+desinstalar ni borrar almacenamiento. SQLite/WAL/SHM se compararon byte a byte
+antes del primer arranque. Se comprobaron búsqueda (una coincidencia entre 19
+documentos cargados), filtros de estado/tipo, resultado vacío, quitar filtros,
+orden local ascendente y teclado cerrado al regresar del selector. Un corte solo
+del túnel ADB conservó la sesión, los resultados y el filtro anterior al fallar
+una nueva consulta; reconectar no reenviaba cargas. El selector Android abrió y
+se canceló sin inspeccionar documentos personales.
+
+La operación nueva `SYNTHETIC_PHASE3_VERIFICATION` realizó un único envío del PDF
+incluido, recibió verificación del servidor, abrió PDFium con zoom y volvió a la
+revisión. Se editó la representación sintética de 90 a 90.0 mg/dL y se confirmó
+tras el resumen y los consentimientos. La pantalla pasó a solo lectura, mantuvo
+la fecha de muestra y mostró la hora local con offset. No es validación clínica.
+El reinicio completo sin túnel mantuvo el bloqueo; al reautorizar se restauró la
+cola, incluido `SYNTHETIC OFFLINE TEST 2` con cero intentos. Las cuatro operaciones
+locales (tres originales más la prueba) se conservan. Los modos claro/oscuro y la
+navegación se comprobaron; esto no certifica TalkBack ni teclado físico.
+La paginación por cursor se verificó en HTTP con límite 1; el listado Android
+no excedió el límite de página y el caso de cargar más sigue pendiente del runner.
+
+```powershell
+C:\Dev\tools\flutter\bin\cache\dart-sdk\bin\dart.exe run test/phase3_domain_check.dart
+# Una vez autorizada normalmente la ejecución del runner por Windows:
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Mobile.ps1 Test
+# Con el puente listo, sin iniciar ni detener servicios:
+C:\Dev\tools\flutter\bin\flutter.bat test test/live_flow_test.dart test/phase3_live_test.dart --dart-define=WELLQ_LIVE=true
+```
+
+Pendientes para el siguiente cierre: ejecutar toda la regresión Flutter y HTTP
+Dart; verificar TalkBack, teclado externo, otros teléfonos y expiración prolongada.
+Para una fase posterior: edición/eliminación con precondiciones, PDF remoto bajo
+política sintética, autenticación local segura y borradores durables de confirmación.
+No añadir scores ni interpretación al paciente (Maestro P1271).
+Evidencias actuales privadas: `C:\Dev\wellq-sync-backups\mobile-phase3`.
 
 ## Windows y Android
 
@@ -174,7 +269,7 @@ Fuentes: [Flutter](https://docs.flutter.dev/install),
 [Drift nativo](https://drift.simonbinder.eu/platforms/vm/),
 [Android emulador](https://developer.android.com/studio/run/emulator-networking-address).
 
-## Verificación
+## Antecedentes verificados de fases 2 y 2.1
 
 - Flutter analyze sin incidencias y contratos OpenAPI coincidentes.
 - Fase 2.1: 75 pruebas aprobadas, incluidas las 55 anteriores; las dos integraciones
@@ -214,7 +309,7 @@ Fuentes: [Flutter](https://docs.flutter.dev/install),
   No se reprodujo `LOCAL_TRANSPORT_ERROR` ni se acreditó su causa raíz. No se
   modificó el puente ni se detuvieron servicios de integración o tareas concurrentes.
 
-Actualizar el APK 0.1.1 (build 2) con `adb install --no-streaming -r` y el mismo
+Actualizar el APK 0.2.0 (build 3) con `adb install --no-streaming -r` y el mismo
 paquete/firma. No desinstalar, no usar `pm clear` y no borrar datos: Drift debe
 conservarse. Si Android pide confirmar la instalación, aceptarla en el teléfono;
 no desactivar protecciones generales. Conservar el respaldo privado de la entrega.

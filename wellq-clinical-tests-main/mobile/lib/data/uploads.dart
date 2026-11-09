@@ -90,14 +90,11 @@ class UploadRepository {
       session: session,
     );
     check();
-    op.phase = s['status'] == 'ready_for_review'
-        ? 'confirmed'
-        : s['status'] as String;
-    if (op.phase == 'initiated') op.phase = 'bytes_pending';
-    op.canDelete = s['local_file_can_be_deleted'] == true;
-    if (op.phase == 'confirmed' && !op.canDelete) {
-      throw const ApiFailure(502, 'UNVERIFIED_READY_RESPONSE');
-    }
+    final phase = verifiedUploadPhase(s);
+    // Commit only a coherent server response; an invalid ready flag must not finish the local operation.
+    op.phase = phase;
+    op.canDelete = phase == 'confirmed';
+    if (['processing', 'confirmed'].contains(op.phase)) op.error = null;
     await store.save(op);
     check();
   }

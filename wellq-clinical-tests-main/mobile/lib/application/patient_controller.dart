@@ -9,6 +9,7 @@ import '../data/local_store.dart';
 import '../data/uploads.dart';
 import 'package:crypto/crypto.dart';
 import '../domain/sample_policy.dart';
+import '../domain/exam_query.dart';
 
 class PatientController extends ChangeNotifier {
   PatientController(this.api, this.identity, this.store, Directory directory)
@@ -21,6 +22,7 @@ class PatientController extends ChangeNotifier {
   List<Exam> exams = [];
   List<PendingUpload> operations = [];
   String? cursor, message;
+  ExamFilters filters = const ExamFilters();
   bool busy = false, online = false;
   int? authorizationFailure;
   Timer? _expiry;
@@ -73,7 +75,7 @@ class PatientController extends ChangeNotifier {
       await action();
       message = null;
     } on ApiFailure catch (e) {
-      await failure(e);
+      if (e.code != 'SESSION_CHANGED') await failure(e);
     } catch (_) {
       message =
           'Operación interrumpida. Consulta el estado antes de reintentar.';
@@ -98,6 +100,8 @@ class PatientController extends ChangeNotifier {
       _epoch++;
     }
     session = fresh;
+    filters = const ExamFilters();
+    cursor = null;
     online = false;
     authorizationFailure = null;
     _watchExpiry();
@@ -108,38 +112,57 @@ class PatientController extends ChangeNotifier {
     check();
     operations = await store.pending(fresh.scope);
     check();
-    final page = ExamPage.fromJson(
-      await api.json('GET', '/api/v1/clinical-tests', session: fresh),
-    );
-    check();
-    exams = page.items;
-    online = true;
-    cursor = page.cursor;
-    await store.cache(fresh.scope, exams);
-    check();
+    await _readExams(fresh, check);
   });
-  Future<void> refresh({bool more = false}) => _run(() async {
-    final s = session;
-    if (s == null) return;
-    final check = guard();
-    await api.ready();
-    check();
-    final page = ExamPage.fromJson(
-      await api.json(
-        'GET',
-        '/api/v1/clinical-tests${more && cursor != null ? '?cursor=${Uri.encodeQueryComponent(cursor!)}' : ''}',
-        session: s,
-      ),
-    );
-    check();
-    exams = more ? [...exams, ...page.items] : page.items;
-    cursor = page.cursor;
-    online = true;
-    await store.cache(s.scope, exams);
-    check();
-    operations = await store.pending(s.scope);
-    check();
-  });
+  Future<void> _readExams(
+    Session s,
+    void Function() check, {
+    bool more = false,
+    ExamFilters? filtering,
+  }) async {
+    final selected = filtering ?? filters;
+    final next = more ? cursor : null;
+    if (more && next == null) return;
+    try {
+      final page = ExamPage.fromJson(
+        await api.json('GET', selected.path(cursor: next), session: s),
+      );
+      check();
+      if (next != null && page.cursor == next) {
+        throw const ApiFailure(502, 'REPEATED_CURSOR');
+      }
+      exams = {
+        for (final exam in [...(more ? exams : <Exam>[]), ...page.items])
+          exam.id: exam,
+      }.values.toList();
+      filters = selected;
+      cursor = page.cursor;
+      online = true;
+      // The existing cache has no filter key. Never label a filtered snapshot as all documents.
+      if (selected.isEmpty) await store.cache(s.scope, exams);
+      check();
+    } on ApiFailure {
+      check(); // A late response cannot invalidate a different, newer session.
+      rethrow;
+    }
+  }
+
+  Future<void> refresh({bool more = false, ExamFilters? filtering}) =>
+      _run(() async {
+        final s = session;
+        if (s == null) return;
+        final check = guard();
+        try {
+          await api.ready();
+        } on ApiFailure {
+          check();
+          rethrow;
+        }
+        check();
+        await _readExams(s, check, more: more, filtering: filtering);
+        operations = await store.pending(s.scope);
+        check();
+      });
   Future<void> queue(List<int> bytes, String title, String date) =>
       _run(() async {
         final s = session;
@@ -188,6 +211,7 @@ class PatientController extends ChangeNotifier {
     }
     operations = await store.pending(fresh.scope);
     check();
+    await _readExams(fresh, check);
   });
   Future<Json> extraction(String id) async {
     final s = session;
@@ -202,6 +226,7 @@ class PatientController extends ChangeNotifier {
       check();
       return data;
     } on ApiFailure catch (e) {
+      check();
       await failure(e);
       rethrow;
     }
@@ -239,6 +264,7 @@ class PatientController extends ChangeNotifier {
       check();
       return data;
     } on ApiFailure catch (e) {
+      check();
       await failure(e);
       rethrow;
     }
@@ -261,6 +287,7 @@ class PatientController extends ChangeNotifier {
       check();
       return result;
     } on ApiFailure catch (e) {
+      check();
       await failure(e);
       rethrow;
     }
@@ -278,6 +305,7 @@ class PatientController extends ChangeNotifier {
     exams = [];
     operations = [];
     cursor = null;
+    filters = const ExamFilters();
     online = false;
     if (!keepMessage) message = null;
     notifyListeners();
