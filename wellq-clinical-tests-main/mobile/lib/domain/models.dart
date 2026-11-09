@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'patient_labels.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -14,19 +15,22 @@ class ApiFailure implements Exception {
   final bool storage;
   bool get denied => !storage && (status == 401 || status == 403);
   bool get conflict => status == 409 || status == 428;
-  String get message => switch (status) {
-    0 => 'Sin conexión verificada. Tu operación sigue pendiente.',
-    401 => 'La sesión venció. Vuelve a conectar el perfil sintético.',
-    403 =>
-      storage
-          ? 'Autorización del archivo vencida. Reintenta explícitamente.'
-          : 'No tienes permiso para esta operación.',
-    409 || 428 => 'Conflicto: consulta el estado actual antes de continuar.',
-    422 => 'Revisa los campos y el consentimiento del documento.',
-    429 => 'Límite temporal. Espera antes de reintentar.',
-    502 || 503 => 'Servicio no disponible. No se ha confirmado éxito.',
-    _ => 'No se pudo completar la operación ($status).',
-  };
+  String get message => code == 'EXTRACTION_NOT_READY'
+      ? 'El documento sigue preparando la propuesta. Consulta nuevamente.'
+      : switch (status) {
+          0 => 'Sin conexión verificada. Tu operación sigue pendiente.',
+          401 => 'La sesión venció. Vuelve a conectar el perfil sintético.',
+          403 =>
+            storage
+                ? 'Autorización del archivo vencida. Reintenta explícitamente.'
+                : 'No tienes permiso para esta operación.',
+          409 ||
+          428 => 'Conflicto: consulta el estado actual antes de continuar.',
+          422 => 'Revisa los campos y el consentimiento del documento.',
+          429 => 'Límite temporal. Espera antes de reintentar.',
+          502 || 503 => 'Servicio no disponible. No se ha confirmado éxito.',
+          _ => 'No se pudo completar la operación ($status).',
+        };
   @override
   String toString() => 'ApiFailure($status, $code)';
 }
@@ -59,19 +63,31 @@ class Session {
 }
 
 class Exam {
-  const Exam(this.id, this.title, this.date, this.status);
+  const Exam(
+    this.id,
+    this.title,
+    this.date,
+    this.status, {
+    this.testType,
+    this.reviewStatus,
+  });
   factory Exam.fromJson(Json j) => Exam(
     j['clinical_test_id'] as String,
     j['title'] as String,
     j['test_date'] as String,
     j['status'] as String,
+    testType: j['test_type'] as String?,
+    reviewStatus: (j['review'] as Map?)?['status'] as String?,
   );
   final String id, title, date, status;
+  final String? testType, reviewStatus;
   Json toJson() => {
     'clinical_test_id': id,
     'title': title,
     'test_date': date,
     'status': status,
+    if (testType != null) 'test_type': testType,
+    if (reviewStatus != null) 'review': {'status': reviewStatus},
   };
 }
 
@@ -143,14 +159,4 @@ class PendingUpload {
   }
 }
 
-String phaseLabel(String phase) => switch (phase) {
-  'queued' => 'Pendiente de envío',
-  'bytes_pending' => 'Archivo pendiente',
-  'complete_pending' => 'Recepción pendiente',
-  'processing' => 'Procesando en FastAPI',
-  'confirmed' => 'Documento verificado',
-  'rejected' => 'Documento rechazado',
-  'failed' => 'Procesamiento fallido',
-  'conflict' => 'Bloqueado por conflicto',
-  _ => phase,
-};
+String phaseLabel(String phase) => uploadLabel(phase);

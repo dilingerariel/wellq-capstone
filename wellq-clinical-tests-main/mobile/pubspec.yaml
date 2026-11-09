@@ -15,6 +15,7 @@ dependencies:
   uuid: ^4.6.0
   path_provider: ^2.1.6
   file_picker: ^13.3.2
+  pdfrx: ^2.12.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

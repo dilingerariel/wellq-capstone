@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:uuid/uuid.dart';
 
 import '../application/patient_controller.dart';
 import '../domain/models.dart';
+import '../domain/patient_labels.dart';
+import 'synthetic_pdf_screen.dart';
+import 'exam_screen.dart';
+import 'patient_dialogs.dart';
+export 'exam_screen.dart';
 
 // Centralized patient copy; Material widgets already localize to Spanish.
 class AppCopy {
@@ -38,6 +42,7 @@ class _WellQAppState extends State<WellQApp> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff006d68)),
         scaffoldBackgroundColor: const Color(0xfff4f8f7),
+        appBarTheme: const AppBarTheme(foregroundColor: Color(0xff15374a)),
         inputDecorationTheme: const InputDecorationTheme(
           border: OutlineInputBorder(),
         ),
@@ -109,7 +114,7 @@ class _PatientShellState extends State<PatientShell>
   Widget page(List<Widget> children) =>
       ListView(padding: const EdgeInsets.all(20), children: children);
   Widget heading(String title, String subtitle) => Padding(
-    padding: const EdgeInsets.only(bottom: 20),
+    padding: const EdgeInsets.only(bottom: 16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -117,7 +122,7 @@ class _PatientShellState extends State<PatientShell>
           title,
           style: Theme.of(
             context,
-          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(subtitle),
@@ -134,21 +139,33 @@ class _PatientShellState extends State<PatientShell>
     final signed = c.session != null;
     final content = Column(
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          color: Theme.of(context).colorScheme.secondaryContainer,
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: [
-              Icon(
-                c.online ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
-                size: 20,
-              ),
-              Text(c.online ? 'FastAPI conectado' : 'Conexión no verificada'),
-              const Text(AppCopy.warning),
-            ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          child: Semantics(
+            liveRegion: true,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Icon(
+                  c.online && !c.busy
+                      ? Icons.cloud_done_outlined
+                      : Icons.cloud_off_outlined,
+                  size: 16,
+                ),
+                Text(
+                  c.connectionLabel,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  'Entorno sintético',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
           ),
         ),
         if (c.busy) const LinearProgressIndicator(),
@@ -227,13 +244,16 @@ class _PatientShellState extends State<PatientShell>
               ? NavigationBar(
                   selectedIndex: tab,
                   labelBehavior:
-                      NavigationDestinationLabelBehavior.onlyShowSelected,
+                      box.maxWidth < 360 ||
+                          MediaQuery.textScalerOf(context).scale(12) > 18
+                      ? NavigationDestinationLabelBehavior.alwaysHide
+                      : NavigationDestinationLabelBehavior.onlyShowSelected,
                   onDestinationSelected: (v) => setState(() => tab = v),
                   destinations: [
                     for (var i = 0; i < 5; i++)
                       NavigationDestination(
                         icon: Icon(icons[i]),
-                        label: labels[i],
+                        label: i == 3 ? 'Cola' : labels[i],
                       ),
                   ],
                 )
@@ -272,59 +292,73 @@ class _PatientShellState extends State<PatientShell>
     ),
   ]);
   Widget dashboard() => page([
-    heading('Hola, paciente', 'Documentos claros, bajo tu control.'),
-    Card.filled(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.favorite_outline, size: 32),
-            const SizedBox(height: 12),
-            Text(
-              'Un lugar para tus exámenes',
-              style: Theme.of(context).textTheme.titleLarge,
+    heading('Hola, paciente', 'Tus documentos, a mano.'),
+    FilledButton.icon(
+      onPressed: () => setState(() => tab = 2),
+      icon: const Icon(Icons.add),
+      label: const Text('Cargar documento'),
+    ),
+    const SizedBox(height: 16),
+    Card.outlined(
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.folder_open_outlined),
+            title: const Text('Mis exámenes'),
+            subtitle: Text('${c.exams.length} en la vista actual'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => setState(() => tab = 1),
+          ),
+          ListTile(
+            leading: const Icon(Icons.sync_outlined),
+            title: const Text('Pendientes de envío'),
+            subtitle: Text(
+              '${c.operations.where((o) => !o.finished).length} operaciones locales',
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Carga el PDF sintético, revisa sus datos y confirma. La confirmación humana no es una validación clínica.',
-            ),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => setState(() => tab = 2),
-              child: const Text('Cargar documento'),
-            ),
-          ],
-        ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => setState(() => tab = 3),
+          ),
+        ],
       ),
     ),
     const SizedBox(height: 16),
-    Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: [
-        Chip(label: Text('${c.exams.length} exámenes en esta vista')),
-        Chip(
-          label: Text(
-            '${c.operations.where((o) => !o.finished).length} pendientes locales',
-          ),
-        ),
-      ],
+    Text(
+      'Exámenes recientes en esta vista',
+      style: Theme.of(context).textTheme.titleMedium,
     ),
-    const SizedBox(height: 16),
-    const Text(
-      'No se muestran scores ni interpretaciones clínicas en el móvil.',
-    ),
+    const SizedBox(height: 8),
+    if (c.exams.isEmpty)
+      const Text(
+        'Aún no hay exámenes. Carga el documento sintético para comenzar.',
+      ),
+    for (final exam in c.exams.take(3)) examCard(exam),
+    if (c.exams.isNotEmpty)
+      const Text('Abre un examen para consultar si requiere tu confirmación.'),
     TextButton(
       onPressed: () => setState(() => tab = 1),
       child: const Text('Ver mis exámenes'),
     ),
   ]);
+  Widget examCard(Exam exam) => Card.outlined(
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: const Icon(Icons.description_outlined),
+      title: Text(exam.title.trim().isEmpty ? 'Examen sin título' : exam.title),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(
+          '${exam.date}${testTypeLabel(exam.testType) == null ? '' : ' · ${testTypeLabel(exam.testType)}'}\n${examLabel(exam.status, review: exam.reviewStatus)}',
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => open(exam),
+    ),
+  );
   Widget exams() => page([
     heading(
       'Mis exámenes',
       c.online
-          ? 'Lectura autorizada de FastAPI'
+          ? 'Tus documentos y su estado actual.'
           : 'Última lectura disponible. No confirma cambios del servidor.',
     ),
     if (c.exams.isEmpty)
@@ -334,17 +368,7 @@ class _PatientShellState extends State<PatientShell>
           'Sin exámenes en esta vista. Actualiza o carga el PDF sintético.',
         ),
       ),
-    for (final exam in c.exams)
-      Card(
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          leading: const Icon(Icons.description_outlined),
-          title: Text(exam.title),
-          subtitle: Text('${exam.date}\n${phaseLabel(exam.status)}'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => open(exam),
-        ),
-      ),
+    for (final exam in c.exams) examCard(exam),
     if (c.cursor != null)
       OutlinedButton(
         onPressed: c.busy ? null : () => c.refresh(more: true),
@@ -358,7 +382,7 @@ class _PatientShellState extends State<PatientShell>
   Widget pending() => page([
     heading(
       'Operaciones pendientes',
-      'Drift conserva identificadores y bytes sintéticos. Reconectar solo consulta estados.',
+      'Tus documentos guardados. Tú decides cuándo enviarlos.',
     ),
     OutlinedButton.icon(
       onPressed: c.busy ? null : c.reconcile,
@@ -382,20 +406,20 @@ class _PatientShellState extends State<PatientShell>
               Text(op.title, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               Text(phaseLabel(op.phase)),
-              Text('Intentos: ${op.attempts} · Versión local: ${op.version}'),
+              Text('Intentos de envío: ${op.attempts}'),
               if (op.error != null)
                 const Text(
                   'El último intento no terminó. Consulta el estado antes de reintentar.',
                 ),
               if (op.canDelete)
-                const Text(
-                  'FastAPI verificó el documento. La copia local se conserva.',
-                ),
+                const Text('Documento verificado. La copia local se conserva.'),
               const SizedBox(height: 8),
               if (!op.finished && op.phase != 'conflict')
                 FilledButton(
                   onPressed: c.busy ? null : () => c.resume(op),
-                  child: const Text('Enviar o reintentar explícitamente'),
+                  child: Text(
+                    op.attempts == 0 ? 'Enviar documento' : 'Reintentar envío',
+                  ),
                 ),
               if (op.examId != null)
                 TextButton(
@@ -416,23 +440,39 @@ class _PatientShellState extends State<PatientShell>
       onTap: widget.toggle,
     ),
     const ListTile(
-      leading: Icon(Icons.lock_outline),
-      title: Text('Identidad sintética'),
-      subtitle: Text(
-        'Tokens solo en RAM. Sin contraseñas ni firma JWT en Dart.',
-      ),
+      leading: Icon(Icons.person_outline),
+      title: Text('Sesión de paciente'),
+      subtitle: Text('Perfil sintético de desarrollo. Sin uso clínico.'),
     ),
-    const ListTile(
-      leading: Icon(Icons.storage_outlined),
-      title: Text('SQLite de pruebas'),
+    ListTile(
+      leading: const Icon(Icons.sync_outlined),
+      title: const Text('Estado de sincronización'),
       subtitle: Text(
-        'Solo el PDF sintético incluido. Sin persistencia clínica productiva.',
+        '${c.operations.where((o) => !o.finished).length} pendientes locales · ${c.connectionLabel}',
       ),
+      onTap: () => setState(() => tab = 3),
     ),
-    const ListTile(
-      leading: Icon(Icons.picture_as_pdf_outlined),
-      title: Text('PDF productivo bloqueado'),
-      subtitle: Text('No hay exportaciones ni scores en esta fase móvil.'),
+    const ExpansionTile(
+      title: Text('Información de desarrollo'),
+      leading: Icon(Icons.code_outlined),
+      children: [
+        ListTile(
+          title: Text('Identidad sintética'),
+          subtitle: Text('Tokens en RAM; firma RS256 solo en el host.'),
+        ),
+        ListTile(
+          title: Text('Persistencia de pruebas'),
+          subtitle: Text(
+            'Drift/SQLite sin datos clínicos reales. Solo PDF sintético verificado.',
+          ),
+        ),
+        ListTile(
+          title: Text('PDF productivo bloqueado'),
+          subtitle: Text(
+            'Sin exportaciones, scores ni proveedores productivos.',
+          ),
+        ),
+      ],
     ),
     FilledButton.tonal(
       onPressed: () async {
@@ -447,26 +487,6 @@ class _PatientShellState extends State<PatientShell>
     ),
   ]);
 }
-
-Future<bool> ask(BuildContext context, String title, String text) async =>
-    await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: SingleChildScrollView(child: Text(text)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Volver'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Confirmar acción'),
-          ),
-        ],
-      ),
-    ) ??
-    false;
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.c, required this.queued});
@@ -484,6 +504,42 @@ class _UploadScreenState extends State<UploadScreen> {
   List<int>? bytes;
   bool consent = false, synthetic = false;
   String? error;
+  Future<void> selectPdf() async {
+    try {
+      final files = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+      if (files.isEmpty) return;
+      final size = await files.single.length();
+      if (size == null || size > 20 * 1024 * 1024) {
+        if (mounted) setState(() => error = 'El archivo excede 20 MiB.');
+        return;
+      }
+      final selected = verifiedSyntheticBytes(await files.single.readAsBytes());
+      if (mounted) {
+        setState(() {
+          bytes = selected;
+          error = null;
+        });
+      }
+    } on FormatException {
+      if (mounted) {
+        setState(
+          () => error =
+              'Solo se admite una copia íntegra del PDF sintético incluido.',
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => error =
+              'No se pudo abrir el selector. Puedes usar el PDF sintético incluido.',
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     title.dispose();
@@ -495,13 +551,10 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(20),
     children: [
-      Text(
-        'Nuevo documento',
-        style: Theme.of(context).textTheme.headlineMedium,
-      ),
+      Text('Nuevo documento', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 8),
       const Text(
-        'Solo se admite el PDF sintético incluido, también si lo eliges desde Archivos. Su SHA-256 se verifica antes de copiarlo.',
+        'Usa el PDF sintético de prueba. No selecciones documentos médicos reales.',
       ),
       const SizedBox(height: 16),
       OutlinedButton.icon(
@@ -513,25 +566,24 @@ class _UploadScreenState extends State<UploadScreen> {
         label: const Text('Usar PDF sintético incluido'),
       ),
       TextButton.icon(
-        onPressed: () async {
-          final r = await FilePicker.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['pdf'],
-          );
-          if (r.isNotEmpty) {
-            final length = await r.single.length();
-            if (length == null || length > 20 * 1024 * 1024) {
-              if (mounted) setState(() => error = 'El archivo excede 20 MiB.');
-              return;
-            }
-            final selected = await r.single.readAsBytes();
-            if (mounted) setState(() => bytes = selected);
-          }
-        },
+        onPressed: selectPdf,
         icon: const Icon(Icons.attach_file),
         label: const Text('Seleccionar PDF de prueba'),
       ),
-      if (bytes != null) Text('PDF seleccionado · ${bytes!.length} bytes'),
+      if (bytes != null) ...[
+        Text('PDF seleccionado · ${bytes!.length} bytes'),
+        TextButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => SyntheticPdfScreen(
+                load: () async => verifiedSyntheticBytes(bytes!),
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.picture_as_pdf_outlined),
+          label: const Text('Ver documento seleccionado'),
+        ),
+      ],
       const SizedBox(height: 16),
       TextField(
         controller: title,
@@ -588,264 +640,4 @@ class _UploadScreenState extends State<UploadScreen> {
       ),
     ],
   );
-}
-
-class ExamScreen extends StatefulWidget {
-  const ExamScreen({super.key, required this.c, required this.exam});
-  final PatientController c;
-  final Exam exam;
-  @override
-  State<ExamScreen> createState() => _ExamScreenState();
-}
-
-class _ExamScreenState extends State<ExamScreen> {
-  Json? detail, extraction, frozen;
-  String? error, key;
-  bool loading = true,
-      identity = false,
-      checked = false,
-      sending = false,
-      conflict = false;
-  final fields =
-      <String, (TextEditingController, TextEditingController, Json)>{};
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
-
-  @override
-  void dispose() {
-    for (final f in fields.values) {
-      f.$1.dispose();
-      f.$2.dispose();
-    }
-    super.dispose();
-  }
-
-  Future<void> load() async {
-    try {
-      final d = await widget.c.detail(widget.exam.id);
-      if (!mounted) return;
-      setState(() => detail = d);
-      final x = await widget.c.extraction(widget.exam.id);
-      if (!mounted) return;
-      for (final f in fields.values) {
-        f.$1.dispose();
-        f.$2.dispose();
-      }
-      fields.clear();
-      for (final p in x['panels'] as List) {
-        for (final item in (p as Map)['markers'] as List) {
-          final m = Map<String, dynamic>.from(item as Map);
-          fields[m['marker_code'] as String] = (
-            TextEditingController(text: m['value_raw'] as String),
-            TextEditingController(text: m['unit_raw'] as String),
-            m,
-          );
-        }
-      }
-      setState(() {
-        extraction = x;
-        loading = false;
-        error = null;
-        frozen = null;
-        key = null;
-        conflict = false;
-        identity = false;
-        checked = false;
-      });
-    } on ApiFailure catch (e) {
-      if (mounted) {
-        setState(() {
-          loading = false;
-          error = e.status == 404
-              ? 'La extracción aún no está disponible. Consulta nuevamente.'
-              : e.message;
-        });
-      }
-    }
-  }
-
-  Future<void> submit(String action) async {
-    if (sending) return;
-    final body =
-        frozen ??
-        {
-          'action': action,
-          'extraction_id': extraction!['extraction_id'],
-          'document_edits': {'identity_confirmed': identity},
-          'acknowledged_marker_codes': fields.keys.toList(),
-          'marker_edits': [
-            for (final e in fields.entries)
-              if (e.value.$1.text != e.value.$3['value_raw'] ||
-                  e.value.$2.text != e.value.$3['unit_raw'])
-                {
-                  'op': 'update',
-                  'marker_code': e.key,
-                  'value_raw': e.value.$1.text,
-                  'unit_raw': e.value.$2.text,
-                },
-          ],
-        };
-    if (frozen == null) {
-      final yes = await ask(
-        context,
-        action == 'discard' ? '¿Descartar propuesta?' : 'Revisar confirmación',
-        '${fields.entries.map((e) => '${e.key}: ${e.value.$1.text} ${e.value.$2.text}').join('\n')}\n\nConfirmación humana. No es validación clínica.',
-      );
-      if (!yes || !mounted) return;
-      frozen = body;
-      key = const Uuid().v4();
-    }
-    setState(() => sending = true);
-    try {
-      final result = await widget.c.confirm(widget.exam.id, frozen!, key!);
-      if (mounted) {
-        setState(() {
-          extraction = result;
-          error = null;
-          frozen = null;
-        });
-      }
-    } on ApiFailure catch (e) {
-      if (mounted) {
-        setState(() {
-          error = e.message;
-          conflict = e.conflict;
-          if (e.status == 422) {
-            frozen = null;
-            key = null;
-          }
-        });
-      }
-    } finally {
-      if (mounted) setState(() => sending = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final editable = extraction?['status'] == 'awaiting_confirmation';
-    return Scaffold(
-      appBar: AppBar(title: const Text('Detalle del examen')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            Text(
-              detail?['title'] as String? ?? widget.exam.title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(detail?['test_date'] as String? ?? widget.exam.date),
-            Text(detail?['status'] as String? ?? widget.exam.status),
-            const SizedBox(height: 12),
-            const Text(AppCopy.warning),
-            if (loading) const LinearProgressIndicator(),
-            if (error != null)
-              Semantics(
-                liveRegion: true,
-                child: Text(
-                  error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            if (extraction != null) ...[
-              const SizedBox(height: 20),
-              Text('Extracción: ${extraction!['status']}'),
-              const Text(
-                'Coteja la propuesta con el PDF sintético original. No es un diagnóstico.',
-              ),
-              for (final e in fields.entries)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(e.value.$3['raw_name'] as String),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: e.value.$1,
-                          enabled: editable && frozen == null,
-                          decoration: InputDecoration(
-                            labelText: 'Valor ${e.key}',
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: e.value.$2,
-                          enabled: editable && frozen == null,
-                          decoration: InputDecoration(
-                            labelText: 'Unidad ${e.key}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              if (editable) ...[
-                CheckboxListTile(
-                  value: identity,
-                  onChanged: frozen == null
-                      ? (v) => setState(() => identity = v ?? false)
-                      : null,
-                  title: const Text(
-                    'He comprobado que este documento me corresponde.',
-                  ),
-                ),
-                CheckboxListTile(
-                  value: checked,
-                  onChanged: frozen == null
-                      ? (v) => setState(() => checked = v ?? false)
-                      : null,
-                  title: const Text(
-                    'He cotejado valores, unidades y campos de baja confianza.',
-                  ),
-                ),
-                FilledButton(
-                  onPressed: identity && checked && !sending && !conflict
-                      ? () => submit('confirm')
-                      : null,
-                  child: Text(
-                    frozen == null
-                        ? 'Revisar y confirmar datos'
-                        : 'Reintentar el mismo envío',
-                  ),
-                ),
-                TextButton(
-                  onPressed: !sending && frozen == null
-                      ? () => submit('discard')
-                      : null,
-                  child: const Text('Descartar propuesta'),
-                ),
-              ],
-              if (!editable)
-                const Text(
-                  'Estado determinado por FastAPI. No equivale a validación profesional.',
-                ),
-            ],
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: sending
-                  ? null
-                  : () async {
-                      if (frozen != null) {
-                        if (!await ask(
-                          context,
-                          '¿Consultar estado actual?',
-                          'Se descartará el borrador. La lectura mostrará si FastAPI recibió la confirmación; no se reenviará ninguna mutación.',
-                        )) {
-                          return;
-                        }
-                      }
-                      await load();
-                    },
-              child: const Text('Consultar propuesta actual'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

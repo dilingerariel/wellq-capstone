@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
@@ -6,6 +7,8 @@ import '../domain/models.dart';
 import '../data/api.dart';
 import '../data/local_store.dart';
 import '../data/uploads.dart';
+import 'package:crypto/crypto.dart';
+import '../domain/sample_policy.dart';
 
 class PatientController extends ChangeNotifier {
   PatientController(this.api, this.identity, this.store, Directory directory)
@@ -19,6 +22,38 @@ class PatientController extends ChangeNotifier {
   List<PendingUpload> operations = [];
   String? cursor, message;
   bool busy = false, online = false;
+  int? authorizationFailure;
+  Timer? _expiry;
+  String get connectionLabel {
+    if (authorizationFailure == 401 || session?.expired == true) {
+      return 'Sesión expirada';
+    }
+    if (authorizationFailure == 403) return 'Acceso no autorizado';
+    if (busy) return 'Verificando';
+    return online ? 'Conectado' : 'Sin conexión verificada';
+  }
+
+  void _watchExpiry() {
+    _expiry?.cancel();
+    final s = session;
+    if (s == null) return;
+    _expiry = Timer(s.expires.difference(DateTime.now()), () async {
+      authorizationFailure = 401;
+      message = const ApiFailure(401, 'SESSION_EXPIRED').message;
+      await logout(keepMessage: true, preservePending: true);
+    });
+  }
+
+  Future<void> failure(ApiFailure e) async {
+    message = e.message;
+    if (e.status == 0 || e.status >= 500) online = false;
+    if (e.denied) {
+      authorizationFailure = e.status;
+      await logout(keepMessage: true, preservePending: true);
+    }
+    notifyListeners();
+  }
+
   int _epoch = 0;
   int get generation => _epoch;
   void Function() guard() {
@@ -38,9 +73,7 @@ class PatientController extends ChangeNotifier {
       await action();
       message = null;
     } on ApiFailure catch (e) {
-      message = e.message;
-      if (e.status == 0) online = false;
-      if (e.denied) await logout(keepMessage: true, preservePending: true);
+      await failure(e);
     } catch (_) {
       message =
           'Operación interrumpida. Consulta el estado antes de reintentar.';
@@ -58,14 +91,16 @@ class PatientController extends ChangeNotifier {
     if (old != null &&
         (old.scope != fresh.scope ||
             !setEquals(old.permissions, fresh.permissions))) {
-      await store.clearScope(old.scope);
+      await store.clearCache(old.scope);
       if (ticket != _epoch) return;
       exams = [];
       operations = [];
       _epoch++;
     }
     session = fresh;
-    online = true;
+    online = false;
+    authorizationFailure = null;
+    _watchExpiry();
     final check = guard();
     await store.recover();
     check();
@@ -78,6 +113,7 @@ class PatientController extends ChangeNotifier {
     );
     check();
     exams = page.items;
+    online = true;
     cursor = page.cursor;
     await store.cache(fresh.scope, exams);
     check();
@@ -125,6 +161,7 @@ class PatientController extends ChangeNotifier {
       throw const ApiFailure(403, 'IDENTITY_CHANGED');
     }
     session = fresh;
+    _watchExpiry();
     online = true;
     await uploads.resume(op, fresh, check);
     check();
@@ -143,6 +180,7 @@ class PatientController extends ChangeNotifier {
       throw const ApiFailure(403, 'IDENTITY_CHANGED');
     }
     session = fresh;
+    _watchExpiry();
     online = true;
     for (final op in operations) {
       await uploads.reconcile(op, fresh, check);
@@ -164,9 +202,28 @@ class PatientController extends ChangeNotifier {
       check();
       return data;
     } on ApiFailure catch (e) {
-      if (e.denied) await logout(preservePending: true);
+      await failure(e);
       rethrow;
     }
+  }
+
+  Future<List<int>?> document(String examId) async {
+    final s = session;
+    if (s == null) return null;
+    final check = guard();
+    check();
+    for (final op in await store.pending(s.scope)) {
+      if (op.examId != examId) continue;
+      final file = uploads.vault.resolve(op.file);
+      if (!await file.exists() || await file.length() > 20 * 1024 * 1024) {
+        return null;
+      }
+      final bytes = await file.readAsBytes();
+      check();
+      if (sha256.convert(bytes).toString() != syntheticPdfSha256) return null;
+      return bytes;
+    }
+    return null;
   }
 
   Future<Json> detail(String id) async {
@@ -182,7 +239,7 @@ class PatientController extends ChangeNotifier {
       check();
       return data;
     } on ApiFailure catch (e) {
-      if (e.denied) await logout(preservePending: true);
+      await failure(e);
       rethrow;
     }
   }
@@ -204,7 +261,7 @@ class PatientController extends ChangeNotifier {
       check();
       return result;
     } on ApiFailure catch (e) {
-      if (e.denied) await logout(preservePending: true);
+      await failure(e);
       rethrow;
     }
   }
@@ -214,6 +271,7 @@ class PatientController extends ChangeNotifier {
     bool preservePending = false,
   }) async {
     final old = session;
+    _expiry?.cancel();
     _epoch++;
     session = null;
     identity.signOut();
@@ -234,6 +292,7 @@ class PatientController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _expiry?.cancel();
     _epoch++;
     api.close();
     super.dispose();

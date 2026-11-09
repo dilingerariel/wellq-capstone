@@ -219,7 +219,11 @@ void main() {
         'He comprobado que este documento me corresponde.',
         'He cotejado valores, unidades y campos de baja confianza.',
       ]) {
-        await t.ensureVisible(find.text(text));
+        await t.scrollUntilVisible(
+          find.text(text),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         await t.tap(find.text(text));
         await t.pumpAndSettle();
       }
