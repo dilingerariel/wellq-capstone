@@ -60,14 +60,18 @@ campos clínicos, además de comprobaciones de semántica y ausencia de excepcio
 de renderizado. No equivale a una certificación TalkBack ni a pruebas Windows.
 
 APK Android debug arm64 `0.3.0+4` compilado con la firma anterior verificada y
-los 24 fuentes Dart actuales incluidos. El teléfono estaba conectado y
-autorizado en ADB, pero Android rechazó la actualización con
-`INSTALL_FAILED_USER_RESTRICTED: Install canceled by user`. Por ello, esta fase
-no acredita aún pruebas físicas de la interfaz bilingüe: sigue instalada la
-versión `0.2.0+3`. Se verificó un respaldo privado de Drift con cuatro operaciones
-y que SQLite/WAL/SHM permanecen idénticos tras el intento. Falta aceptar la
-instalación y recorrer los flujos en ambos idiomas, sin desinstalar ni borrar
-datos. Esta limitación física no se sustituye por los resultados Linux.
+los 24 archivos fuente Dart actuales incluidos. Android rechazó dos intentos ADB
+con `INSTALL_FAILED_USER_RESTRICTED`. El usuario completó posteriormente la
+instalación manual del mismo APK desde Descargas. Se confirmó versión `0.3.0+4`,
+pero Android la registra como instalación nueva y su carpeta privada `files`
+está vacía. No se pudo acreditar una actualización que conservara Drift en el
+dispositivo; no se determinó qué acción del flujo manual produjo ese estado.
+El respaldo privado previo, verificado con hashes, conserva las cuatro
+operaciones originales. El usuario indicó conservar ese respaldo y detener las
+pruebas físicas, por lo que no se restauraron archivos ni se abrió la aplicación
+para generar datos nuevos. La interfaz bilingüe no se acredita físicamente en
+esta fase: quedan pendientes una recuperación autorizada de Drift y el recorrido
+en ambos idiomas. Los resultados Linux no sustituyen esta validación pendiente.
 
 El login productivo autorizado para React/Flutter y las demás integraciones
 productivas siguen pendientes. No se habilitan datos clínicos reales. Los cinco
