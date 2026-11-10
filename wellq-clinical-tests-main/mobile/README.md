@@ -1,7 +1,8 @@
 # WellQ móvil · fase 3
 
-Estado: implementación funcional local; cierre de regresión Flutter pendiente
-por el bloqueo del runner en Control de aplicaciones de Windows.
+Estado: implementación funcional local con validación Flutter en Ubuntu WSL2;
+sin merge ni publicación. El runner de Windows continúa bloqueado por Control
+de aplicaciones y no se modificaron sus protecciones.
 
 Aplicación Flutter de paciente, independiente de React. FastAPI y MongoDB son
 reales; identidad RS256, almacenamiento firmado, antivirus e IA son de pruebas.
@@ -53,14 +54,26 @@ otro paciente/tenant. Rechazado, fallido y procesando tienen mensajes distintos;
 no son confirmación humana ni validación profesional. Consultar estados no envía.
 Los borradores de revisión siguen en RAM, no son una cola durable de confirmaciones.
 
-Validación actual: 25 comprobaciones de dominio Dart aprobadas, OpenAPI coincidente,
-análisis sin incidencias y APK debug compilado. Se añadieron pruebas Flutter de
-paginación, filtros, caché, respuestas tardías, detalle y reflow, pero **no se han
-ejecutado**: Windows bloquea `flutter_tester.exe` por Control de aplicaciones
-(eventos 3033/3077). No se cambiaron políticas, exclusiones ni el runner para
-eludirlo. Los 75 tests de fase 2.1 son antecedentes, no resultados de esta entrega.
-Las tres comprobaciones HTTP de contrato en Python aprobaron contra la integración
-real después de recuperar el puente; no sustituyen las pruebas HTTP Dart ni los widgets.
+La regresión Flutter se ejecuta en una copia aislada del código versionado, con
+Flutter Linux oficial 3.47.9 y Dart 3.13.7 en Ubuntu WSL2. Las suites se ejecutan
+en serie (`--concurrency=1`), con `PDFIUM_PATH` apuntando a la biblioteca Linux
+descargada por el hook del paquete. Las tres pruebas HTTP Dart requieren la
+integración sintética real y se ejecutan aparte con `WELLQ_LIVE=true`.
+
+Los cuatro fallos iniciales con texto al 200 % eran interacciones incompletas del
+test: `ListView` monta de forma diferida los elementos alejados del viewport.
+Los árboles de widgets/renderizado y las cuatro reproducciones individuales
+mostraron el texto correcto tras desplazar la lista, sin overflow de renderizado.
+El test desplaza hasta cada resultado/control antes de comprobarlo o pulsarlo,
+comprueba su intersección con el viewport y conserva todas las expectativas,
+incluido el foco del mismo `FocusNode` aunque el campo se desmonte al desplazarse.
+No cambió el layout, la escala de texto ni las funcionalidades de la aplicación.
+
+La evidencia local de este cierre (resultados, hashes y commit probado) se conserva
+fuera de Git en `C:\Dev\wellq-sync-backups\mobile-phase3-responsive-fix`.
+Las comprobaciones Dart/Python y el APK previos son antecedentes; no sustituyen
+la regresión Flutter. Las pruebas Linux no certifican TalkBack, teclado físico,
+el ejecutor de Windows ni proveedores productivos.
 El contenedor ClamAV adicional se detuvo limpiamente tras confirmar fin de la tarea,
 ausencia de conexiones y uso del doble de escáner por los servicios. No se eliminó.
 
@@ -82,8 +95,14 @@ El reinicio completo sin túnel mantuvo el bloqueo; al reautorizar se restauró 
 cola, incluido `SYNTHETIC OFFLINE TEST 2` con cero intentos. Las cuatro operaciones
 locales (tres originales más la prueba) se conservan. Los modos claro/oscuro y la
 navegación se comprobaron; esto no certifica TalkBack ni teclado físico.
-La paginación por cursor se verificó en HTTP con límite 1; el listado Android
-no excedió el límite de página y el caso de cargar más sigue pendiente del runner.
+La paginación por cursor se verifica en HTTP con límite 1 y mediante pruebas
+Flutter; el listado Android físico no excedió el límite de página, por lo que
+la interacción física de cargar más continúa pendiente.
+
+Pendientes posteriores: Fase 3.1 incorporará español e inglés, selector de idioma
+y preferencia persistente; actualmente la aplicación fija español. La identidad
+productiva autorizada para React y Flutter queda para otra etapa. Flutter sigue
+siendo la aplicación del paciente; el profesional utiliza React.
 
 ```powershell
 C:\Dev\tools\flutter\bin\cache\dart-sdk\bin\dart.exe run test/phase3_domain_check.dart

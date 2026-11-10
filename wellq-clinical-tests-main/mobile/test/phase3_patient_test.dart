@@ -316,24 +316,38 @@ void main() {
             ),
           ),
         );
+        // ListView mounts distant children lazily, especially at 200% text.
+        // Reveal each result/control with a user scroll before asserting/tapping.
+        Future<void> reveal(Finder target, double delta) async {
+          final list = find.byType(Scrollable).first;
+          await t.scrollUntilVisible(target, delta, scrollable: list);
+          await t.pumpAndSettle();
+          expect(t.getRect(target).overlaps(t.getRect(list)), isTrue);
+        }
+
         await t.enterText(
           find.byKey(const ValueKey('exam-search')),
           'no-match',
         );
         await t.pumpAndSettle();
+        final searchFocus = t
+            .widget<EditableText>(find.byType(EditableText))
+            .focusNode;
+        await reveal(find.textContaining('0 de 2 documentos'), 120);
         expect(find.textContaining('0 de 2 documentos'), findsOneWidget);
+        await reveal(find.textContaining('Sin coincidencias'), 120);
         expect(find.textContaining('Sin coincidencias'), findsOneWidget);
+        await reveal(find.byTooltip('Limpiar búsqueda'), -120);
         await t.tap(find.byTooltip('Limpiar búsqueda'));
         await t.pumpAndSettle();
+        await reveal(find.textContaining('2 de 2 documentos'), 120);
         expect(find.textContaining('2 de 2 documentos'), findsOneWidget);
+        await reveal(find.text('Filtrar y ordenar'), -120);
         await t.tap(find.text('Filtrar y ordenar'));
         await t.pumpAndSettle();
-        expect(
-          t.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
-          isFalse,
-        );
+        expect(searchFocus.hasFocus, isFalse);
         final status = find.byKey(const ValueKey('exam-status'));
-        await t.ensureVisible(status);
+        await reveal(status, 120);
         await t.tap(status);
         await t.pumpAndSettle();
         await t.tap(find.text('Procesando documento').last);
