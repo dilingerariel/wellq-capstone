@@ -1,3 +1,4 @@
+import '../l10n/localized_copy.dart';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _SyntheticPdfScreenState extends State<SyntheticPdfScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Documento sintético')),
+    appBar: AppBar(title: Text(context.l10n.syntheticDocument)),
     body: SafeArea(
       child: Column(
         children: [
@@ -46,17 +47,17 @@ class _SyntheticPdfScreenState extends State<SyntheticPdfScreen> {
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 8,
               children: [
-                const Text('Sin uso clínico'),
-                if (ready) Text('$pages página(s)'),
+                Text(context.l10n.noClinicalUse),
+                if (ready) Text(context.l10n.pagesCount(pages)),
                 IconButton(
-                  tooltip: 'Alejar documento',
+                  tooltip: context.l10n.zoomOut,
                   onPressed: ready
                       ? () => controller.zoomDown(duration: Duration.zero)
                       : null,
                   icon: const Icon(Icons.zoom_out),
                 ),
                 IconButton(
-                  tooltip: 'Acercar documento',
+                  tooltip: context.l10n.zoomIn,
                   onPressed: ready
                       ? () => controller.zoomUp(duration: Duration.zero)
                       : null,
@@ -70,12 +71,10 @@ class _SyntheticPdfScreenState extends State<SyntheticPdfScreen> {
               future: data,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return const Center(
+                  return Center(
                     child: Padding(
                       padding: EdgeInsets.all(24),
-                      child: Text(
-                        'No se puede abrir el documento: falta el archivo o su integridad no coincide.',
-                      ),
+                      child: Text(context.l10n.pdfOpenFailed),
                     ),
                   );
                 }
@@ -97,11 +96,7 @@ class _SyntheticPdfScreenState extends State<SyntheticPdfScreen> {
                       }
                     },
                     errorBannerBuilder: (context, _, trace, ref) =>
-                        const Center(
-                          child: Text(
-                            'No se pudo representar el PDF sintético.',
-                          ),
-                        ),
+                        Center(child: Text(context.l10n.pdfRenderFailed)),
                   ),
                 );
               },

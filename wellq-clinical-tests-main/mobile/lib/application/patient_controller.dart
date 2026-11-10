@@ -28,11 +28,11 @@ class PatientController extends ChangeNotifier {
   Timer? _expiry;
   String get connectionLabel {
     if (authorizationFailure == 401 || session?.expired == true) {
-      return 'Sesión expirada';
+      return 'sessionExpired';
     }
-    if (authorizationFailure == 403) return 'Acceso no autorizado';
-    if (busy) return 'Verificando';
-    return online ? 'Conectado' : 'Sin conexión verificada';
+    if (authorizationFailure == 403) return 'accessUnauthorized';
+    if (busy) return 'verifying';
+    return online ? 'connected' : 'connectionUnverified';
   }
 
   void _watchExpiry() {
@@ -77,8 +77,7 @@ class PatientController extends ChangeNotifier {
     } on ApiFailure catch (e) {
       if (e.code != 'SESSION_CHANGED') await failure(e);
     } catch (_) {
-      message =
-          'Operación interrumpida. Consulta el estado antes de reintentar.';
+      message = 'operationInterrupted';
     } finally {
       busy = false;
       notifyListeners();

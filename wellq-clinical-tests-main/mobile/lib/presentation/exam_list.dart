@@ -1,8 +1,8 @@
+import '../l10n/localized_copy.dart';
 import 'package:flutter/material.dart';
 import '../application/patient_controller.dart';
 import '../domain/exam_query.dart';
 import '../domain/models.dart';
-import '../domain/patient_labels.dart';
 import 'patient_widgets.dart';
 
 class ExamList extends StatefulWidget {
@@ -58,18 +58,19 @@ class _ExamListState extends State<ExamList> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Mis exámenes', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          context.l10n.myExams,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         Text(
           c.online
-              ? 'Tus documentos y su estado actual.'
-              : 'Última lectura disponible. No confirma cambios del servidor.',
+              ? context.l10n.documentsStatusSubtitle
+              : context.l10n.lastAvailableReading,
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Búsqueda y orden: documentos cargados. Estado y tipo: servidor.',
-        ),
+        Text(context.l10n.searchScope),
         LabeledField(
-          label: 'Buscar en títulos cargados',
+          label: context.l10n.searchLoadedTitles,
           child: TextField(
             key: const ValueKey('exam-search'),
             controller: search,
@@ -84,7 +85,7 @@ class _ExamListState extends State<ExamList> {
               suffixIcon: search.text.isEmpty
                   ? null
                   : IconButton(
-                      tooltip: 'Limpiar búsqueda',
+                      tooltip: context.l10n.clearSearch,
                       icon: const Icon(Icons.clear),
                       onPressed: () => setState(search.clear),
                     ),
@@ -92,21 +93,21 @@ class _ExamListState extends State<ExamList> {
           ),
         ),
         ExpansionTile(
-          title: const Text('Filtrar y ordenar'),
+          title: Text(context.l10n.filterSort),
           onExpansionChanged: (_) => searchFocus.unfocus(),
           children: [
             LabeledField(
-              label: 'Estado en el servidor',
+              label: context.l10n.serverStatus,
               child: select<String>(
                 key: const ValueKey('exam-status'),
                 value: c.filters.status ?? '',
                 items: [
-                  const DropdownMenuItem(value: '', child: Text('Todos')),
+                  DropdownMenuItem(value: '', child: Text(context.l10n.all)),
                   for (final value in ExamFilters.statuses)
                     DropdownMenuItem(
                       value: value,
                       child: Text(
-                        examLabel(value),
+                        localizedExamLabel(context, value),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -123,17 +124,17 @@ class _ExamListState extends State<ExamList> {
               ),
             ),
             LabeledField(
-              label: 'Tipo en el servidor',
+              label: context.l10n.serverType,
               child: select<String>(
                 key: const ValueKey('exam-type'),
                 value: c.filters.type ?? '',
                 items: [
-                  const DropdownMenuItem(value: '', child: Text('Todos')),
+                  DropdownMenuItem(value: '', child: Text(context.l10n.all)),
                   for (final value in ExamFilters.types)
                     DropdownMenuItem(
                       value: value,
                       child: Text(
-                        testTypeLabel(value)!,
+                        localizedTestTypeLabel(context, value)!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -154,16 +155,22 @@ class _ExamListState extends State<ExamList> {
                 onPressed: !canFilter
                     ? null
                     : () => c.refresh(filtering: const ExamFilters()),
-                child: const Text('Quitar filtros del servidor'),
+                child: Text(context.l10n.removeServerFilters),
               ),
             LabeledField(
-              label: 'Orden de documentos cargados',
+              label: context.l10n.loadedDocumentOrder,
               child: select<bool>(
                 key: const ValueKey('exam-order'),
                 value: oldest,
-                items: const [
-                  DropdownMenuItem(value: false, child: Text('Más recientes')),
-                  DropdownMenuItem(value: true, child: Text('Más antiguos')),
+                items: [
+                  DropdownMenuItem(
+                    value: false,
+                    child: Text(context.l10n.newestFirst),
+                  ),
+                  DropdownMenuItem(
+                    value: true,
+                    child: Text(context.l10n.oldestFirst),
+                  ),
                 ],
                 onChanged: (v) => setState(() => oldest = v ?? false),
               ),
@@ -172,14 +179,19 @@ class _ExamListState extends State<ExamList> {
         ),
         if (!c.filters.isEmpty)
           Text(
-            'Filtro del servidor: ${c.filters.status == null ? 'todos los estados' : examLabel(c.filters.status!)} · ${c.filters.type == null ? 'todos los tipos' : testTypeLabel(c.filters.type)}',
+            context.l10n.serverFilter(
+              c.filters.status == null
+                  ? context.l10n.allStatuses
+                  : localizedExamLabel(context, c.filters.status!),
+              c.filters.type == null
+                  ? context.l10n.allTypes
+                  : localizedTestTypeLabel(context, c.filters.type)!,
+            ),
           ),
         const SizedBox(height: 12),
         Semantics(
           liveRegion: true,
-          child: Text(
-            '${visible.length} de ${c.exams.length} documentos cargados en esta consulta.',
-          ),
+          child: Text(context.l10n.resultCount(visible.length, c.exams.length)),
         ),
         if (c.busy) const LinearProgressIndicator(),
         if (visible.isEmpty)
@@ -187,27 +199,25 @@ class _ExamListState extends State<ExamList> {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Text(
               c.exams.isNotEmpty
-                  ? 'Sin coincidencias entre los documentos cargados. Puedes cargar más páginas o cambiar la búsqueda.'
+                  ? context.l10n.noMatches
                   : !c.online
-                  ? 'No hay una lectura disponible. Verifica la conexión y consulta nuevamente.'
+                  ? context.l10n.noReading
                   : !c.filters.isEmpty
-                  ? 'No hay documentos para estos filtros. Puedes quitarlos o actualizar.'
-                  : 'Sin exámenes en esta vista. Actualiza o carga el PDF sintético.',
+                  ? context.l10n.noFilteredDocuments
+                  : context.l10n.noExamsView,
             ),
           ),
         for (final e in visible) widget.card(e),
         if (c.cursor != null) ...[
-          const Text(
-            'Hay más páginas del servidor; aún no se buscaron sus títulos.',
-          ),
+          Text(context.l10n.morePagesHint),
           OutlinedButton(
             onPressed: c.busy || !c.online ? null : () => c.refresh(more: true),
-            child: const Text('Cargar más'),
+            child: Text(context.l10n.loadMore),
           ),
         ],
         TextButton(
           onPressed: c.busy ? null : () => c.refresh(),
-          child: const Text('Actualizar listado'),
+          child: Text(context.l10n.refreshList),
         ),
       ],
     );

@@ -1,10 +1,9 @@
+import '../l10n/localized_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../application/patient_controller.dart';
 import '../domain/models.dart';
 import '../domain/extraction_draft.dart';
-import '../domain/patient_labels.dart';
-import '../domain/patient_dates.dart';
 import 'patient_widgets.dart';
 import 'patient_dialogs.dart';
 import 'synthetic_pdf_screen.dart';
@@ -77,8 +76,8 @@ class _ExamScreenState extends State<ExamScreen> {
           if (draft != null) conflict = true;
           error = e.status == 404
               ? detailRead
-                    ? 'La extracción aún no está disponible. Consulta nuevamente.'
-                    : 'El examen no está disponible o ya no existe en esta vista.'
+                    ? 'extractionUnavailable'
+                    : 'examUnavailable'
               : e.message;
         });
       }
@@ -86,7 +85,7 @@ class _ExamScreenState extends State<ExamScreen> {
       if (mounted) {
         setState(() {
           if (draft != null) conflict = true;
-          error = 'No se pudo leer la propuesta. Consulta nuevamente.';
+          error = 'proposalReadFailed';
         });
       }
     } finally {
@@ -108,11 +107,13 @@ class _ExamScreenState extends State<ExamScreen> {
         final yes = await ask(
           context,
           action == 'discard'
-              ? '¿Descartar propuesta?'
-              : 'Revisar confirmación',
+              ? context.l10n.discardQuestion
+              : context.l10n.reviewConfirmation,
           action == 'discard'
-              ? 'Se descartará esta propuesta. No se elimina el documento.'
-              : '${draft!.summary}\n\nOriginal → revisión. Confirmación humana, sin validación clínica.',
+              ? context.l10n.discardWarning
+              : context.l10n.submissionSummary(
+                  draft!.summaryWith(context.l10n.safeMessage),
+                ),
         );
         if (!yes || !mounted) return;
         frozen = body;
@@ -148,9 +149,7 @@ class _ExamScreenState extends State<ExamScreen> {
         try {
           final current = await widget.c.extraction(widget.exam.id);
           if (mounted) {
-            setState(
-              () => latestStatus = extractionLabel(current['status'] as String),
-            );
+            setState(() => latestStatus = current['status'] as String);
           }
         } on ApiFailure {
           /* Keep the blocked draft; no silent replacement. */
@@ -158,10 +157,7 @@ class _ExamScreenState extends State<ExamScreen> {
       }
     } catch (_) {
       if (mounted) {
-        setState(
-          () => error =
-              'Operación interrumpida. Consulta el estado antes de reintentar.',
-        );
+        setState(() => error = 'operationInterrupted');
       }
     } finally {
       if (mounted) setState(() => sending = false);
@@ -174,18 +170,21 @@ class _ExamScreenState extends State<ExamScreen> {
     ValueChanged<String> change, {
     TextInputType? keyboard,
     String code = 'document',
+    required String fieldId,
   }) => LabeledField(
     key: ValueKey(
-      '${extraction?['extraction_id']}/${draft.hashCode}/$code/$label',
+      '${extraction?['extraction_id']}/${draft.hashCode}/$code/$fieldId',
     ),
     label: label,
     child: TextFormField(
-      key: ValueKey('review/$code/$label'),
+      key: ValueKey('review/$code/$fieldId'),
       initialValue: initial,
       enabled: editable && !loading && !sending && frozen == null && !conflict,
       keyboardType: keyboard,
       decoration: InputDecoration(
-        hintText: keyboard == TextInputType.datetime ? 'AAAA-MM-DD' : null,
+        hintText: keyboard == TextInputType.datetime
+            ? context.l10n.isoDateHint
+            : null,
         isDense: true,
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.all(12),
@@ -201,26 +200,26 @@ class _ExamScreenState extends State<ExamScreen> {
         children: [
           Text(m.name, style: Theme.of(context).textTheme.titleMedium),
           if (m.lowConfidence)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 8),
-              child: Text(
-                'Baja confianza: coteja este marcador con el documento original.',
-              ),
+              child: Text(context.l10n.lowConfidenceHint),
             ),
           if (editable) ...[
             LayoutBuilder(
               builder: (context, box) {
                 final value = field(
-                  'Valor',
+                  context.l10n.valueLabel,
                   m.value,
                   (v) => m.value = v,
                   code: m.code,
+                  fieldId: 'value',
                 );
                 final unit = field(
-                  'Unidad',
+                  context.l10n.unitLabel,
                   m.unit,
                   (v) => m.unit = v,
                   code: m.code,
+                  fieldId: 'unit',
                 );
                 return box.maxWidth >= 280 &&
                         MediaQuery.textScalerOf(context).scale(14) <= 19
@@ -237,10 +236,10 @@ class _ExamScreenState extends State<ExamScreen> {
             ),
             ExpansionTile(
               tilePadding: EdgeInsets.zero,
-              title: const Text('Referencia del documento'),
+              title: Text(context.l10n.documentReference),
               children: [
                 field(
-                  'Límite inferior',
+                  context.l10n.lowerLimit,
                   m.low,
                   (v) => m.low = v,
                   code: m.code,
@@ -248,9 +247,10 @@ class _ExamScreenState extends State<ExamScreen> {
                     decimal: true,
                     signed: true,
                   ),
+                  fieldId: 'reference-low',
                 ),
                 field(
-                  'Límite superior',
+                  context.l10n.upperLimit,
                   m.high,
                   (v) => m.high = v,
                   code: m.code,
@@ -258,18 +258,21 @@ class _ExamScreenState extends State<ExamScreen> {
                     decimal: true,
                     signed: true,
                   ),
+                  fieldId: 'reference-high',
                 ),
                 field(
-                  'Unidad de referencia',
+                  context.l10n.referenceUnit,
                   m.referenceUnit,
                   (v) => m.referenceUnit = v,
                   code: m.code,
+                  fieldId: 'reference-unit',
                 ),
                 field(
-                  'Texto de referencia',
+                  context.l10n.referenceText,
                   m.referenceText,
                   (v) => m.referenceText = v,
                   code: m.code,
+                  fieldId: 'reference-text',
                 ),
               ],
             ),
@@ -280,7 +283,12 @@ class _ExamScreenState extends State<ExamScreen> {
                 m.high.isNotEmpty ||
                 m.referenceText.isNotEmpty)
               Text(
-                'Referencia del documento: ${m.low} – ${m.high} ${m.referenceUnit} ${m.referenceText}',
+                context.l10n.referenceDescription(
+                  m.low,
+                  m.high,
+                  m.referenceUnit,
+                  m.referenceText,
+                ),
               ),
           ],
         ],
@@ -289,7 +297,7 @@ class _ExamScreenState extends State<ExamScreen> {
   );
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Detalle del examen')),
+    appBar: AppBar(title: Text(context.l10n.examDetail)),
     body: SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -299,45 +307,55 @@ class _ExamScreenState extends State<ExamScreen> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           Text(
-            clinicalDate(detail?['test_date'] as String? ?? widget.exam.date),
+            localizedClinicalDate(
+              context,
+              detail?['test_date'] as String? ?? widget.exam.date,
+            ),
           ),
-          Text(examLabel(detail?['status'] as String? ?? widget.exam.status)),
           Text(
-            'Revisión profesional: ${(detail?['review'] as Map?)?['status'] == 'reviewed' ? 'completada' : 'pendiente o no informada'}',
+            localizedExamLabel(
+              context,
+              detail?['status'] as String? ?? widget.exam.status,
+            ),
           ),
-          if (testTypeLabel(
+          Text(
+            context.l10n.professionalReview(
+              (detail?['review'] as Map?)?['status'] == 'reviewed'
+                  ? context.l10n.reviewCompleted
+                  : context.l10n.reviewPendingUnknown,
+            ),
+          ),
+          if (localizedTestTypeLabel(
+                context,
                 detail?['test_type'] as String? ?? widget.exam.testType,
               )
               case final String type)
             Text(type),
           if (detail?['file'] case final Map file) ...[
-            if (file['name'] case final String name) Text('Archivo: $name'),
+            if (file['name'] case final String name)
+              Text(context.l10n.fileName(name)),
             if (file['size_bytes'] case final num size)
-              Text('Tamaño: ${size.toInt()} bytes'),
+              Text(context.l10n.fileSize(size.toInt())),
           ],
           if (detail?['notes'] case final String notes)
-            if (notes.isNotEmpty) Text('Tus notas: $notes'),
+            if (notes.isNotEmpty) Text(context.l10n.patientNotes(notes)),
           if ([
             'initiated',
             'object_uploaded',
             'processing',
           ].contains(detail?['status']))
-            const Text(
-              'El documento aún no termina de procesarse. Consulta el estado; no necesitas cargarlo otra vez.',
-            ),
+            Text(context.l10n.stillProcessing),
           if (['rejected', 'failed'].contains(detail?['status']))
-            const Text(
-              'Este documento no está disponible para confirmar. Se conserva la copia local; consulta el estado antes de preparar otro.',
-            ),
+            Text(context.l10n.documentCannotConfirm),
           const SizedBox(height: 12),
           Text(
-            'Entorno sintético · Sin uso clínico',
+            context.l10n.syntheticNoClinical,
             style: Theme.of(context).textTheme.bodySmall,
           ),
           if (hasDocument)
             OutlinedButton.icon(
               icon: const Icon(Icons.picture_as_pdf_outlined),
-              label: const Text('Ver documento'),
+              label: Text(context.l10n.viewDocument),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => SyntheticPdfScreen(
@@ -352,53 +370,61 @@ class _ExamScreenState extends State<ExamScreen> {
                 ),
               ),
             ),
-          if (!hasDocument && !loading)
-            const Text(
-              'No hay una copia sintética verificada en este dispositivo. No se descargan documentos arbitrarios.',
-            ),
+          if (!hasDocument && !loading) Text(context.l10n.noVerifiedCopy),
           if (loading || sending) const LinearProgressIndicator(),
           if (error != null)
             Semantics(
               liveRegion: true,
               child: Text(
-                error!,
+                context.l10n.safeMessage(error!),
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
           if (latestStatus != null)
             Text(
-              'Estado actual del servidor: $latestStatus. Revisa la propuesta actual antes de continuar.',
+              context.l10n.currentServerState(
+                localizedExtractionLabel(context, latestStatus!),
+              ),
             ),
           if (extraction != null) ...[
             if (!editable && draft!.collectionDate.isNotEmpty)
-              Text('Fecha de muestra: ${clinicalDate(draft!.collectionDate)}'),
+              Text(
+                context.l10n.sampleDate(
+                  localizedClinicalDate(context, draft!.collectionDate),
+                ),
+              ),
             if (!editable && draft!.reportDate.isNotEmpty)
-              Text('Fecha de informe: ${clinicalDate(draft!.reportDate)}'),
+              Text(
+                context.l10n.reportDate(
+                  localizedClinicalDate(context, draft!.reportDate),
+                ),
+              ),
             const SizedBox(height: 20),
             Text(
-              extractionLabel(extraction!['status'] as String),
+              localizedExtractionLabel(
+                context,
+                extraction!['status'] as String,
+              ),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             if (editable)
-              const Text(
-                'Coteja la propuesta con el PDF sintético original. No es un diagnóstico.',
-              )
+              Text(context.l10n.compareProposal)
             else if (extraction!['status'] == 'confirmed') ...[
-              const Text(
-                'La confirmación ya fue recibida. Puede faltar la revisión profesional.',
-              ),
+              Text(context.l10n.confirmationReceived),
               if ((extraction!['confirmation'] as Map?)?['confirmed_at']
                   case final String date)
-                Text('Confirmado: ${confirmationTime(date)}'),
+                Text(
+                  context.l10n.confirmedOn(
+                    localizedConfirmationTime(context, date),
+                  ),
+                ),
             ] else
-              const Text(
-                'Consulta el estado del examen. No se requiere una nueva confirmación.',
-              ),
+              Text(context.l10n.noNewConfirmation),
             for (final panel in draft!.markers.map((m) => m.panel).toSet()) ...[
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 8),
                 child: Text(
-                  panel,
+                  panel.isEmpty ? context.l10n.panelUnnamed : panel,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
@@ -407,19 +433,21 @@ class _ExamScreenState extends State<ExamScreen> {
             ],
             if (editable) ...[
               ExpansionTile(
-                title: const Text('Fechas del documento'),
+                title: Text(context.l10n.documentDates),
                 children: [
                   field(
-                    'Fecha de muestra',
+                    context.l10n.collectionDateLabel,
                     draft!.collectionDate,
                     (v) => draft!.collectionDate = v,
                     keyboard: TextInputType.datetime,
+                    fieldId: 'collection-date',
                   ),
                   field(
-                    'Fecha de informe',
+                    context.l10n.reportDateLabel,
                     draft!.reportDate,
                     (v) => draft!.reportDate = v,
                     keyboard: TextInputType.datetime,
+                    fieldId: 'report-date',
                   ),
                 ],
               ),
@@ -428,18 +456,14 @@ class _ExamScreenState extends State<ExamScreen> {
                 onChanged: frozen == null && !sending && !conflict
                     ? (v) => setState(() => identity = v ?? false)
                     : null,
-                title: const Text(
-                  'He comprobado que este documento me corresponde.',
-                ),
+                title: Text(context.l10n.identityAcknowledgement),
               ),
               CheckboxListTile(
                 value: checked,
                 onChanged: frozen == null && !sending && !conflict
                     ? (v) => setState(() => checked = v ?? false)
                     : null,
-                title: const Text(
-                  'He cotejado valores, unidades y campos de baja confianza.',
-                ),
+                title: Text(context.l10n.valuesAcknowledgement),
               ),
               FilledButton(
                 onPressed: identity && checked && !sending && !conflict
@@ -447,20 +471,18 @@ class _ExamScreenState extends State<ExamScreen> {
                     : null,
                 child: Text(
                   frozen == null
-                      ? 'Revisar y confirmar'
-                      : 'Reintentar el mismo envío',
+                      ? context.l10n.reviewConfirm
+                      : context.l10n.retrySameSubmission,
                 ),
               ),
               TextButton(
                 onPressed: !sending && frozen == null && !conflict
                     ? () => submit('discard')
                     : null,
-                child: const Text('Descartar propuesta'),
+                child: Text(context.l10n.discardProposal),
               ),
             ] else
-              const Text(
-                'Estado determinado por FastAPI. No equivale a validación profesional.',
-              ),
+              Text(context.l10n.serverDeterminesStatus),
           ],
           const SizedBox(height: 16),
           OutlinedButton(
@@ -471,14 +493,14 @@ class _ExamScreenState extends State<ExamScreen> {
                         editable &&
                         !await ask(
                           context,
-                          '¿Consultar estado actual?',
-                          'Se descartará el borrador y se consultará la propuesta vigente. No se reenviará ninguna mutación.',
+                          context.l10n.checkCurrentQuestion,
+                          context.l10n.checkCurrentWarning,
                         )) {
                       return;
                     }
                     await load();
                   },
-            child: const Text('Consultar propuesta actual'),
+            child: Text(context.l10n.checkCurrentProposal),
           ),
         ],
       ),

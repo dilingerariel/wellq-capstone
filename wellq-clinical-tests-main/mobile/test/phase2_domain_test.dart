@@ -38,28 +38,22 @@ void main() {
   test(
     'patient labels distinguish extraction, examination and upload states',
     () {
-      expect(
-        examLabel('ready_for_review'),
-        'Pendiente de revisión profesional',
-      );
-      expect(
-        extractionLabel('awaiting_confirmation'),
-        'Esperando tu confirmación',
-      );
-      expect(extractionLabel('confirmed'), 'Datos confirmados');
-      expect(uploadLabel('confirmed'), 'Documento verificado');
+      expect(examLabel('ready_for_review'), 'statusReady');
+      expect(extractionLabel('awaiting_confirmation'), 'extractionAwaiting');
+      expect(extractionLabel('confirmed'), 'extractionConfirmed');
+      expect(uploadLabel('confirmed'), 'uploadVerified');
       expect(
         examLabel('ready_for_review', review: 'reviewed'),
-        'Con revisión profesional',
+        'statusReviewed',
       );
-      expect(testTypeLabel('blood_test'), 'Examen de sangre');
+      expect(testTypeLabel('blood_test'), 'typeBlood');
       expect(testTypeLabel('unknown'), isNull);
       for (final label in [
         examLabel('UNKNOWN_PRIVATE'),
         extractionLabel('UNKNOWN_PRIVATE'),
         uploadLabel('UNKNOWN_PRIVATE'),
       ]) {
-        expect(label, 'Estado por consultar');
+        expect(label, 'statusUnknown');
       }
       for (final state in [
         'queued',
@@ -101,7 +95,7 @@ void main() {
       expect(edit['unit_raw'], 'mg/dL');
       expect((edit['reference'] as Map)['low'], 71.0);
       expect(draft.summary, contains('90 mg/dL → 91 mg/dL'));
-      expect(draft.summary, contains('Referencia original'));
+      expect(draft.summary, contains('referenceOriginal'));
       expect(jsonEncode(original), snapshot);
       expect(draft.body('discard', false), {
         'action': 'discard',

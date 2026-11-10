@@ -181,7 +181,7 @@ void main() {
       );
       final saved = c.operations.single;
       await c.failure(const ApiFailure(401, 'SESSION_EXPIRED'));
-      expect(c.connectionLabel, 'Sesión expirada');
+      expect(c.connectionLabel, 'sessionExpired');
       expect(c.session, isNull);
       expect((await store.pending(first.scope)).single.id, saved.id);
       await c.connect();
@@ -255,7 +255,7 @@ void main() {
       expect(c.session, isNull);
       expect(c.operations, isEmpty);
       expect(c.exams, isEmpty);
-      expect(c.connectionLabel, 'Sesión expirada');
+      expect(c.connectionLabel, 'sessionExpired');
       expect(await store.pending(s.scope), hasLength(1));
       identity.session = patient();
       await c.connect();

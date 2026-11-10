@@ -16,20 +16,17 @@ class ApiFailure implements Exception {
   bool get denied => !storage && (status == 401 || status == 403);
   bool get conflict => status == 409 || status == 428;
   String get message => code == 'EXTRACTION_NOT_READY'
-      ? 'El documento sigue preparando la propuesta. Consulta nuevamente.'
+      ? 'errorExtractionNotReady'
       : switch (status) {
-          0 => 'Sin conexión verificada. Tu operación sigue pendiente.',
-          401 => 'La sesión venció. Vuelve a conectar el perfil sintético.',
-          403 =>
-            storage
-                ? 'Autorización del archivo vencida. Reintenta explícitamente.'
-                : 'No tienes permiso para esta operación.',
-          409 ||
-          428 => 'Conflicto: consulta el estado actual antes de continuar.',
-          422 => 'Revisa los campos y el consentimiento del documento.',
-          429 => 'Límite temporal. Espera antes de reintentar.',
-          502 || 503 => 'Servicio no disponible. No se ha confirmado éxito.',
-          _ => 'No se pudo completar la operación ($status).',
+          0 => 'errorOffline',
+          401 => 'errorSession',
+          403 => storage ? 'errorStorageAuth' : 'errorDenied',
+          404 => 'errorNotFound',
+          409 || 428 => 'errorConflict',
+          422 => 'errorValidation',
+          429 => 'errorRateLimit',
+          502 || 503 => 'errorService',
+          _ => 'errorUnknown',
         };
   @override
   String toString() => 'ApiFailure($status, $code)';

@@ -35,18 +35,14 @@ class MarkerDraft {
       if (text.isEmpty) return null;
       final v = double.tryParse(text);
       if (v == null || !v.isFinite) {
-        throw const FormatException(
-          'Revisa los límites de referencia: usa números finitos.',
-        );
+        throw const FormatException('referenceFinite');
       }
       return v;
     }
 
     final l = number(low), h = number(high);
     if (l != null && h != null && l >= h) {
-      throw const FormatException(
-        'El límite inferior debe ser menor que el superior.',
-      );
+      throw const FormatException('referenceOrder');
     }
     return {
       'low': l,
@@ -71,9 +67,7 @@ class MarkerDraft {
       return null;
     }
     if (value.trim().isEmpty || unit.trim().isEmpty) {
-      throw const FormatException(
-        'Completa valor y unidad de los marcadores editados.',
-      );
+      throw const FormatException('markerFieldsRequired');
     }
     return {
       'op': 'update',
@@ -84,11 +78,13 @@ class MarkerDraft {
     };
   }
 
-  String get summary {
+  String summaryWith(String Function(String) label) {
     final old = MarkerDraft(original, panel, flagged);
     return '$name: ${old.value} ${old.unit} → $value $unit'
-        '${[low, high, referenceUnit, referenceText].join() != [old.low, old.high, old.referenceUnit, old.referenceText].join() ? '\nReferencia original: ${old.low} – ${old.high} ${old.referenceUnit} ${old.referenceText}\nReferencia revisada: $low – $high $referenceUnit $referenceText' : ''}';
+        '${[low, high, referenceUnit, referenceText].join() != [old.low, old.high, old.referenceUnit, old.referenceText].join() ? '\n${label('referenceOriginal')}: ${old.low} – ${old.high} ${old.referenceUnit} ${old.referenceText}\n${label('referenceRevised')}: $low – $high $referenceUnit $referenceText' : ''}';
   }
+
+  String get summary => summaryWith((key) => key);
 }
 
 class ExtractionDraft {
@@ -104,7 +100,7 @@ class ExtractionDraft {
         markers.add(
           MarkerDraft(
             marker,
-            p['panel_name_raw'] as String? ?? 'Panel sin nombre',
+            p['panel_name_raw'] as String? ?? '',
             flags.any(
               (f) => f['code'] == 'low_confidence' && f['marker_code'] == code,
             ),
@@ -134,9 +130,7 @@ class ExtractionDraft {
         if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(entry.value) ||
             parsed == null ||
             parsed.toIso8601String().substring(0, 10) != entry.value) {
-          throw const FormatException(
-            'Revisa las fechas (AAAA-MM-DD). La API no permite vaciar una fecha existente.',
-          );
+          throw const FormatException('reviewDatesInvalid');
         }
         edits[entry.key] = entry.value;
       }
@@ -153,11 +147,12 @@ class ExtractionDraft {
     };
   }
 
-  String get summary => [
-    for (final m in markers) m.summary,
+  String get summary => summaryWith((key) => key);
+  String summaryWith(String Function(String) label) => [
+    for (final m in markers) m.summaryWith(label),
     if (collectionDate != (document['collection_date'] ?? ''))
-      'Fecha de muestra: ${document['collection_date'] ?? 'sin fecha'} → $collectionDate',
+      "${label('collectionDateLabel')}: ${document['collection_date'] ?? label('withoutDate')} → $collectionDate",
     if (reportDate != (document['report_date'] ?? ''))
-      'Fecha de informe: ${document['report_date'] ?? 'sin fecha'} → $reportDate',
+      "${label('reportDateLabel')}: ${document['report_date'] ?? label('withoutDate')} → $reportDate",
   ].join('\n');
 }

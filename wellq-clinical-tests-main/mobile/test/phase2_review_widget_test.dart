@@ -177,9 +177,9 @@ void main() {
         ),
       );
       await t.pumpAndSettle();
-      await t.ensureVisible(find.byKey(const ValueKey('review/glucose/Valor')));
+      await t.ensureVisible(find.byKey(const ValueKey('review/glucose/value')));
       await t.enterText(
-        find.byKey(const ValueKey('review/glucose/Valor')),
+        find.byKey(const ValueKey('review/glucose/value')),
         '91',
       );
       for (final label in [

@@ -20,8 +20,8 @@ void main() {
     'date-only values do not shift days and invalid dates stay explicit',
     () {
       expect(clinicalDate('2026-11-08'), '08/11/2026');
-      expect(clinicalDate('2026-02-31'), 'Fecha no disponible');
-      expect(clinicalDate(''), 'Fecha no disponible');
+      expect(clinicalDate('2026-02-31'), 'dateUnavailable');
+      expect(clinicalDate(''), 'dateUnavailable');
     },
   );
   test(
@@ -54,8 +54,8 @@ void main() {
         ),
         '09/11/2026 09:00:08 (UTC+05:30)',
       );
-      expect(confirmationTime('invalid'), 'Hora no disponible');
-      expect(confirmationTime('2026-02-31T00:00:00'), 'Hora no disponible');
+      expect(confirmationTime('invalid'), 'timeUnavailable');
+      expect(confirmationTime('2026-02-31T00:00:00'), 'timeUnavailable');
     },
   );
   for (final width in [320.0, 360.0, 390.0, 430.0]) {
@@ -163,9 +163,12 @@ void main() {
         final label = section.startsWith('Referencia')
             ? 'Texto de referencia'
             : 'Fecha de informe';
+        final fieldId = section.startsWith('Referencia')
+            ? 'reference-text'
+            : 'report-date';
         final field = find.byKey(
           ValueKey(
-            'review/${section.startsWith('Referencia') ? 'glucose' : 'document'}/$label',
+            'review/${section.startsWith('Referencia') ? 'glucose' : 'document'}/$fieldId',
           ),
         );
         await t.scrollUntilVisible(

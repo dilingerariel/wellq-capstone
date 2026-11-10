@@ -1,12 +1,12 @@
+import '../l10n/localized_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import '../application/language_controller.dart';
+import 'language_selector.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../application/patient_controller.dart';
 import '../domain/models.dart';
-import '../domain/patient_labels.dart';
-import '../domain/patient_dates.dart';
 import 'patient_widgets.dart';
 import 'synthetic_pdf_screen.dart';
 import 'exam_screen.dart';
@@ -14,33 +14,42 @@ import 'patient_dialogs.dart';
 import 'exam_list.dart';
 export 'exam_screen.dart';
 
-// Centralized patient copy; Material widgets already localize to Spanish.
+// Brand is a proper name; patient-facing copy is generated from ARB resources.
 class AppCopy {
   static const brand = 'WellQ';
-  static const warning = 'Solo datos sintéticos • Sin uso clínico';
+  static const warningId = 'syntheticWarning';
 }
 
 class WellQApp extends StatefulWidget {
-  const WellQApp({super.key, required this.controller});
+  const WellQApp({super.key, required this.controller, this.language});
   final PatientController controller;
+  final LanguageController? language;
   @override
   State<WellQApp> createState() => _WellQAppState();
 }
 
 class _WellQAppState extends State<WellQApp> {
   ThemeMode mode = ThemeMode.system;
+  late final LanguageController language =
+      widget.language ?? LanguageController();
+  @override
+  void dispose() {
+    if (widget.language == null) language.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: widget.controller,
+    animation: Listenable.merge([widget.controller, language]),
     builder: (context, _) => MaterialApp(
       key: ValueKey(
         '${widget.controller.session?.scope}/${widget.controller.generation}',
       ),
       debugShowCheckedModeBanner: false,
       title: AppCopy.brand,
-      locale: const Locale('es'),
-      supportedLocales: const [Locale('es')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      locale: language.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff006d68)),
@@ -67,6 +76,7 @@ class _WellQAppState extends State<WellQApp> {
       themeMode: mode,
       home: PatientShell(
         c: widget.controller,
+        language: language,
         toggle: () => setState(
           () =>
               mode = mode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
@@ -77,9 +87,15 @@ class _WellQAppState extends State<WellQApp> {
 }
 
 class PatientShell extends StatefulWidget {
-  const PatientShell({super.key, required this.c, required this.toggle});
+  const PatientShell({
+    super.key,
+    required this.c,
+    required this.toggle,
+    required this.language,
+  });
   final PatientController c;
   final VoidCallback toggle;
+  final LanguageController language;
   @override
   State<PatientShell> createState() => _PatientShellState();
 }
@@ -88,12 +104,12 @@ class _PatientShellState extends State<PatientShell>
     with WidgetsBindingObserver {
   int tab = 0;
   PatientController get c => widget.c;
-  static const labels = [
-    'Inicio',
-    'Exámenes',
-    'Cargar',
-    'Pendientes',
-    'Ajustes',
+  List<String> get labels => [
+    context.l10n.home,
+    context.l10n.exams,
+    context.l10n.upload,
+    context.l10n.pending,
+    context.l10n.settings,
   ];
   static const icons = [
     Icons.space_dashboard_outlined,
@@ -165,11 +181,11 @@ class _PatientShellState extends State<PatientShell>
                   size: 16,
                 ),
                 Text(
-                  c.connectionLabel,
+                  context.l10n.safeMessage(c.connectionLabel),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Text(
-                  'Entorno sintético',
+                  context.l10n.syntheticEnvironment,
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
@@ -177,7 +193,7 @@ class _PatientShellState extends State<PatientShell>
                 if (signed && !c.online)
                   TextButton(
                     onPressed: c.busy ? null : c.reconcile,
-                    child: const Text('Comprobar conexión'),
+                    child: Text(context.l10n.checkConnection),
                   ),
               ],
             ),
@@ -190,7 +206,7 @@ class _PatientShellState extends State<PatientShell>
             child: Semantics(
               liveRegion: true,
               child: Text(
-                c.message!,
+                context.l10n.safeMessage(c.message!),
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
@@ -222,13 +238,13 @@ class _PatientShellState extends State<PatientShell>
             ),
             actions: [
               IconButton(
-                tooltip: 'Cambiar tema',
+                tooltip: context.l10n.changeTheme,
                 onPressed: widget.toggle,
                 icon: const Icon(Icons.brightness_6_outlined),
               ),
               if (signed)
                 IconButton(
-                  tooltip: 'Actualizar lecturas',
+                  tooltip: context.l10n.refreshReadings,
                   onPressed: c.busy ? null : c.refresh,
                   icon: const Icon(Icons.refresh),
                 ),
@@ -270,6 +286,10 @@ class _PatientShellState extends State<PatientShell>
   }
 
   Widget welcome() => page([
+    ExpansionTile(
+      title: Text(context.l10n.settings),
+      children: [LanguageSelector(language: widget.language)],
+    ),
     const SizedBox(height: 12),
     const Align(
       alignment: Alignment.centerLeft,
@@ -279,30 +299,23 @@ class _PatientShellState extends State<PatientShell>
       ),
     ),
     const SizedBox(height: 24),
-    heading(
-      'Tu salud, en orden',
-      'Conecta el perfil de prueba para continuar.',
-    ),
-    const Text(
-      'Tu cola local se conserva. Después de reiniciar necesitas verificar el mismo perfil para abrirla.',
-    ),
+    heading(context.l10n.welcomeTitle, context.l10n.welcomeSubtitle),
+    Text(context.l10n.welcomeQueue),
     const SizedBox(height: 24),
     FilledButton.icon(
       onPressed: c.busy ? null : c.connect,
       icon: const Icon(Icons.login),
-      label: const Text('Conectar paciente sintético'),
+      label: Text(context.l10n.connectSynthetic),
     ),
     const SizedBox(height: 16),
-    const Text(
-      'Requiere WellQ disponible. Solo datos sintéticos; sin uso clínico.',
-    ),
+    Text(context.l10n.welcomeRequires),
   ]);
   Widget dashboard() => page([
-    heading('Hola, paciente', 'Tus documentos, a mano.'),
+    heading(context.l10n.helloPatient, context.l10n.documentsAtHand),
     FilledButton.icon(
       onPressed: () => setState(() => tab = 2),
       icon: const Icon(Icons.add),
-      label: const Text('Cargar documento'),
+      label: Text(context.l10n.uploadDocument),
     ),
     const SizedBox(height: 16),
     Card.outlined(
@@ -310,16 +323,18 @@ class _PatientShellState extends State<PatientShell>
         children: [
           ListTile(
             leading: const Icon(Icons.folder_open_outlined),
-            title: const Text('Mis exámenes'),
-            subtitle: Text('${c.exams.length} en la vista actual'),
+            title: Text(context.l10n.myExams),
+            subtitle: Text(context.l10n.currentViewCount(c.exams.length)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => setState(() => tab = 1),
           ),
           ListTile(
             leading: const Icon(Icons.sync_outlined),
-            title: const Text('Pendientes de envío'),
+            title: Text(context.l10n.pendingUploads),
             subtitle: Text(
-              '${c.operations.where((o) => !o.finished).length} operaciones locales',
+              context.l10n.localOperationsCount(
+                c.operations.where((o) => !o.finished).length,
+              ),
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => setState(() => tab = 3),
@@ -329,20 +344,16 @@ class _PatientShellState extends State<PatientShell>
     ),
     const SizedBox(height: 16),
     Text(
-      'Exámenes recientes en esta vista',
+      context.l10n.recentExams,
       style: Theme.of(context).textTheme.titleMedium,
     ),
     const SizedBox(height: 8),
-    if (c.exams.isEmpty)
-      const Text(
-        'Aún no hay exámenes. Carga el documento sintético para comenzar.',
-      ),
+    if (c.exams.isEmpty) Text(context.l10n.noExamsYet),
     for (final exam in c.exams.take(3)) examCard(exam),
-    if (c.exams.isNotEmpty)
-      const Text('Abre un examen para consultar si requiere tu confirmación.'),
+    if (c.exams.isNotEmpty) Text(context.l10n.openExamHint),
     TextButton(
       onPressed: () => setState(() => tab = 1),
-      child: const Text('Ver mis exámenes'),
+      child: Text(context.l10n.viewMyExams),
     ),
   ]);
   Widget examCard(Exam exam) => Card.outlined(
@@ -352,7 +363,7 @@ class _PatientShellState extends State<PatientShell>
       horizontalTitleGap: 12,
       leading: const Icon(Icons.description_outlined),
       title: Text(
-        exam.title.trim().isEmpty ? 'Examen sin título' : exam.title,
+        exam.title.trim().isEmpty ? context.l10n.untitledExam : exam.title,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
@@ -362,11 +373,15 @@ class _PatientShellState extends State<PatientShell>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${clinicalDate(exam.date)}${testTypeLabel(exam.testType) == null ? '' : ' · ${testTypeLabel(exam.testType)}'}',
+              '${localizedClinicalDate(context, exam.date)}${localizedTestTypeLabel(context, exam.testType) == null ? '' : ' · ${localizedTestTypeLabel(context, exam.testType)}'}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             Text(
-              examLabel(exam.status, review: exam.reviewStatus),
+              localizedExamLabel(
+                context,
+                exam.status,
+                review: exam.reviewStatus,
+              ),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w600,
@@ -381,21 +396,16 @@ class _PatientShellState extends State<PatientShell>
   );
   Widget exams() => ExamList(c: c, card: examCard);
   Widget pending() => page([
-    heading(
-      'Operaciones pendientes',
-      'Tus documentos guardados. Tú decides cuándo enviarlos.',
-    ),
+    heading(context.l10n.pendingOperations, context.l10n.pendingSubtitle),
     OutlinedButton.icon(
       onPressed: c.busy ? null : c.reconcile,
       icon: const Icon(Icons.sync),
-      label: const Text('Consultar estados y conexión'),
+      label: Text(context.l10n.checkStatesConnection),
     ),
     if (c.operations.isEmpty)
-      const Padding(
+      Padding(
         padding: EdgeInsets.all(24),
-        child: Text(
-          'Sin operaciones locales. Puedes preparar un documento aunque se interrumpa la red.',
-        ),
+        child: Text(context.l10n.noLocalOperations),
       ),
     for (final op in c.operations)
       Card(
@@ -406,30 +416,32 @@ class _PatientShellState extends State<PatientShell>
             children: [
               Text(op.title, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              Text(phaseLabel(op.phase)),
-              Text('Intentos de envío: ${op.attempts}'),
+              Text(localizedPhaseLabel(context, op.phase)),
+              Text(context.l10n.attemptCount(op.attempts)),
               Text(
-                pendingHelp(
+                localizedPendingHelp(
+                  context,
                   op.phase,
                   error: op.error,
                   retryScheduled: op.payload['retry_at'] != null,
                 ),
               ),
-              if (op.canDelete)
-                const Text('Documento verificado. La copia local se conserva.'),
+              if (op.canDelete) Text(context.l10n.verifiedLocalCopy),
               const SizedBox(height: 8),
               if (op.canResume)
                 FilledButton(
                   onPressed: c.busy ? null : () => c.resume(op),
                   child: Text(
-                    op.attempts == 0 ? 'Enviar documento' : 'Reintentar envío',
+                    op.attempts == 0
+                        ? context.l10n.sendDocument
+                        : context.l10n.retryUpload,
                   ),
                 ),
               if (op.examId != null)
                 TextButton(
                   onPressed: () =>
                       open(Exam(op.examId!, op.title, '', 'processing')),
-                  child: const Text('Abrir examen y extracción'),
+                  child: Text(context.l10n.openExamExtraction),
                 ),
             ],
           ),
@@ -437,44 +449,44 @@ class _PatientShellState extends State<PatientShell>
       ),
   ]);
   Widget settings() => page([
-    heading('Tu espacio', 'Preferencias de la aplicación.'),
+    heading(context.l10n.yourSpace, context.l10n.appPreferences),
+    LanguageSelector(language: widget.language),
     ListTile(
       leading: const Icon(Icons.palette_outlined),
-      title: const Text('Cambiar tema claro / oscuro'),
+      title: Text(context.l10n.changeAppearance),
       onTap: widget.toggle,
     ),
-    const ListTile(
+    ListTile(
       leading: Icon(Icons.person_outline),
-      title: Text('Sesión de paciente'),
-      subtitle: Text('Perfil sintético de desarrollo. Sin uso clínico.'),
+      title: Text(context.l10n.patientSession),
+      subtitle: Text(context.l10n.syntheticProfile),
     ),
     ListTile(
       leading: const Icon(Icons.sync_outlined),
-      title: const Text('Estado de sincronización'),
+      title: Text(context.l10n.syncStatus),
       subtitle: Text(
-        '${c.operations.where((o) => !o.finished).length} pendientes locales · ${c.connectionLabel}',
+        context.l10n.pendingConnection(
+          c.operations.where((o) => !o.finished).length,
+          context.l10n.safeMessage(c.connectionLabel),
+        ),
       ),
       onTap: () => setState(() => tab = 3),
     ),
-    const ExpansionTile(
-      title: Text('Información de desarrollo'),
+    ExpansionTile(
+      title: Text(context.l10n.developmentInfo),
       leading: Icon(Icons.code_outlined),
       children: [
         ListTile(
-          title: Text('Identidad sintética'),
-          subtitle: Text('Tokens en RAM; firma RS256 solo en el host.'),
+          title: Text(context.l10n.syntheticIdentity),
+          subtitle: Text(context.l10n.tokensRam),
         ),
         ListTile(
-          title: Text('Persistencia de pruebas'),
-          subtitle: Text(
-            'Drift/SQLite sin datos clínicos reales. Solo PDF sintético verificado.',
-          ),
+          title: Text(context.l10n.testPersistence),
+          subtitle: Text(context.l10n.syntheticDrift),
         ),
         ListTile(
-          title: Text('PDF productivo bloqueado'),
-          subtitle: Text(
-            'Sin exportaciones, scores ni proveedores productivos.',
-          ),
+          title: Text(context.l10n.productionPdfBlocked),
+          subtitle: Text(context.l10n.noProductionProviders),
         ),
       ],
     ),
@@ -482,12 +494,12 @@ class _PatientShellState extends State<PatientShell>
       onPressed: () async {
         final yes = await ask(
           context,
-          '¿Cerrar sesión?',
-          'Se borrarán caché y operaciones locales de esta identidad. Los archivos originales, las copias y los documentos del servidor se conservan.',
+          context.l10n.logoutQuestion,
+          context.l10n.logoutWarning,
         );
         if (yes) await c.logout();
       },
-      child: const Text('Cerrar sesión'),
+      child: Text(context.l10n.logout),
     ),
   ]);
 }
@@ -517,7 +529,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (files.isEmpty) return;
       final size = await files.single.length();
       if (size == null || size > 20 * 1024 * 1024) {
-        if (mounted) setState(() => error = 'El archivo excede 20 MiB.');
+        if (mounted) setState(() => error = 'fileTooLarge');
         return;
       }
       final selected = verifiedSyntheticBytes(await files.single.readAsBytes());
@@ -529,17 +541,11 @@ class _UploadScreenState extends State<UploadScreen> {
       }
     } on FormatException {
       if (mounted) {
-        setState(
-          () => error =
-              'Solo se admite una copia íntegra del PDF sintético incluido.',
-        );
+        setState(() => error = 'syntheticIntegrityOnly');
       }
     } catch (_) {
       if (mounted) {
-        setState(
-          () => error =
-              'No se pudo abrir el selector. Puedes usar el PDF sintético incluido.',
-        );
+        setState(() => error = 'pickerUnavailable');
       }
     }
   }
@@ -555,11 +561,12 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      Text('Nuevo documento', style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: 8),
-      const Text(
-        'Usa el PDF sintético de prueba. No selecciones documentos médicos reales.',
+      Text(
+        context.l10n.newDocument,
+        style: Theme.of(context).textTheme.titleMedium,
       ),
+      const SizedBox(height: 8),
+      Text(context.l10n.syntheticPdfOnly),
       const SizedBox(height: 16),
       OutlinedButton.icon(
         onPressed: () async {
@@ -567,15 +574,15 @@ class _UploadScreenState extends State<UploadScreen> {
           if (mounted) setState(() => bytes = data.buffer.asUint8List());
         },
         icon: const Icon(Icons.science_outlined),
-        label: const Text('Usar PDF de prueba'),
+        label: Text(context.l10n.useTestPdf),
       ),
       TextButton.icon(
         onPressed: selectPdf,
         icon: const Icon(Icons.attach_file),
-        label: const Text('Seleccionar PDF de prueba'),
+        label: Text(context.l10n.selectTestPdf),
       ),
       if (bytes != null) ...[
-        Text('PDF seleccionado · ${bytes!.length} bytes'),
+        Text(context.l10n.selectedPdf(bytes!.length)),
         TextButton.icon(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -585,12 +592,12 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
           ),
           icon: const Icon(Icons.picture_as_pdf_outlined),
-          label: const Text('Ver documento'),
+          label: Text(context.l10n.viewDocument),
         ),
       ],
       const SizedBox(height: 16),
       LabeledField(
-        label: 'Título del documento',
+        label: context.l10n.documentTitle,
         child: TextField(
           controller: title,
           maxLength: 200,
@@ -598,34 +605,32 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
       ),
       LabeledField(
-        label: 'Fecha del examen',
+        label: context.l10n.examDate,
         child: TextField(
           controller: date,
           keyboardType: TextInputType.datetime,
-          decoration: const InputDecoration(hintText: 'AAAA-MM-DD'),
+          decoration: InputDecoration(hintText: context.l10n.isoDateHint),
         ),
       ),
-      const Padding(
+      Padding(
         padding: EdgeInsets.only(top: 4),
-        child: Text(
-          'Fecha registrada del examen; puede diferir de la fecha de muestra del PDF.',
-        ),
+        child: Text(context.l10n.examDateHint),
       ),
       CheckboxListTile(
         contentPadding: EdgeInsets.zero,
         value: synthetic,
         onChanged: (v) => setState(() => synthetic = v ?? false),
-        title: const Text('Confirmo que solo uso datos sintéticos.'),
+        title: Text(context.l10n.confirmSyntheticOnly),
       ),
       CheckboxListTile(
         contentPadding: EdgeInsets.zero,
         value: consent,
         onChanged: (v) => setState(() => consent = v ?? false),
-        title: const Text('Autorizo el procesamiento sintético del documento.'),
+        title: Text(context.l10n.authorizeSyntheticProcessing),
       ),
       if (error != null)
         Text(
-          error!,
+          context.l10n.safeMessage(error!),
           style: TextStyle(color: Theme.of(context).colorScheme.error),
         ),
       FilledButton.icon(
@@ -639,16 +644,15 @@ class _UploadScreenState extends State<UploadScreen> {
                   widget.queued();
                 } else {
                   setState(
-                    () => error =
-                        widget.c.message ?? 'No se guardó la operación.',
+                    () => error = widget.c.message ?? 'operationNotSaved',
                   );
                 }
               },
         icon: const Icon(Icons.save_outlined),
-        label: const Text('Guardar en pendientes'),
+        label: Text(context.l10n.savePending),
       ),
       const SizedBox(height: 12),
-      const Text('Guardar no envía el archivo ni elimina el original.'),
+      Text(context.l10n.saveDoesNotSend),
     ],
   );
 }

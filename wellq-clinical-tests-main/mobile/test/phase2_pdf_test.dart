@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdfrx/pdfrx.dart';
+import 'package:wellq_mobile/l10n/localized_copy.dart';
 import 'package:wellq_mobile/presentation/synthetic_pdf_screen.dart';
 
 void main() {
@@ -68,17 +69,13 @@ void main() {
       await t.enterText(find.byType(TextField), 'SYNTHETIC DRAFT');
       await t.tap(find.text('Open PDF'));
       await t.pump();
-      for (
-        var i = 0;
-        i < 80 && find.text('1 página(s)').evaluate().isEmpty;
-        i++
-      ) {
+      for (var i = 0; i < 80 && find.text('1 página').evaluate().isEmpty; i++) {
         await t.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 50)),
         );
         await t.pump(const Duration(milliseconds: 50));
       }
-      expect(find.text('1 página(s)'), findsOneWidget);
+      expect(find.text('1 página'), findsOneWidget);
       final viewer = t.widget<PdfViewer>(find.byType(PdfViewer));
       final zoom = viewer.controller!.currentZoom;
       await t.tap(find.byTooltip('Acercar documento'));
@@ -88,6 +85,60 @@ void main() {
       await t.pumpAndSettle();
       expect(find.text('SYNTHETIC DRAFT'), findsOneWidget);
       expect(find.byType(PdfViewer), findsNothing);
+    },
+  );
+  testWidgets(
+    'PDF controls change language without reloading or changing the document',
+    (t) async {
+      final bytes = (await t.runAsync(
+        () => File('assets/synthetic.pdf').readAsBytes(),
+      ))!;
+      final original = Uint8List.fromList(bytes);
+      final locale = ValueNotifier(const Locale('es'));
+      await t.pumpWidget(
+        ValueListenableBuilder(
+          valueListenable: locale,
+          builder: (context, selected, _) => MaterialApp(
+            locale: selected,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: SyntheticPdfScreen(load: () async => bytes),
+          ),
+        ),
+      );
+      for (var i = 0; i < 80 && find.text('1 página').evaluate().isEmpty; i++) {
+        await t.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 50)),
+        );
+        await t.pump(const Duration(milliseconds: 50));
+      }
+      expect(find.text('1 página'), findsOneWidget);
+      final controller = t
+          .widget<PdfViewer>(find.byType(PdfViewer))
+          .controller!;
+      locale.value = const Locale('en');
+      await t.pumpAndSettle();
+      expect(find.text('1 page'), findsOneWidget);
+      expect(find.text('Synthetic document'), findsOneWidget);
+      expect(find.text('Not for clinical use'), findsOneWidget);
+      expect(
+        t.widget<PdfViewer>(find.byType(PdfViewer)).controller,
+        same(controller),
+      );
+      final zoom = controller.currentZoom;
+      await t.tap(find.byTooltip('Zoom in'));
+      await t.pump(const Duration(milliseconds: 300));
+      expect(controller.currentZoom, greaterThan(zoom));
+      final changedZoom = controller.currentZoom;
+      locale.value = const Locale('es');
+      await t.pumpAndSettle();
+      expect(find.text('1 página'), findsOneWidget);
+      expect(find.byTooltip('Acercar documento'), findsOneWidget);
+      expect(controller.currentZoom, changedZoom);
+      expect(bytes, orderedEquals(original));
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+      locale.dispose();
     },
   );
   testWidgets(

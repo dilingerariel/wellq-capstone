@@ -1,3 +1,6 @@
+import 'application/language_controller.dart';
+import 'data/language_preference.dart';
+import 'l10n/localized_copy.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +16,17 @@ Future<void> main() async {
   const enabled = kDebugMode && bool.fromEnvironment('WELLQ_SYNTHETIC');
   if (!enabled) {
     runApp(
-      const MaterialApp(
+      MaterialApp(
+        locale: const Locale('es'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: SafeArea(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: Text(
-                  'WellQ: modo productivo bloqueado. Solo debug con datos sinteticos.',
+                child: Builder(
+                  builder: (context) => Text(context.l10n.productionBlocked),
                 ),
               ),
             ),
@@ -32,6 +38,10 @@ Future<void> main() async {
   }
   final root = await getApplicationSupportDirectory();
   await root.create(recursive: true);
+  final language = LanguageController(
+    preference: LanguagePreference(File('${root.path}/language.pref')),
+  );
+  await language.load();
   final store = LocalStore(
     NativeDatabase.createInBackground(
       File('${root.path}/wellq_synthetic.sqlite'),
@@ -40,6 +50,7 @@ Future<void> main() async {
   final api = ApiClient();
   runApp(
     WellQApp(
+      language: language,
       controller: PatientController(
         api,
         LoopbackIdentity(api, enabled: enabled),

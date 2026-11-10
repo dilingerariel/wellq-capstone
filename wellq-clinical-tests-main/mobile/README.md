@@ -1,8 +1,78 @@
-# WellQ móvil · fase 3
+# WellQ móvil · fase 3.1
 
 Estado: implementación funcional local con validación Flutter en Ubuntu WSL2;
 sin merge ni publicación. El runner de Windows continúa bloqueado por Control
 de aplicaciones y no se modificaron sus protecciones.
+
+## Fase 3.1: español e inglés
+
+Versión `0.3.0+4`, rama `feature/wellq-flutter-mobile-phase3-i18n`, basada en
+`4eae97396fba26919b5aba6eb17f32e3e1241097`. La aplicación sigue siendo del
+paciente y solo admite datos sintéticos. El profesional utiliza React.
+
+Las traducciones se empaquetan en `lib/l10n/app_es.arb` y `app_en.arb` y generan
+`AppLocalizations` mediante `flutter gen-l10n` y `l10n.yaml`. Los widgets usan
+getters/métodos tipados; Material también recibe sus delegados oficiales. No hay
+servicios de traducción, descarga de textos ni traducción automática de datos.
+Los mensajes de dominio son identificadores estables: `localized_copy.dart`
+los mapea explícitamente a recursos generados y nunca presenta errores internos
+arbitrarios. Las plantillas incluyen parámetros y pluralización ICU.
+
+El selector está en Ajustes y en el panel Ajustes de la bienvenida, incluso sin
+identidad ni conexión. El idioma inicial y el fallback son español. Cambiar a
+English o Español actualiza las pantallas y rutas abiertas sin iniciar sesión,
+reenviar operaciones ni sustituir borradores. El tema visual es independiente.
+La preferencia no sensible se guarda como `es` o `en` en `language.pref`, en el
+directorio privado de soporte de la aplicación, separado de Drift, tokens y
+credenciales. Las escrituras se ordenan; un fallo de escritura se anuncia y una
+preferencia inválida o ilegible usa español. No cambia el esquema SQLite.
+
+Las fechas de presentación usan `intl` (la misma versión del lockfile, ahora
+dependencia directa). Las fechas de calendario no se desplazan de zona horaria;
+las confirmaciones conservan las reglas UTC/offset previas y muestran el offset
+local. Los campos de entrada siguen usando ISO `YYYY-MM-DD`. Valores, decimales,
+unidades, rangos, títulos del paciente, notas y contenido del PDF se conservan
+literalmente. Las claves de campos de revisión usan IDs estables, no etiquetas
+traducidas. Los controles del visor se traducen; el PDF permanece intacto.
+
+Para añadir un idioma: crear su ARB con las mismas claves y parámetros, traducir
+con revisión humana, habilitar su identificador en la preferencia/controlador y
+añadir su opción al selector. Ejecutar `flutter gen-l10n`, revisar que el informe
+`.dart_tool/l10n_untranslated.json` esté vacío y ampliar las pruebas. No editar
+las clases generadas a mano. Francés no está implementado en esta fase.
+
+La validación se realiza en `/home/vegal/wellq-validation/phase31-i18n`, con el SDK
+Linux oficial 3.47.9 existente, suites en serie y `PDFIUM_PATH` explícito. La
+evidencia y los resultados finales están fuera de Git, en
+`C:\Dev\wellq-sync-backups\mobile-phase31-i18n`. Las pruebas cubren reinicio,
+preferencias inválidas, uso sin conexión, aislamiento, cuerpo de confirmación
+inalterado y la matriz es/en × 320/360/390/430 px × 100/145/200 % × claro/oscuro.
+Las pruebas físicas Android se informan separadamente; los diálogos del sistema
+operativo pueden seguir su propio idioma. Las secciones siguientes describen
+las capacidades y antecedentes de las fases anteriores, no resultados nuevos.
+
+Validación Linux de esta fase: 161 pruebas Flutter aprobadas, cero fallidas y tres
+HTTP omitidas por configuración; las tres HTTP Dart aprobaron en ejecución
+explícita contra la integración sintética real (164 casos únicos). También
+aprobaron 25 comprobaciones Dart de dominio, análisis y formato de 39 archivos.
+La matriz de 48 combinaciones incluye navegación, carga, ajustes y detalle con
+campos clínicos, además de comprobaciones de semántica y ausencia de excepciones
+de renderizado. No equivale a una certificación TalkBack ni a pruebas Windows.
+
+APK Android debug arm64 `0.3.0+4` compilado con la firma anterior verificada y
+los 24 fuentes Dart actuales incluidos. El teléfono estaba conectado y
+autorizado en ADB, pero Android rechazó la actualización con
+`INSTALL_FAILED_USER_RESTRICTED: Install canceled by user`. Por ello, esta fase
+no acredita aún pruebas físicas de la interfaz bilingüe: sigue instalada la
+versión `0.2.0+3`. Se verificó un respaldo privado de Drift con cuatro operaciones
+y que SQLite/WAL/SHM permanecen idénticos tras el intento. Falta aceptar la
+instalación y recorrer los flujos en ambos idiomas, sin desinstalar ni borrar
+datos. Esta limitación física no se sustituye por los resultados Linux.
+
+El login productivo autorizado para React/Flutter y las demás integraciones
+productivas siguen pendientes. No se habilitan datos clínicos reales. Los cinco
+Word originales no se releen en esta fase: sus requisitos aplicables fueron
+proporcionados en la solicitud.
 
 Aplicación Flutter de paciente, independiente de React. FastAPI y MongoDB son
 reales; identidad RS256, almacenamiento firmado, antivirus e IA son de pruebas.

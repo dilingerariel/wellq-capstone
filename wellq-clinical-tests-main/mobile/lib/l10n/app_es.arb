@@ -1,0 +1,401 @@
+{
+  "@@locale": "es",
+  "syntheticWarning": "Solo datos sintéticos • Sin uso clínico",
+  "syntheticEnvironment": "Entorno sintético",
+  "syntheticNoClinical": "Entorno sintético · Sin uso clínico",
+  "noClinicalUse": "Sin uso clínico",
+  "productionBlocked": "WellQ: modo productivo bloqueado. Solo debug con datos sinteticos.",
+  "home": "Inicio",
+  "exams": "Exámenes",
+  "upload": "Cargar",
+  "pending": "Pendientes",
+  "settings": "Ajustes",
+  "docsCaption": "Docs.",
+  "queueCaption": "Cola",
+  "changeTheme": "Cambiar tema",
+  "refreshReadings": "Actualizar lecturas",
+  "checkConnection": "Comprobar conexión",
+  "welcomeTitle": "Tu salud, en orden",
+  "welcomeSubtitle": "Conecta el perfil de prueba para continuar.",
+  "welcomeQueue": "Tu cola local se conserva. Después de reiniciar necesitas verificar el mismo perfil para abrirla.",
+  "connectSynthetic": "Conectar paciente sintético",
+  "welcomeRequires": "Requiere WellQ disponible. Solo datos sintéticos; sin uso clínico.",
+  "helloPatient": "Hola, paciente",
+  "documentsAtHand": "Tus documentos, a mano.",
+  "uploadDocument": "Cargar documento",
+  "myExams": "Mis exámenes",
+  "pendingUploads": "Pendientes de envío",
+  "recentExams": "Exámenes recientes en esta vista",
+  "noExamsYet": "Aún no hay exámenes. Carga el documento sintético para comenzar.",
+  "openExamHint": "Abre un examen para consultar si requiere tu confirmación.",
+  "viewMyExams": "Ver mis exámenes",
+  "untitledExam": "Examen sin título",
+  "pendingOperations": "Operaciones pendientes",
+  "pendingSubtitle": "Tus documentos guardados. Tú decides cuándo enviarlos.",
+  "checkStatesConnection": "Consultar estados y conexión",
+  "noLocalOperations": "Sin operaciones locales. Puedes preparar un documento aunque se interrumpa la red.",
+  "verifiedLocalCopy": "Documento verificado. La copia local se conserva.",
+  "sendDocument": "Enviar documento",
+  "retryUpload": "Reintentar envío",
+  "openExamExtraction": "Abrir examen y extracción",
+  "yourSpace": "Tu espacio",
+  "appPreferences": "Preferencias de la aplicación.",
+  "changeAppearance": "Cambiar tema claro / oscuro",
+  "patientSession": "Sesión de paciente",
+  "syntheticProfile": "Perfil sintético de desarrollo. Sin uso clínico.",
+  "syncStatus": "Estado de sincronización",
+  "developmentInfo": "Información de desarrollo",
+  "syntheticIdentity": "Identidad sintética",
+  "tokensRam": "Tokens en RAM; firma RS256 solo en el host.",
+  "testPersistence": "Persistencia de pruebas",
+  "syntheticDrift": "Drift/SQLite sin datos clínicos reales. Solo PDF sintético verificado.",
+  "productionPdfBlocked": "PDF productivo bloqueado",
+  "noProductionProviders": "Sin exportaciones, scores ni proveedores productivos.",
+  "logoutQuestion": "¿Cerrar sesión?",
+  "logoutWarning": "Se borrarán caché y operaciones locales de esta identidad. Los archivos originales, las copias y los documentos del servidor se conservan.",
+  "logout": "Cerrar sesión",
+  "newDocument": "Nuevo documento",
+  "syntheticPdfOnly": "Usa el PDF sintético de prueba. No selecciones documentos médicos reales.",
+  "useTestPdf": "Usar PDF de prueba",
+  "selectTestPdf": "Seleccionar PDF de prueba",
+  "viewDocument": "Ver documento",
+  "documentTitle": "Título del documento",
+  "examDate": "Fecha del examen",
+  "isoDateHint": "AAAA-MM-DD",
+  "examDateHint": "Fecha registrada del examen; puede diferir de la fecha de muestra del PDF.",
+  "confirmSyntheticOnly": "Confirmo que solo uso datos sintéticos.",
+  "authorizeSyntheticProcessing": "Autorizo el procesamiento sintético del documento.",
+  "savePending": "Guardar en pendientes",
+  "saveDoesNotSend": "Guardar no envía el archivo ni elimina el original.",
+  "fileTooLarge": "El archivo excede 20 MiB.",
+  "syntheticIntegrityOnly": "Solo se admite una copia íntegra del PDF sintético incluido.",
+  "pickerUnavailable": "No se pudo abrir el selector. Puedes usar el PDF sintético incluido.",
+  "operationNotSaved": "No se guardó la operación.",
+  "back": "Volver",
+  "confirmAction": "Confirmar acción",
+  "documentsStatusSubtitle": "Tus documentos y su estado actual.",
+  "lastAvailableReading": "Última lectura disponible. No confirma cambios del servidor.",
+  "searchScope": "Búsqueda y orden: documentos cargados. Estado y tipo: servidor.",
+  "searchLoadedTitles": "Buscar en títulos cargados",
+  "clearSearch": "Limpiar búsqueda",
+  "filterSort": "Filtrar y ordenar",
+  "serverStatus": "Estado en el servidor",
+  "all": "Todos",
+  "serverType": "Tipo en el servidor",
+  "removeServerFilters": "Quitar filtros del servidor",
+  "loadedDocumentOrder": "Orden de documentos cargados",
+  "newestFirst": "Más recientes",
+  "oldestFirst": "Más antiguos",
+  "allStatuses": "todos los estados",
+  "allTypes": "todos los tipos",
+  "noMatches": "Sin coincidencias entre los documentos cargados. Puedes cargar más páginas o cambiar la búsqueda.",
+  "noReading": "No hay una lectura disponible. Verifica la conexión y consulta nuevamente.",
+  "noFilteredDocuments": "No hay documentos para estos filtros. Puedes quitarlos o actualizar.",
+  "noExamsView": "Sin exámenes en esta vista. Actualiza o carga el PDF sintético.",
+  "morePagesHint": "Hay más páginas del servidor; aún no se buscaron sus títulos.",
+  "loadMore": "Cargar más",
+  "refreshList": "Actualizar listado",
+  "examDetail": "Detalle del examen",
+  "reviewCompleted": "completada",
+  "reviewPendingUnknown": "pendiente o no informada",
+  "stillProcessing": "El documento aún no termina de procesarse. Consulta el estado; no necesitas cargarlo otra vez.",
+  "documentCannotConfirm": "Este documento no está disponible para confirmar. Se conserva la copia local; consulta el estado antes de preparar otro.",
+  "noVerifiedCopy": "No hay una copia sintética verificada en este dispositivo. No se descargan documentos arbitrarios.",
+  "extractionUnavailable": "La extracción aún no está disponible. Consulta nuevamente.",
+  "examUnavailable": "El examen no está disponible o ya no existe en esta vista.",
+  "proposalReadFailed": "No se pudo leer la propuesta. Consulta nuevamente.",
+  "discardQuestion": "¿Descartar propuesta?",
+  "reviewConfirmation": "Revisar confirmación",
+  "discardWarning": "Se descartará esta propuesta. No se elimina el documento.",
+  "lowConfidenceHint": "Baja confianza: coteja este marcador con el documento original.",
+  "valueLabel": "Valor",
+  "unitLabel": "Unidad",
+  "documentReference": "Referencia del documento",
+  "lowerLimit": "Límite inferior",
+  "upperLimit": "Límite superior",
+  "referenceUnit": "Unidad de referencia",
+  "referenceText": "Texto de referencia",
+  "compareProposal": "Coteja la propuesta con el PDF sintético original. No es un diagnóstico.",
+  "confirmationReceived": "La confirmación ya fue recibida. Puede faltar la revisión profesional.",
+  "noNewConfirmation": "Consulta el estado del examen. No se requiere una nueva confirmación.",
+  "documentDates": "Fechas del documento",
+  "collectionDateLabel": "Fecha de muestra",
+  "reportDateLabel": "Fecha de informe",
+  "identityAcknowledgement": "He comprobado que este documento me corresponde.",
+  "valuesAcknowledgement": "He cotejado valores, unidades y campos de baja confianza.",
+  "reviewConfirm": "Revisar y confirmar",
+  "retrySameSubmission": "Reintentar el mismo envío",
+  "discardProposal": "Descartar propuesta",
+  "serverDeterminesStatus": "Estado determinado por FastAPI. No equivale a validación profesional.",
+  "checkCurrentQuestion": "¿Consultar estado actual?",
+  "checkCurrentWarning": "Se descartará el borrador y se consultará la propuesta vigente. No se reenviará ninguna mutación.",
+  "checkCurrentProposal": "Consultar propuesta actual",
+  "syntheticDocument": "Documento sintético",
+  "zoomOut": "Alejar documento",
+  "zoomIn": "Acercar documento",
+  "pdfOpenFailed": "No se puede abrir el documento: falta el archivo o su integridad no coincide.",
+  "pdfRenderFailed": "No se pudo representar el PDF sintético.",
+  "statusReviewed": "Con revisión profesional",
+  "statusReady": "Pendiente de revisión profesional",
+  "statusValidated": "Revisión profesional completada",
+  "statusRejected": "Revisión no aprobada",
+  "statusProcessing": "Procesando documento",
+  "statusPendingUpload": "Carga pendiente",
+  "statusReceived": "Documento recibido",
+  "statusDeleted": "Examen eliminado",
+  "statusFailed": "No se pudo procesar",
+  "statusUnknown": "Estado por consultar",
+  "typeBlood": "Examen de sangre",
+  "typeUrine": "Examen de orina",
+  "typeImaging": "Imagen médica",
+  "typePathology": "Anatomía patológica",
+  "typeOther": "Otro documento",
+  "extractionAwaiting": "Esperando tu confirmación",
+  "extractionConfirmed": "Datos confirmados",
+  "extractionPreparing": "Preparando propuesta",
+  "extractionFailed": "No se pudo extraer la información",
+  "extractionUnreadable": "Documento ilegible",
+  "extractionDiscarded": "Propuesta descartada",
+  "extractionRejected": "Propuesta no aprobada",
+  "extractionNotApplicable": "Sin propuesta de resultados",
+  "uploadQueued": "Pendiente de envío",
+  "uploadBytesPending": "Archivo pendiente",
+  "uploadCompletePending": "Recepción pendiente",
+  "uploadVerified": "Documento verificado",
+  "uploadRejected": "Documento rechazado",
+  "uploadFailed": "Procesamiento fallido",
+  "uploadConflict": "Requiere revisar el estado actual",
+  "pendingConflictHelp": "Consulta estados antes de continuar. No prepares otra carga para resolver este conflicto.",
+  "pendingProcessingHelp": "El servidor recibió la carga. Consulta estados; no necesitas enviarla otra vez.",
+  "pendingRejectedHelp": "El servidor rechazó el documento. La copia local se conserva; no se reenvía automáticamente.",
+  "pendingFailedHelp": "El procesamiento falló. Consulta el detalle antes de preparar otra operación.",
+  "pendingVerifiedHelp": "La recepción fue verificada; abre el examen para consultar su extracción y confirmación.",
+  "pendingHashHelp": "La copia no coincide con su hash. No se enviará; conserva el original y revisa la operación.",
+  "pendingRetryHelp": "Espera el intervalo indicado por el servidor antes de reintentar explícitamente.",
+  "pendingInterruptedHelp": "El último intento no terminó. Consulta estados y luego reintenta explícitamente; se conserva la identidad de la carga.",
+  "pendingLocalHelp": "Guardado solo en este dispositivo. El envío requiere tu acción explícita.",
+  "errorExtractionNotReady": "El documento sigue preparando la propuesta. Consulta nuevamente.",
+  "errorOffline": "Sin conexión verificada. Tu operación sigue pendiente.",
+  "errorSession": "La sesión venció. Vuelve a conectar el perfil sintético.",
+  "errorStorageAuth": "Autorización del archivo vencida. Reintenta explícitamente.",
+  "errorDenied": "No tienes permiso para esta operación.",
+  "errorConflict": "Conflicto: consulta el estado actual antes de continuar.",
+  "errorValidation": "Revisa los campos y el consentimiento del documento.",
+  "errorRateLimit": "Límite temporal. Espera antes de reintentar.",
+  "errorService": "Servicio no disponible. No se ha confirmado éxito.",
+  "errorUnknown": "No se pudo completar la operación.",
+  "operationInterrupted": "Operación interrumpida. Consulta el estado antes de reintentar.",
+  "sessionExpired": "Sesión expirada",
+  "accessUnauthorized": "Acceso no autorizado",
+  "verifying": "Verificando",
+  "connected": "Conectado",
+  "connectionUnverified": "Sin conexión verificada",
+  "dateUnavailable": "Fecha no disponible",
+  "timeUnavailable": "Hora no disponible",
+  "referenceFinite": "Revisa los límites de referencia: usa números finitos.",
+  "referenceOrder": "El límite inferior debe ser menor que el superior.",
+  "markerFieldsRequired": "Completa valor y unidad de los marcadores editados.",
+  "reviewDatesInvalid": "Revisa las fechas (AAAA-MM-DD). La API no permite vaciar una fecha existente.",
+  "referenceOriginal": "Referencia original",
+  "referenceRevised": "Referencia revisada",
+  "withoutDate": "sin fecha",
+  "panelUnnamed": "Panel sin nombre",
+  "language": "Idioma",
+  "languageHint": "Se guarda en este dispositivo, incluso sin conexión.",
+  "spanish": "Español",
+  "english": "English",
+  "languageSaveFailed": "No se pudo guardar el idioma. Inténtalo nuevamente.",
+  "loadingDocument": "Cargando documento",
+  "lightTheme": "Tema claro",
+  "darkTheme": "Tema oscuro",
+  "currentViewCount": "{count, plural, one{{count} en la vista actual} other{{count} en la vista actual}}",
+  "@currentViewCount": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "localOperationsCount": "{count, plural, one{{count} operación local} other{{count} operaciones locales}}",
+  "@localOperationsCount": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "attemptCount": "Intentos de envío: {count}",
+  "@attemptCount": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pendingConnection": "{count} pendientes locales · {connection}",
+  "@pendingConnection": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "connection": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedPdf": "PDF seleccionado · {count} bytes",
+  "@selectedPdf": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "serverFilter": "Filtro del servidor: {status} · {type}",
+  "@serverFilter": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "resultCount": "{visible} de {loaded} documentos cargados en esta consulta.",
+  "@resultCount": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "visible": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "loaded": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "referenceDescription": "Referencia del documento: {low} – {high} {unit} {text}",
+  "@referenceDescription": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalReview": "Revisión profesional: {status}",
+  "@professionalReview": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "fileName": "Archivo: {name}",
+  "@fileName": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileSize": "Tamaño: {count} bytes",
+  "@fileSize": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "patientNotes": "Tus notas: {notes}",
+  "@patientNotes": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "currentServerState": "Estado actual del servidor: {status}. Revisa la propuesta actual antes de continuar.",
+  "@currentServerState": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "sampleDate": "Fecha de muestra: {date}",
+  "@sampleDate": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reportDate": "Fecha de informe: {date}",
+  "@reportDate": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmedOn": "Confirmado: {date}",
+  "@confirmedOn": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pagesCount": "{count, plural, one{{count} página} other{{count} páginas}}",
+  "@pagesCount": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "submissionSummary": "{summary}\n\nOriginal → revisión. Confirmación humana, sin validación clínica.",
+  "@submissionSummary": {
+    "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "errorNotFound": "Documento no encontrado."
+}
