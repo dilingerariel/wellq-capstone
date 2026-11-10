@@ -18,19 +18,18 @@ import sys
 import tarfile
 import threading
 import time
+import urllib.error
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
-import urllib.request
-import urllib.error
 
 import jwt
 from cryptography.hazmat.primitives import serialization
-
 from live_api import (
     BACK,
     FRONT,
-    RUNTIME,
     PIPE_RELAY,
+    RUNTIME,
     command,
     container_python,
     inspect,
@@ -41,6 +40,21 @@ CONTROL = LOCAL / "control.json"
 FIXTURE = LOCAL / "fixture.json"
 WEB = "http://127.0.0.1:5178"
 BRIDGE = "http://127.0.0.1:8765"
+# Keep the historical five-service Start/Stop separate from bridge recovery.
+LOCAL_SERVICES = (
+    ("mongo-int-1", "mongo-int", "1"),
+    ("objects-int-1", "objects-int", "1"),
+    ("api-int-1", "api-int", "1"),
+    ("worker-int-1", "worker-int", "1"),
+    ("worker-int-2", "worker-int", "2"),
+)
+BRIDGE_SERVICES = LOCAL_SERVICES + (("clamav-int-1", "clamav-int", "1"),)
+# Verified official image currently used by this isolated integration. A new
+# antivirus image requires an explicit review, not automatic tag acceptance.
+CLAMAV_IMAGE = "clamav/clamav:stable"
+CLAMAV_IMAGE_ID = (
+    "sha256:6d87c712e3391e13c1ba6e05dfb074d4b1ddb5a6834b23bb9da990d2a4ef042a"
+)
 # A Windows proxy setting must never receive the private loopback control nonce.
 LOCAL_HTTP = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 GRANTS = [
@@ -75,29 +89,40 @@ def save(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
-def owned(check_source=True):
+def owned(check_source=True, bridge_only=False):
     state = load(RUNTIME / "state.json")
     project = state["project"]
     assert (
         project == "wellq-int-" + state["run"]
         and state["db"] == "wellq_integration_" + state["run"]
     )
-    names = [
-        project + "-" + service
-        for service in (
-            "mongo-int-1",
-            "objects-int-1",
-            "api-int-1",
-            "worker-int-1",
-            "worker-int-2",
-        )
-    ]
+    identities = BRIDGE_SERVICES if bridge_only else LOCAL_SERVICES
+    names = [project + "-" + suffix for suffix, _, _ in identities]
     details = [inspect(name) for name in names]
-    for c in details:
+    for (suffix, service, number), c in zip(identities, details):
+        assert c["Name"].lstrip("/") == project + "-" + suffix
         assert c["Config"]["Labels"]["com.docker.compose.project"] == project
+        assert c["Config"]["Labels"]["com.docker.compose.service"] == service
+        assert c["Config"]["Labels"]["com.docker.compose.container-number"] == number
         assert not c["HostConfig"].get("PortBindings")
         assert set(c["NetworkSettings"]["Networks"]) == {project + "-net"}
-        if c["Config"]["Labels"]["com.docker.compose.service"] != "mongo-int":
+        if bridge_only:
+            assert c["State"]["Running"], "Bridge recovery never starts services"
+            if service in ("api-int", "clamav-int"):
+                assert c["State"].get("Health", {}).get("Status") == "healthy"
+        if service == "clamav-int":
+            assert c["Config"]["Image"] == CLAMAV_IMAGE
+            assert c["Image"] == CLAMAV_IMAGE_ID
+            assert not c["HostConfig"].get("Privileged")
+            assert len(c["Mounts"]) == 1
+            mount = c["Mounts"][0]
+            assert (
+                mount["Type"] == "volume"
+                and mount["Name"] == project + "-clam-signatures"
+                and mount["Destination"] == "/var/lib/clamav"
+                and mount["RW"]
+            )
+        elif service != "mongo-int":
             env = dict(item.split("=", 1) for item in c["Config"]["Env"])
             assert env["ENVIRONMENT"] == "test" and env["MONGODB_DB"] == state["db"]
             assert (
@@ -108,6 +133,9 @@ def owned(check_source=True):
                 env["JWT_ISSUER"] == "https://identity.wellq-integration.invalid"
                 and env["JWT_AUDIENCE"] == "wellq-integration-only"
             )
+            if bridge_only:
+                assert env["CLAMAV_HOST"] == "clamav-int"
+                assert env.get("CLAMAV_PORT", "3310") == "3310"
         for mount in c["Mounts"]:
             if mount["Type"] == "volume" and mount["Destination"] != "/data/configdb":
                 assert mount["Name"].startswith(project + "-")
@@ -122,11 +150,16 @@ def owned(check_source=True):
         if mount["Type"] == "volume"
     }
     ids = command(["docker", "ps", "-q"]).decode().split()
+    seen = set()
+    expected_ids = {c["Name"].lstrip("/"): c["Id"] for c in details}
     for c in json.loads(command(["docker", "inspect", *ids])) if ids else []:
         if c["Name"].lstrip("/") in names:
+            assert c["Id"] == expected_ids[c["Name"].lstrip("/")]
+            seen.add(c["Name"].lstrip("/"))
             continue
         if (
-            (c["Config"].get("Labels") or {}).get("com.docker.compose.project")
+            bridge_only
+            or (c["Config"].get("Labels") or {}).get("com.docker.compose.project")
             == project
             or project + "-net" in c["NetworkSettings"]["Networks"]
             or any(mount.get("Name") in volumes for mount in c["Mounts"])
@@ -134,6 +167,8 @@ def owned(check_source=True):
             raise RuntimeError(
                 "Another integration task is active; finish it before local Start/Stop"
             )
+    if bridge_only:
+        assert seen == set(names), "Bridge service state changed during inspection"
     # Refuse stale product code without rebuilding or replacing historical containers.
     if not check_source:
         return state, names
@@ -165,6 +200,8 @@ def status():
         with LOCAL_HTTP.open(request, timeout=3) as response:
             result = json.load(response)
         if result["run"] == record["run"]:
+            if record.get("mode") == "bridge-only":
+                result["mode"] = "bridge-only"
             return result
     except (OSError, ValueError, KeyError):
         pass
@@ -181,12 +218,6 @@ class LocalHost:
         )
         self.ready = False
         self.lock = threading.Lock()
-        self.relay = subprocess.Popen(
-            ["docker", "exec", "-i", names[2], "python", "-B", "-u", "-c", PIPE_RELAY],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-        )
         self.key = serialization.load_pem_private_key(
             (RUNTIME / "private.pem").read_bytes(), None
         )
@@ -196,6 +227,13 @@ class LocalHost:
         assert (
             self.key.key_size >= 2048
             and public.strip() == (RUNTIME / "public.pem").read_bytes().strip()
+        )
+        # Reject invalid identity material before creating a transport process.
+        self.relay = subprocess.Popen(
+            ["docker", "exec", "-i", names[2], "python", "-B", "-u", "-c", PIPE_RELAY],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
         )
         self.frontend = None
 
@@ -585,6 +623,100 @@ def services():
     return names
 
 
+def prepare_bridge_only():
+    """Read-only preflight. Never create a fixture or start/seed dependencies."""
+    if not __debug__:
+        raise RuntimeError("Bridge safety guards require Python assertions enabled")
+    if status() is not None:
+        raise RuntimeError("An existing local host is active; it will not be replaced")
+    _, names = owned(bridge_only=True)
+    if not FIXTURE.is_file():
+        raise RuntimeError("Existing synthetic fixture required; recovery never seeds")
+    fixture = load(FIXTURE)
+    for field, prefix in (
+        ("tenant", "synthetic-local-"),
+        ("patient", "synthetic-local-patient-"),
+        ("clinician", "synthetic-local-clinician-"),
+    ):
+        value = fixture.get(field)
+        if (
+            not isinstance(value, str)
+            or not value.startswith(prefix)
+            or value == prefix
+        ):
+            raise RuntimeError("Existing synthetic identity is invalid")
+    ready = container_python(
+        names[2],
+        "import json,urllib.request;print(json.dumps({'ready':urllib.request.urlopen('http://127.0.0.1:8000/ready',timeout=2).status==200}))",
+    )
+    if ready != {"ready": True}:
+        raise RuntimeError("Existing API is not ready; recovery will not change it")
+    return names, fixture
+
+
+def serve_bridge_only():
+    """Foreground bridge only: no Docker lifecycle commands, seed or Vite."""
+    names, fixture = prepare_bridge_only()
+    # Reserve the exact loopback port before creating our relay. An occupied
+    # port is an error; no process is terminated or replaced to acquire it.
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 8765), BaseHTTPRequestHandler, bind_and_activate=False
+    )
+    host = None
+    try:
+        if os.name == "nt":
+            # Winsock SO_REUSEADDR does not guarantee an exclusive listener.
+            server.allow_reuse_address = False
+            server.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        server.server_bind()
+        host = LocalHost(names, fixture)
+        result = host.forward("/ready")
+        if result["status"] != 200:
+            raise RuntimeError("Existing API became unavailable before bridge startup")
+        host.ready = True
+        server.RequestHandlerClass = handler(host)
+        server.server_activate()
+        save(
+            CONTROL,
+            {
+                "control": host.control,
+                "run": host.run,
+                "pid": os.getpid(),
+                "mode": "bridge-only",
+            },
+        )
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+        if host is not None:
+            # EOF ends our existing pipe relay. This never stops a container.
+            host.relay.stdin.close()
+            try:
+                host.relay.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                host.relay.terminate()
+                host.relay.wait(timeout=5)
+
+
+def stop_bridge_only():
+    """Stop only a matching bridge-only host via its private control channel."""
+    current = status()
+    if current is None:
+        raise RuntimeError("No matching local bridge is active")
+    record = load(CONTROL)
+    if record.get("mode") != "bridge-only" or record.get("run") != current["run"]:
+        raise RuntimeError("Existing host is not this bridge-only operation")
+    request = urllib.request.Request(
+        BRIDGE + "/__wellq_local/stop",
+        data=b"{}",
+        headers={"X-WellQ-Control": record["control"]},
+    )
+    with LOCAL_HTTP.open(request, timeout=3):
+        pass
+
+
 def serve():
     names = services()
     if FIXTURE.is_file():
@@ -643,13 +775,35 @@ def main():
         )
     action = argparse.ArgumentParser()
     action.add_argument(
-        "action", choices=["start", "serve", "stop", "status", "logs", "test-services"]
+        "action",
+        choices=[
+            "start",
+            "serve",
+            "stop",
+            "status",
+            "logs",
+            "test-services",
+            "bridge-only",
+            "bridge-stop",
+        ],
     )
     args = action.parse_args()
+    if args.action == "bridge-only":
+        serve_bridge_only()
+        return
+    if args.action == "bridge-stop":
+        stop_bridge_only()
+        return
     if args.action == "serve":
         serve()
         return
     current = status()
+    if (
+        args.action in ("start", "stop")
+        and current
+        and current.get("mode") == "bridge-only"
+    ):
+        raise RuntimeError("Use bridge-stop before local Start/Stop")
     if args.action == "test-services":
         if current:
             raise RuntimeError(
