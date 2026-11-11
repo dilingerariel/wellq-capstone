@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     def validate_identity(self):
         if not all((self.JWT_PUBLIC_KEY, self.JWT_ISSUER, self.JWT_AUDIENCE)):
             raise RuntimeError("Trusted identity authority is not configured")
+        if self.ENVIRONMENT == "production" and (
+            self.JWT_ISSUER.strip().rstrip("/").lower()
+            == "https://identity.wellq-integration.invalid"
+            or self.JWT_AUDIENCE.strip() == "wellq-integration-only"
+        ):
+            raise RuntimeError("Synthetic integration identity is forbidden in production")
         if "BEGIN PUBLIC KEY" not in self.JWT_PUBLIC_KEY:
             raise RuntimeError("RSA public verification key required")
         from cryptography.hazmat.primitives.serialization import load_pem_public_key
