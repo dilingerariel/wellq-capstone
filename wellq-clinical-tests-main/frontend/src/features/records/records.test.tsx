@@ -18,6 +18,7 @@ import {
 import { ReportExportController } from './export-controller'
 import { constantRange, ordered, verifiedRange } from './TrendChart'
 import { ScorePanel } from './ScorePanel'
+import es from '../../i18n/es.json'
 
 function setup() {
   let exports = 0
@@ -94,9 +95,15 @@ it('shows authorized zero scores and suppresses unapproved values without invent
   const { unmount } = render(<ScorePanel data={scoresSchema.parse(syntheticScores())} />)
   expect(screen.getAllByText('0').length).toBeGreaterThan(0)
   expect(screen.getAllByText('—').length).toBeGreaterThan(0)
+  expect(screen.getAllByText(es.recordsPublished).length).toBeGreaterThan(0)
+  expect(screen.getByText(es.recordsServerScore)).toBeInTheDocument()
   unmount()
   render(<ScorePanel data={scoresSchema.parse(syntheticScores(false))} />)
   expect(screen.queryAllByText('0')).toHaveLength(0)
+  expect(screen.getByRole('status')).toHaveTextContent(es.recordsUnapproved)
+  expect(screen.queryByText(es.recordsPublished)).not.toBeInTheDocument()
+  expect(screen.queryByText(es.recordsServerScore)).not.toBeInTheDocument()
+  expect(screen.getAllByText(es.recordsNoScore).length).toBeGreaterThan(0)
 })
 it('requires a matching approved snapshot before displaying a report score, including zero', () => {
   const scores = scoresSchema.parse(syntheticScores())

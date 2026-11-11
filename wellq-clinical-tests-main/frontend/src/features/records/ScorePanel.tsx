@@ -20,7 +20,11 @@ export function ScorePanel({ data }: { data: Scores }) {
         <article className="metric">
           <span>{t('recordsLabIndex')}</span>
           <strong>{s.catalog_clinically_approved ? number(s.lab_index) : '—'}</strong>
-          <span>{s.lab_index == null ? t('recordsNoScore') : t('recordsServerScore')}</span>
+          <span>
+            {s.catalog_clinically_approved && s.lab_index != null
+              ? t('recordsServerScore')
+              : t('recordsNoScore')}
+          </span>
         </article>
         {Object.entries(s.pillars).map(([key, p]) => (
           <article className="metric" key={key}>
@@ -36,7 +40,11 @@ export function ScorePanel({ data }: { data: Scores }) {
               {t('recordsConfidence_' + p.confidence, { defaultValue: t('recordsUnknown') })}
             </span>
             <span>
-              {p.status === 'published' ? t('recordsPublished') : t('recordsInsufficient')}
+              {!s.catalog_clinically_approved
+                ? t('recordsNoScore')
+                : p.status === 'published'
+                  ? t('recordsPublished')
+                  : t('recordsInsufficient')}
             </span>
           </article>
         ))}
