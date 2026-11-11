@@ -70,7 +70,7 @@ export function SessionGate() {
         {runtime.canSignIn && (
           <button className="button primary" disabled={disabled} onClick={runtime.signIn}>
             <LogIn size={17} aria-hidden="true" />
-            {t(runtime.loading ? 'loadingSession' : patientEntry ? 'signIn' : 'accessEnter')}
+            {t(runtime.loading ? 'loadingSession' : 'signIn')}
           </button>
         )}
         <button className="button secondary" disabled={disabled} onClick={runtime.reloadIdentity}>

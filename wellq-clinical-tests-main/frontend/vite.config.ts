@@ -18,7 +18,14 @@ export default defineConfig({
   plugins: [
     react(),
     shellPwa(),
-    ...(process.env.WELLQ_LOCAL_INTEGRATION === '1' ? [localIdentity()] : []),
+    ...(process.env.WELLQ_LOCAL_INTEGRATION === '1'
+      ? [
+          localIdentity({
+            professionalLogin: process.env.WELLQ_LOCAL_PROFESSIONAL_LOGIN === '1',
+            apiTarget: proxyTarget,
+          }),
+        ]
+      : []),
   ],
   server: {
     port: 5173,

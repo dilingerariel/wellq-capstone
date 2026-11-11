@@ -47,7 +47,7 @@ describe('delegated access presentation', () => {
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     const user = userEvent.setup()
     await user.tab()
-    expect(screen.getByRole('button', { name: text.accessEnter })).toHaveFocus()
+    expect(screen.getByRole('button', { name: text.signIn })).toHaveFocus()
     await user.keyboard('{Enter}')
     expect(state.signIn).toHaveBeenCalledOnce()
     expect(state.reloadIdentity).not.toHaveBeenCalled()
@@ -56,7 +56,7 @@ describe('delegated access presentation', () => {
     state.canSignIn = false
     state.sessionPhase = 'unavailable'
     gate()
-    expect(screen.queryByRole('button', { name: es.accessEnter })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: es.signIn })).not.toBeInTheDocument()
     expect(screen.getByText(es.accessProviderHelp)).toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent(es.session_unavailable)
   })
