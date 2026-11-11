@@ -318,31 +318,156 @@ class _PatientShellState extends State<PatientShell>
     );
   }
 
-  Widget welcome() => page([
-    ExpansionTile(
-      title: Text(context.l10n.settings),
-      children: [LanguageSelector(language: widget.language)],
-    ),
-    const SizedBox(height: 12),
-    const Align(
-      alignment: Alignment.centerLeft,
-      child: CircleAvatar(
-        radius: 34,
-        child: Icon(Icons.health_and_safety_outlined, size: 38),
+  Widget welcome() {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l = context.l10n;
+    return page([
+      Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Card.outlined(
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+                side: BorderSide(color: colors.outlineVariant),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: colors.primaryContainer,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              Icons.monitor_heart_outlined,
+                              size: 28,
+                              color: colors.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          AppCopy.brand,
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l.patientSession,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        l.welcomeTitle,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      l.welcomeSubtitle,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: colors.secondaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        l.syntheticWarning,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colors.onSecondaryContainer,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: c.busy ? null : c.connect,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 52),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                      icon: const Icon(Icons.login, size: 20),
+                      label: Text(
+                        l.connectSynthetic,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l.welcomeRequires,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 20,
+                          color: colors.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            l.welcomeQueue,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: Text(l.settings),
+                      children: [LanguageSelector(language: widget.language)],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
-    ),
-    const SizedBox(height: 24),
-    heading(context.l10n.welcomeTitle, context.l10n.welcomeSubtitle),
-    Text(context.l10n.welcomeQueue),
-    const SizedBox(height: 24),
-    FilledButton.icon(
-      onPressed: c.busy ? null : c.connect,
-      icon: const Icon(Icons.login),
-      label: Text(context.l10n.connectSynthetic),
-    ),
-    const SizedBox(height: 16),
-    Text(context.l10n.welcomeRequires),
-  ]);
+    ]);
+  }
+
   Widget dashboard() => page([
     heading(context.l10n.helloPatient, context.l10n.documentsAtHand),
     FilledButton.icon(
