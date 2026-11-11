@@ -469,14 +469,44 @@ class _PatientShellState extends State<PatientShell>
   }
 
   Widget dashboard() => page([
-    heading(context.l10n.helloPatient, context.l10n.documentsAtHand),
-    FilledButton.icon(
-      onPressed: () => setState(() => tab = 2),
-      icon: const Icon(Icons.add),
-      label: Text(context.l10n.uploadDocument),
+    Card.filled(
+      margin: EdgeInsets.zero,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Semantics(
+              header: true,
+              child: heading(
+                context.l10n.helloPatient,
+                context.l10n.documentsAtHand,
+              ),
+            ),
+            const SizedBox(height: 4),
+            FilledButton.icon(
+              onPressed: () => setState(() => tab = 2),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(0, 52),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+              icon: const Icon(Icons.upload_file_outlined),
+              label: Text(
+                context.l10n.uploadDocument,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
     const SizedBox(height: 16),
     Card.outlined(
+      margin: EdgeInsets.zero,
       child: Column(
         children: [
           ListTile(
@@ -486,6 +516,7 @@ class _PatientShellState extends State<PatientShell>
             trailing: const Icon(Icons.chevron_right),
             onTap: () => setState(() => tab = 1),
           ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.sync_outlined),
             title: Text(context.l10n.pendingUploads),
@@ -500,13 +531,36 @@ class _PatientShellState extends State<PatientShell>
         ],
       ),
     ),
-    const SizedBox(height: 16),
-    Text(
-      context.l10n.recentExams,
-      style: Theme.of(context).textTheme.titleMedium,
+    const SizedBox(height: 24),
+    Semantics(
+      header: true,
+      child: Text(
+        context.l10n.recentExams,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+      ),
     ),
     const SizedBox(height: 8),
-    if (c.exams.isEmpty) Text(context.l10n.noExamsYet),
+    if (c.exams.isEmpty)
+      Card.outlined(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.folder_open_outlined,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                size: 28,
+              ),
+              const SizedBox(height: 12),
+              Text(context.l10n.noExamsYet),
+            ],
+          ),
+        ),
+      ),
     for (final exam in c.exams.take(3)) examCard(exam),
     if (c.exams.isNotEmpty) Text(context.l10n.openExamHint),
     TextButton(
