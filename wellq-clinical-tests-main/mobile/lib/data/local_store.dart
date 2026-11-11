@@ -8,7 +8,7 @@ import '../domain/models.dart';
 class LocalStore extends GeneratedDatabase {
   LocalStore(super.executor);
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -17,7 +17,7 @@ class LocalStore extends GeneratedDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (_) async {
       await customStatement(
-        'CREATE TABLE operations (id TEXT PRIMARY KEY, scope TEXT NOT NULL, data TEXT NOT NULL, running INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL)',
+        'CREATE TABLE operations (id TEXT PRIMARY KEY, scope TEXT NOT NULL, data TEXT NOT NULL, running INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, lease_owner TEXT)',
       );
       await customStatement(
         'CREATE INDEX operations_scope ON operations(scope, created_at)',
@@ -27,7 +27,14 @@ class LocalStore extends GeneratedDatabase {
       );
     },
     onUpgrade: (_, from, to) async {
-      throw StateError('Unreviewed migration $from -> $to');
+      if (from != 1 || to != 2) {
+        throw StateError('Unreviewed migration $from -> $to');
+      }
+      await transaction(() async {
+        await customStatement(
+          'ALTER TABLE operations ADD COLUMN lease_owner TEXT',
+        );
+      });
     },
   );
   void check(String scope) {
@@ -50,17 +57,36 @@ class LocalStore extends GeneratedDatabase {
     );
   }
 
-  Future<void> save(PendingUpload op) async {
+  Future<void> save(PendingUpload op, {String? lease}) async {
     check(op.scope);
-    await customUpdate(
-      'UPDATE operations SET data=? WHERE id=? AND scope=?',
+    final changed = await customUpdate(
+      'UPDATE operations SET data=? WHERE id=? AND scope=? AND '
+      '${lease == null ? 'running=0' : 'running=1 AND lease_owner=?'}',
       variables: [
         Variable(op.serialize()),
         Variable(op.id),
         Variable(op.scope),
+        if (lease != null) Variable(lease),
       ],
     );
+    if (changed != 1) throw const ApiFailure(409, 'LOCAL_LEASE_LOST');
   }
+
+  Future<PendingUpload?> operation(String scope, String id) async {
+    check(scope);
+    final row = await customSelect(
+      'SELECT data FROM operations WHERE scope=? AND id=?',
+      variables: [Variable(scope), Variable(id)],
+    ).getSingleOrNull();
+    return row == null
+        ? null
+        : PendingUpload.deserialize(row.read<String>('data'));
+  }
+
+  // Used only to detect unreferenced files; never expose IDs from other scopes.
+  Future<Set<String>> referencedIds() async => (await customSelect(
+    'SELECT id FROM operations',
+  ).get()).map((row) => row.read<String>('id')).toSet();
 
   Future<List<PendingUpload>> pending(String scope) async {
     check(scope);
@@ -73,22 +99,32 @@ class LocalStore extends GeneratedDatabase {
         .toList();
   }
 
-  Future<bool> claim(String scope, String id) async =>
+  Future<bool> claim(
+    String scope,
+    String id, {
+    String lease = 'legacy',
+  }) async =>
       (await customUpdate(
-        'UPDATE operations SET running=1 WHERE id=? AND scope=? AND running=0',
-        variables: [Variable(id), Variable(scope)],
+        'UPDATE operations SET running=1, lease_owner=? WHERE id=? AND scope=? AND running=0',
+        variables: [Variable(lease), Variable(id), Variable(scope)],
       )) ==
       1;
-  Future<void> release(String scope, String id) async {
+  Future<void> release(
+    String scope,
+    String id, {
+    String lease = 'legacy',
+  }) async {
     await customUpdate(
-      'UPDATE operations SET running=0 WHERE id=? AND scope=?',
-      variables: [Variable(id), Variable(scope)],
+      'UPDATE operations SET running=0, lease_owner=NULL WHERE id=? AND scope=? AND lease_owner=?',
+      variables: [Variable(id), Variable(scope), Variable(lease)],
     );
   }
 
-  // Startup recovers leases only; it never replays a write.
+  // Call once at process startup, under the exclusive vault process lock.
   Future<void> recover() async {
-    await customUpdate('UPDATE operations SET running=0');
+    await customUpdate(
+      'UPDATE operations SET running=0, lease_owner=NULL WHERE running<>0',
+    );
   }
 
   Future<void> cache(String scope, List<Exam> exams) async {
@@ -119,18 +155,5 @@ class LocalStore extends GeneratedDatabase {
       'DELETE FROM exam_cache WHERE scope=?',
       variables: [Variable(scope)],
     );
-  }
-
-  Future<void> clearScope(String scope) async {
-    await transaction(() async {
-      await customUpdate(
-        'DELETE FROM exam_cache WHERE scope=?',
-        variables: [Variable(scope)],
-      );
-      await customUpdate(
-        'DELETE FROM operations WHERE scope=?',
-        variables: [Variable(scope)],
-      );
-    });
   }
 }

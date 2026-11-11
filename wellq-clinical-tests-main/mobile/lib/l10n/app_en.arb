@@ -52,7 +52,7 @@
   "productionPdfBlocked": "Production PDF blocked",
   "noProductionProviders": "No exports, scores or production providers.",
   "logoutQuestion": "Sign out?",
-  "logoutWarning": "The cache and local operations for this identity will be cleared. Original files, copies and server documents are kept.",
+  "logoutWarning": "Access ends and cached readings are cleared. The queue and private files are kept for this identity.",
   "logout": "Sign out",
   "newDocument": "New document",
   "syntheticPdfOnly": "Use the synthetic test PDF. Do not select real medical documents.",
@@ -211,7 +211,7 @@
   "currentViewCount": "{count, plural, one{{count} in the current view} other{{count} in the current view}}",
   "localOperationsCount": "{count, plural, one{{count} local operation} other{{count} local operations}}",
   "attemptCount": "Upload attempts: {count}",
-  "pendingConnection": "{count} local pending · {connection}",
+  "pendingConnection": "{count, plural, one{1 local pending operation} other{{count} local pending operations}} ? {connection}",
   "selectedPdf": "PDF selected · {count} bytes",
   "serverFilter": "Server filter: {status} · {type}",
   "resultCount": "{visible} of {loaded} documents loaded for this query.",
@@ -226,5 +226,27 @@
   "confirmedOn": "Confirmed: {date}",
   "pagesCount": "{count, plural, one{{count} page} other{{count} pages}}",
   "submissionSummary": "{summary}\n\nOriginal → review. Human confirmation, without clinical validation.",
-  "errorNotFound": "Document not found."
+  "errorNotFound": "Document not found.",
+  "queueSending": "Sending operation",
+  "queueMissing": "Private copy missing. The operation is kept.",
+  "queueIncomplete": "Copy interrupted. Available data is kept.",
+  "queueCorrupt": "The copy does not match its hash. It will not be sent.",
+  "queueUnreadable": "Could not save or read the copy. The operation is kept.",
+  "queueVerifying": "Verifying receipt on the server",
+  "queueWaitingConnection": "Waiting for a verified connection",
+  "queuePaused": "Upload paused. An action is required to continue.",
+  "queueAwaitingAuthorization": "Saved locally. Waiting for permission to send.",
+  "queueReadyToResume": "Ready to resume with your permission.",
+  "queueRetryAfter": "Recoverable error. You can retry from {date}, {time}.",
+  "queuePause": "Pause upload",
+  "@queueRetryAfter": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

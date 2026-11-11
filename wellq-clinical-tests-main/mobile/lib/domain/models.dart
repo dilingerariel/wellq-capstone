@@ -15,7 +15,9 @@ class ApiFailure implements Exception {
   final bool storage;
   bool get denied => !storage && (status == 401 || status == 403);
   bool get conflict => status == 409 || status == 428;
-  String get message => code == 'EXTRACTION_NOT_READY'
+  String get message => code == 'UPLOAD_PAUSED'
+      ? 'queuePaused'
+      : code == 'EXTRACTION_NOT_READY'
       ? 'errorExtractionNotReady'
       : switch (status) {
           0 => 'errorOffline',
@@ -38,7 +40,9 @@ class Session {
       patient = j['resourceId'] as String,
       tenant = j['tenantId'] as String,
       role = j['role'] as String,
-      permissions = Set<String>.from(j['permissions'] as List),
+      permissions = Set<String>.unmodifiable(
+        (j['permissions'] as List).cast<String>(),
+      ),
       expires = DateTime.fromMillisecondsSinceEpoch(
         (j['expiresAt'] as int) * 1000,
       ) {
@@ -119,6 +123,8 @@ class PendingUpload {
   bool canDelete;
   String get title => payload['title'] as String;
   String get file => payload['file'] as String;
+  String? get fileIssue => payload['file_issue'] as String?;
+  int get retryAt => payload['retry_at'] as int? ?? 0;
   String get initiateKey => payload['initiate_key'] as String;
   String get completeKey => payload['complete_key'] as String;
   Json get initiate => Map<String, dynamic>.from(payload['initiate'] as Map);
@@ -129,6 +135,7 @@ class PendingUpload {
   bool get finished => ['confirmed', 'rejected', 'failed'].contains(phase);
   bool get canResume =>
       !finished &&
+      fileIssue == null &&
       !['conflict', 'processing', 'object_uploaded'].contains(phase);
   String serialize() => jsonEncode({
     'id': id,

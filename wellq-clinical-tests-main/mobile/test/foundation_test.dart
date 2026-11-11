@@ -80,8 +80,8 @@ void main() {
       expect(await FileVault(root).resolve(saved.file).exists(), isTrue);
       expect(saved.serialize(), isNot(contains('synthetic-test-only')));
       expect(saved.serialize(), isNot(contains('signed_url')));
-      await db.clearScope(s.scope);
-      expect(await db.pending(s.scope), isEmpty);
+      await db.clearCache(s.scope);
+      expect((await db.pending(s.scope)).single.id, op.id);
       expect(await db.cached(s.scope), isEmpty);
       api.close();
     },
@@ -200,20 +200,31 @@ void main() {
               'upload': {
                 'signed_url':
                     'http://127.0.0.1:8765/object/quarantine/clinical-tests/test',
-                'required_headers': {},
+                'required_headers': {'x-goog-if-generation-match': '0'},
+                'expires_at': '2099-01-01T00:00:00Z',
               },
             });
           }
           if (r.url.path.endsWith('/status')) {
             return response({
               'status': status,
+              'upload_id': 'upload',
+              'clinical_test_id': 'exam',
+              'processing': {
+                'malware_scan': 'passed',
+                'mime_validation': 'passed',
+              },
               'local_file_can_be_deleted': status == 'ready_for_review',
             });
           }
           if (r.url.path.endsWith('/complete')) {
             complete++;
             status = 'processing';
-            return response({'status': 'processing'});
+            return response({
+              'status': 'processing',
+              'upload_id': 'upload',
+              'clinical_test_id': 'exam',
+            });
           }
           throw StateError('Unexpected route');
         }),
@@ -222,7 +233,8 @@ void main() {
           return http.Response('', 200);
         }),
       );
-      final repo = UploadRepository(api, db, FileVault(root));
+      var now = DateTime.now();
+      final repo = UploadRepository(api, db, FileVault(root), clock: () => now);
       final s = patient();
       final op = await repo.queue(
         s,
@@ -232,6 +244,7 @@ void main() {
         () {},
       );
       await expectLater(repo.resume(op, s, () {}), throwsA(isA<ApiFailure>()));
+      now = DateTime.fromMillisecondsSinceEpoch(op.retryAt);
       expect(op.phase, 'queued');
       expect(op.canDelete, isFalse);
       await repo.resume(op, s, () {});
@@ -455,13 +468,16 @@ void main() {
               'upload': {
                 'signed_url':
                     'http://127.0.0.1:8765/object/quarantine/clinical-tests/test',
-                'required_headers': {},
+                'required_headers': {'x-goog-if-generation-match': '0'},
+                'expires_at': '2099-01-01T00:00:00Z',
               },
             });
           }
           if (r.url.path.endsWith('/status')) {
             return response({
               'status': state,
+              'upload_id': 'u',
+              'clinical_test_id': 'e',
               'local_file_can_be_deleted': false,
             });
           }
@@ -478,7 +494,8 @@ void main() {
         }),
       );
       final s = patient();
-      final repo = UploadRepository(api, db, FileVault(root));
+      var now = DateTime.now();
+      final repo = UploadRepository(api, db, FileVault(root), clock: () => now);
       final op = await repo.queue(
         s,
         await File('assets/synthetic.pdf').readAsBytes(),
@@ -487,6 +504,7 @@ void main() {
         () {},
       );
       await expectLater(repo.resume(op, s, () {}), throwsA(isA<ApiFailure>()));
+      now = DateTime.fromMillisecondsSinceEpoch(op.retryAt);
       expect(op.phase, 'complete_pending');
       await repo.resume(op, s, () {});
       expect(op.phase, 'processing');

@@ -11,6 +11,10 @@ import 'data/api.dart';
 import 'data/local_store.dart';
 import 'presentation/app.dart';
 
+// Keep the handle for the app process lifetime. A second process cannot open
+// the same vault or release leases from a still-running process.
+RandomAccessFile? _processLock;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const enabled = kDebugMode && bool.fromEnvironment('WELLQ_SYNTHETIC');
@@ -38,6 +42,16 @@ Future<void> main() async {
   }
   final root = await getApplicationSupportDirectory();
   await root.create(recursive: true);
+  final lock = await File(
+    '${root.path}/wellq-outbox.lock',
+  ).open(mode: FileMode.append);
+  try {
+    await lock.lock(FileLock.exclusive);
+    _processLock = lock;
+  } catch (_) {
+    await lock.close();
+    rethrow;
+  }
   final language = LanguageController(
     preference: LanguagePreference(File('${root.path}/language.pref')),
   );
@@ -47,6 +61,8 @@ Future<void> main() async {
       File('${root.path}/wellq_synthetic.sqlite'),
     ),
   );
+  if (_processLock == null) throw StateError('Outbox process lock required');
+  await store.recover();
   final api = ApiClient();
   runApp(
     WellQApp(

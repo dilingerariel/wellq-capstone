@@ -15,6 +15,7 @@ extension WellQLocalizations on BuildContext {
 extension SafePatientMessages on AppLocalizations {
   String safeMessage(String id) => switch (id) {
     'syntheticWarning' => syntheticWarning,
+    'queuePaused' => queuePaused,
     'syntheticEnvironment' => syntheticEnvironment,
     'syntheticNoClinical' => syntheticNoClinical,
     'noClinicalUse' => noClinicalUse,

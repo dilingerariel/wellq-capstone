@@ -208,7 +208,7 @@ void main() {
             isA<ApiFailure>().having((e) => e.code, 'code', 'SESSION_CHANGED'),
           ),
         );
-        await c.logout(preservePending: true);
+        await c.logout();
         final fresh = Session.fromJson({
           'accessToken': 'synthetic-new-test-only',
           'resourceId': 'synthetic-local-patient-new',
@@ -238,8 +238,12 @@ void main() {
     () async {
       var status = 'ready_for_review';
       c = controller(
-        (_) async =>
-            response({'status': status, 'local_file_can_be_deleted': false}),
+        (_) async => response({
+          'upload_id': 'synthetic-upload',
+          'clinical_test_id': 'synthetic-exam',
+          'status': status,
+          'local_file_can_be_deleted': false,
+        }),
       );
       await c.queue(
         await File('assets/synthetic.pdf').readAsBytes(),
@@ -248,11 +252,18 @@ void main() {
       );
       final op = c.operations.single
         ..uploadId = 'synthetic-upload'
+        ..examId = 'synthetic-exam'
         ..phase = 'processing';
       await store.save(op);
       await expectLater(
         c.uploads.reconcile(op, c.session!, c.guard()),
-        throwsA(isA<ApiFailure>()),
+        throwsA(
+          isA<ApiFailure>().having(
+            (e) => e.code,
+            'code',
+            'UNVERIFIED_READY_RESPONSE',
+          ),
+        ),
       );
       expect(op.phase, 'processing');
       expect(op.finished, isFalse);
@@ -260,7 +271,13 @@ void main() {
       status = 'unexpected';
       await expectLater(
         c.uploads.reconcile(op, c.session!, c.guard()),
-        throwsA(isA<ApiFailure>()),
+        throwsA(
+          isA<ApiFailure>().having(
+            (e) => e.code,
+            'code',
+            'UNKNOWN_UPLOAD_STATUS',
+          ),
+        ),
       );
       expect(
         (await store.pending(c.session!.scope)).single.phase,

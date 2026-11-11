@@ -413,7 +413,7 @@ abstract class AppLocalizations {
   /// No description provided for @logoutWarning.
   ///
   /// In es, this message translates to:
-  /// **'Se borrarán caché y operaciones locales de esta identidad. Los archivos originales, las copias y los documentos del servidor se conservan.'**
+  /// **'Se cerrar? el acceso y se limpiar? la cach?. La cola y los archivos privados se conservan para esta identidad.'**
   String get logoutWarning;
 
   /// No description provided for @logout.
@@ -1367,7 +1367,7 @@ abstract class AppLocalizations {
   /// Patient presentation only; preserve raw clinical data and API identifiers.
   ///
   /// In es, this message translates to:
-  /// **'{count} pendientes locales · {connection}'**
+  /// **'{count, plural, one{1 pendiente local} other{{count} pendientes locales}} ? {connection}'**
   String pendingConnection(int count, String connection);
 
   /// Patient presentation only; preserve raw clinical data and API identifiers.
@@ -1464,6 +1464,78 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Documento no encontrado.'**
   String get errorNotFound;
+
+  /// No description provided for @queueSending.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviando operaci?n'**
+  String get queueSending;
+
+  /// No description provided for @queueMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'Falta la copia privada. La operaci?n se conserva.'**
+  String get queueMissing;
+
+  /// No description provided for @queueIncomplete.
+  ///
+  /// In es, this message translates to:
+  /// **'Copia interrumpida. Los datos disponibles se conservan.'**
+  String get queueIncomplete;
+
+  /// No description provided for @queueCorrupt.
+  ///
+  /// In es, this message translates to:
+  /// **'La copia no coincide con su huella. No se enviar?.'**
+  String get queueCorrupt;
+
+  /// No description provided for @queueUnreadable.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar o leer la copia. La operaci?n se conserva.'**
+  String get queueUnreadable;
+
+  /// No description provided for @queueVerifying.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificando recepci?n en el servidor'**
+  String get queueVerifying;
+
+  /// No description provided for @queueWaitingConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Esperando conexi?n verificada'**
+  String get queueWaitingConnection;
+
+  /// No description provided for @queuePaused.
+  ///
+  /// In es, this message translates to:
+  /// **'Env?o pausado. Se requiere una acci?n para continuar.'**
+  String get queuePaused;
+
+  /// No description provided for @queueAwaitingAuthorization.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardado localmente. Esperando autorizaci?n de env?o.'**
+  String get queueAwaitingAuthorization;
+
+  /// No description provided for @queueReadyToResume.
+  ///
+  /// In es, this message translates to:
+  /// **'Preparado para reanudar con tu autorizaci?n.'**
+  String get queueReadyToResume;
+
+  /// No description provided for @queueRetryAfter.
+  ///
+  /// In es, this message translates to:
+  /// **'Error recuperable. Puedes reintentar a partir de {date}, {time}.'**
+  String queueRetryAfter(String date, String time);
+
+  /// No description provided for @queuePause.
+  ///
+  /// In es, this message translates to:
+  /// **'Pausar env?o'**
+  String get queuePause;
 }
 
 class _AppLocalizationsDelegate

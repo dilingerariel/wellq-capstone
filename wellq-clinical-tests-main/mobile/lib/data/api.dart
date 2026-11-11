@@ -12,6 +12,55 @@ abstract interface class IdentityAdapter {
   void signOut();
 }
 
+class UploadCancellation {
+  final _signal = Completer<void>();
+  Future<void> get signal => _signal.future;
+  void cancel() {
+    if (!_signal.isCompleted) _signal.complete();
+  }
+
+  void check() {
+    if (_signal.isCompleted) throw const ApiFailure(0, 'UPLOAD_PAUSED');
+  }
+}
+
+class _Exchange {
+  _Exchange(this.cancellation);
+  final UploadCancellation? cancellation;
+  final abort = Completer<void>();
+
+  Future<http.Response> run(
+    http.Client client,
+    http.Request request,
+    Duration deadline,
+  ) async {
+    cancellation?.check();
+    final response = client.send(request).then(http.Response.fromStream);
+    final signal = cancellation;
+    try {
+      return await (signal == null
+              ? response
+              : Future.any<http.Response>([
+                  response,
+                  signal.signal.then<http.Response>((_) {
+                    if (!abort.isCompleted) abort.complete();
+                    throw const ApiFailure(0, 'UPLOAD_PAUSED');
+                  }),
+                ]))
+          .timeout(
+            deadline,
+            onTimeout: () {
+              if (!abort.isCompleted) abort.complete();
+              throw TimeoutException('Request deadline');
+            },
+          );
+    } on http.RequestAbortedException {
+      signal?.check();
+      rethrow;
+    }
+  }
+}
+
 class ApiClient {
   ApiClient({http.Client? client, http.Client? storageClient})
     : client = client ?? http.Client(),
@@ -24,12 +73,17 @@ class ApiClient {
     Session? session,
     Json? body,
     String? key,
+    UploadCancellation? cancellation,
   }) async {
     if (!path.startsWith('/') || path.startsWith('//')) {
       throw const ApiFailure(0, 'INVALID_PATH');
     }
-    final req = http.Request(method, origin.resolve(path))
-      ..followRedirects = false;
+    final exchange = _Exchange(cancellation);
+    final req = http.AbortableRequest(
+      method,
+      origin.resolve(path),
+      abortTrigger: exchange.abort.future,
+    )..followRedirects = false;
     req.headers['Accept'] = 'application/json';
     if (session != null) {
       if (session.expired) throw const ApiFailure(401, 'SESSION_EXPIRED');
@@ -41,9 +95,7 @@ class ApiClient {
       req.body = jsonEncode(body);
     }
     try {
-      final res = await http.Response.fromStream(
-        await client.send(req),
-      ).timeout(const Duration(seconds: 20));
+      final res = await exchange.run(client, req, const Duration(seconds: 20));
       if (res.statusCode < 200 || res.statusCode >= 300) {
         var code = 'HTTP_${res.statusCode}';
         try {
@@ -78,6 +130,7 @@ class ApiClient {
     Session? session,
     Json? body,
     String? key,
+    UploadCancellation? cancellation,
   }) async {
     final res = await send(
       method,
@@ -85,6 +138,7 @@ class ApiClient {
       session: session,
       body: body,
       key: key,
+      cancellation: cancellation,
     );
     try {
       return jsonDecode(res.body) as Json;
@@ -97,7 +151,11 @@ class ApiClient {
     await send('GET', '/ready');
   }
 
-  Future<void> put(Json descriptor, List<int> bytes) async {
+  Future<void> put(
+    Json descriptor,
+    List<int> bytes, {
+    UploadCancellation? cancellation,
+  }) async {
     final uri = Uri.parse(descriptor['signed_url'] as String);
     if (uri.scheme != 'http' ||
         uri.host != '127.0.0.1' ||
@@ -114,14 +172,28 @@ class ApiClient {
     )) {
       throw const ApiFailure(403, 'STORAGE_HEADER_DENIED', storage: true);
     }
-    final req = http.Request('PUT', uri)
-      ..followRedirects = false
-      ..headers.addAll(headers)
-      ..bodyBytes = bytes;
+    final generation = headers.entries.where(
+      (entry) => entry.key.toLowerCase() == 'x-goog-if-generation-match',
+    );
+    if (generation.length != 1 || generation.single.value != '0') {
+      throw const ApiFailure(
+        403,
+        'STORAGE_PRECONDITION_REQUIRED',
+        storage: true,
+      );
+    }
+    final exchange = _Exchange(cancellation);
+    final req =
+        http.AbortableRequest('PUT', uri, abortTrigger: exchange.abort.future)
+          ..followRedirects = false
+          ..headers.addAll(headers)
+          ..bodyBytes = bytes;
     try {
-      final res = await http.Response.fromStream(
-        await storageClient.send(req),
-      ).timeout(const Duration(seconds: 30));
+      final res = await exchange.run(
+        storageClient,
+        req,
+        const Duration(seconds: 30),
+      );
       // 412 can mean an immutable object already exists after an uncertain PUT.
       // Only backend hash/scan checks may confirm it. Never call this validation.
       if (!((res.statusCode >= 200 && res.statusCode < 300) ||
@@ -130,6 +202,7 @@ class ApiClient {
           res.statusCode,
           'STORAGE_UPLOAD_FAILED',
           storage: true,
+          retryAfter: int.tryParse(res.headers['retry-after'] ?? '') ?? 0,
         );
       }
     } on SocketException {
@@ -164,8 +237,13 @@ class LoopbackIdentity implements IdentityAdapter {
     if (nonce == null) {
       throw const ApiFailure(503, 'LOCAL_AUTHORITY_UNAVAILABLE');
     }
+    final exchange = _Exchange(null);
     final req =
-        http.Request('POST', ApiClient.origin.resolve('/__wellq_local/session'))
+        http.AbortableRequest(
+            'POST',
+            ApiClient.origin.resolve('/__wellq_local/session'),
+            abortTrigger: exchange.abort.future,
+          )
           ..followRedirects = false
           ..headers.addAll({
             'Content-Type': 'application/json',
@@ -173,9 +251,11 @@ class LoopbackIdentity implements IdentityAdapter {
           })
           ..body = jsonEncode({'role': 'patient'});
     try {
-      final res = await http.Response.fromStream(
-        await api.client.send(req),
-      ).timeout(const Duration(seconds: 15));
+      final res = await exchange.run(
+        api.client,
+        req,
+        const Duration(seconds: 15),
+      );
       if (res.statusCode != 200) {
         throw ApiFailure(res.statusCode, 'LOCAL_AUTHORITY_DENIED');
       }

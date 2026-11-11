@@ -270,7 +270,7 @@ void main() {
       );
       expect(find.textContaining('PRIVATE_INTERNAL'), findsNothing);
       expect(h.requests, requests);
-      await h.c.logout(preservePending: true);
+      await h.c.logout();
       await t.pumpAndSettle();
       expect(lang.code, 'en');
       expect(h.c.session, isNull);

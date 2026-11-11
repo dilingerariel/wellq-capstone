@@ -177,7 +177,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutWarning =>
-      'The cache and local operations for this identity will be cleared. Original files, copies and server documents are kept.';
+      'Access ends and cached readings are cleared. The queue and private files are kept for this identity.';
 
   @override
   String get logout => 'Sign out';
@@ -741,7 +741,13 @@ class AppLocalizationsEn extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String countString = countNumberFormat.format(count);
 
-    return '$countString local pending · $connection';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString local pending operations',
+      one: '1 local pending operation',
+    );
+    return '$_temp0 ? $connection';
   }
 
   @override
@@ -846,4 +852,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorNotFound => 'Document not found.';
+
+  @override
+  String get queueSending => 'Sending operation';
+
+  @override
+  String get queueMissing => 'Private copy missing. The operation is kept.';
+
+  @override
+  String get queueIncomplete => 'Copy interrupted. Available data is kept.';
+
+  @override
+  String get queueCorrupt =>
+      'The copy does not match its hash. It will not be sent.';
+
+  @override
+  String get queueUnreadable =>
+      'Could not save or read the copy. The operation is kept.';
+
+  @override
+  String get queueVerifying => 'Verifying receipt on the server';
+
+  @override
+  String get queueWaitingConnection => 'Waiting for a verified connection';
+
+  @override
+  String get queuePaused => 'Upload paused. An action is required to continue.';
+
+  @override
+  String get queueAwaitingAuthorization =>
+      'Saved locally. Waiting for permission to send.';
+
+  @override
+  String get queueReadyToResume => 'Ready to resume with your permission.';
+
+  @override
+  String queueRetryAfter(String date, String time) {
+    return 'Recoverable error. You can retry from $date, $time.';
+  }
+
+  @override
+  String get queuePause => 'Pause upload';
 }

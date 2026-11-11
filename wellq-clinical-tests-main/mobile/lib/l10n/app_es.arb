@@ -52,7 +52,7 @@
   "productionPdfBlocked": "PDF productivo bloqueado",
   "noProductionProviders": "Sin exportaciones, scores ni proveedores productivos.",
   "logoutQuestion": "¿Cerrar sesión?",
-  "logoutWarning": "Se borrarán caché y operaciones locales de esta identidad. Los archivos originales, las copias y los documentos del servidor se conservan.",
+  "logoutWarning": "Se cerrar? el acceso y se limpiar? la cach?. La cola y los archivos privados se conservan para esta identidad.",
   "logout": "Cerrar sesión",
   "newDocument": "Nuevo documento",
   "syntheticPdfOnly": "Usa el PDF sintético de prueba. No selecciones documentos médicos reales.",
@@ -238,7 +238,7 @@
       }
     }
   },
-  "pendingConnection": "{count} pendientes locales · {connection}",
+  "pendingConnection": "{count, plural, one{1 pendiente local} other{{count} pendientes locales}} ? {connection}",
   "@pendingConnection": {
     "description": "Patient presentation only; preserve raw clinical data and API identifiers.",
     "placeholders": {
@@ -397,5 +397,27 @@
       }
     }
   },
-  "errorNotFound": "Documento no encontrado."
+  "errorNotFound": "Documento no encontrado.",
+  "queueSending": "Enviando operaci?n",
+  "queueMissing": "Falta la copia privada. La operaci?n se conserva.",
+  "queueIncomplete": "Copia interrumpida. Los datos disponibles se conservan.",
+  "queueCorrupt": "La copia no coincide con su huella. No se enviar?.",
+  "queueUnreadable": "No se pudo guardar o leer la copia. La operaci?n se conserva.",
+  "queueVerifying": "Verificando recepci?n en el servidor",
+  "queueWaitingConnection": "Esperando conexi?n verificada",
+  "queuePaused": "Env?o pausado. Se requiere una acci?n para continuar.",
+  "queueAwaitingAuthorization": "Guardado localmente. Esperando autorizaci?n de env?o.",
+  "queueReadyToResume": "Preparado para reanudar con tu autorizaci?n.",
+  "queueRetryAfter": "Error recuperable. Puedes reintentar a partir de {date}, {time}.",
+  "queuePause": "Pausar env?o",
+  "@queueRetryAfter": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -177,7 +177,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get logoutWarning =>
-      'Se borrarán caché y operaciones locales de esta identidad. Los archivos originales, las copias y los documentos del servidor se conservan.';
+      'Se cerrar? el acceso y se limpiar? la cach?. La cola y los archivos privados se conservan para esta identidad.';
 
   @override
   String get logout => 'Cerrar sesión';
@@ -741,7 +741,13 @@ class AppLocalizationsEs extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String countString = countNumberFormat.format(count);
 
-    return '$countString pendientes locales · $connection';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString pendientes locales',
+      one: '1 pendiente local',
+    );
+    return '$_temp0 ? $connection';
   }
 
   @override
@@ -846,4 +852,49 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorNotFound => 'Documento no encontrado.';
+
+  @override
+  String get queueSending => 'Enviando operaci?n';
+
+  @override
+  String get queueMissing =>
+      'Falta la copia privada. La operaci?n se conserva.';
+
+  @override
+  String get queueIncomplete =>
+      'Copia interrumpida. Los datos disponibles se conservan.';
+
+  @override
+  String get queueCorrupt =>
+      'La copia no coincide con su huella. No se enviar?.';
+
+  @override
+  String get queueUnreadable =>
+      'No se pudo guardar o leer la copia. La operaci?n se conserva.';
+
+  @override
+  String get queueVerifying => 'Verificando recepci?n en el servidor';
+
+  @override
+  String get queueWaitingConnection => 'Esperando conexi?n verificada';
+
+  @override
+  String get queuePaused =>
+      'Env?o pausado. Se requiere una acci?n para continuar.';
+
+  @override
+  String get queueAwaitingAuthorization =>
+      'Guardado localmente. Esperando autorizaci?n de env?o.';
+
+  @override
+  String get queueReadyToResume =>
+      'Preparado para reanudar con tu autorizaci?n.';
+
+  @override
+  String queueRetryAfter(String date, String time) {
+    return 'Error recuperable. Puedes reintentar a partir de $date, $time.';
+  }
+
+  @override
+  String get queuePause => 'Pausar env?o';
 }

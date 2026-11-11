@@ -207,6 +207,9 @@ void main() {
     'temporary network and 502 preserve authorized draft across tabs and reconnect',
     (t) async {
       final db = LocalStore(NativeDatabase.memory());
+      final root = Directory.systemTemp.createTempSync(
+        'wellq-phase21-reconnect-',
+      );
       var down = true, posts = 0;
       final s = patient();
       final c = PatientController(
@@ -220,7 +223,7 @@ void main() {
         ),
         FixedIdentity(s),
         db,
-        Directory.systemTemp,
+        root,
       )..session = s;
       await t.pumpWidget(WellQApp(controller: c));
       await t.pumpAndSettle();
@@ -242,7 +245,7 @@ void main() {
       await t.pumpAndSettle();
       expect(find.text('SYNTHETIC PRESERVED DRAFT'), findsOneWidget);
       down = false;
-      await c.reconcile();
+      await t.runAsync(c.reconcile);
       await t.pumpAndSettle();
       expect(find.text('SYNTHETIC PRESERVED DRAFT'), findsOneWidget);
       expect(posts, 0);

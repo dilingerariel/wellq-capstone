@@ -26,6 +26,17 @@ class PatientController extends ChangeNotifier {
   bool busy = false, online = false;
   int? authorizationFailure;
   Timer? _expiry;
+  bool _foreground = true;
+  UploadCancellation? _activeUpload;
+  String? sendingId;
+  int unreferencedFiles = 0;
+
+  void setForeground(bool value) {
+    _foreground = value;
+    if (!value) pauseUpload();
+  }
+
+  void pauseUpload() => _activeUpload?.cancel();
   String get connectionLabel {
     if (authorizationFailure == 401 || session?.expired == true) {
       return 'sessionExpired';
@@ -42,16 +53,18 @@ class PatientController extends ChangeNotifier {
     _expiry = Timer(s.expires.difference(DateTime.now()), () async {
       authorizationFailure = 401;
       message = const ApiFailure(401, 'SESSION_EXPIRED').message;
-      await logout(keepMessage: true, preservePending: true);
+      await logout(keepMessage: true);
     });
   }
 
   Future<void> failure(ApiFailure e) async {
     message = e.message;
-    if (e.status == 0 || e.status >= 500) online = false;
+    if ((e.status == 0 && e.code != 'UPLOAD_PAUSED') || e.status >= 500) {
+      online = false;
+    }
     if (e.denied) {
       authorizationFailure = e.status;
-      await logout(keepMessage: true, preservePending: true);
+      await logout(keepMessage: true);
     }
     notifyListeners();
   }
@@ -105,7 +118,7 @@ class PatientController extends ChangeNotifier {
     authorizationFailure = null;
     _watchExpiry();
     final check = guard();
-    await store.recover();
+    unreferencedFiles = await uploads.recoverFiles(fresh, check);
     check();
     exams = await store.cached(fresh.scope);
     check();
@@ -174,21 +187,41 @@ class PatientController extends ChangeNotifier {
       });
   Future<void> resume(PendingUpload op) => _run(() async {
     final before = session;
-    if (before == null) return;
+    if (before == null || !_foreground) return;
     final check = guard();
-    final fresh = await identity.connect();
     check();
-    if (fresh.scope != before.scope ||
-        !setEquals(fresh.permissions, before.permissions)) {
-      throw const ApiFailure(403, 'IDENTITY_CHANGED');
+    if (before.scope != op.scope ||
+        !before.permissions.contains('clinical:write')) {
+      throw const ApiFailure(403, 'UPLOAD_PERMISSION');
     }
-    session = fresh;
-    _watchExpiry();
-    online = true;
-    await uploads.resume(op, fresh, check);
-    check();
-    operations = await store.pending(fresh.scope);
-    check();
+    if (op.retryAt > DateTime.now().millisecondsSinceEpoch) {
+      throw const ApiFailure(429, 'RETRY_AFTER');
+    }
+    final cancellation = UploadCancellation();
+    _activeUpload = cancellation;
+    sendingId = op.id;
+    notifyListeners();
+    try {
+      final fresh = await identity.connect();
+      check();
+      cancellation.check();
+      if (fresh.scope != before.scope ||
+          !setEquals(fresh.permissions, before.permissions)) {
+        throw const ApiFailure(403, 'IDENTITY_CHANGED');
+      }
+      session = fresh;
+      _watchExpiry();
+      online = true;
+      await uploads.resume(op, fresh, check, cancellation: cancellation);
+    } finally {
+      cancellation.cancel();
+      _activeUpload = null;
+      sendingId = null;
+      check();
+      final updated = await store.pending(before.scope);
+      check();
+      operations = updated;
+    }
   });
   // Explicit reconnect: reads only. Never replays clinical confirmations.
   Future<void> reconcile() => _run(() async {
@@ -204,7 +237,9 @@ class PatientController extends ChangeNotifier {
     session = fresh;
     _watchExpiry();
     online = true;
-    for (final op in operations) {
+    unreferencedFiles = await uploads.recoverFiles(fresh, check);
+    check();
+    for (final op in await store.pending(fresh.scope)) {
       await uploads.reconcile(op, fresh, check);
       check();
     }
@@ -292,34 +327,30 @@ class PatientController extends ChangeNotifier {
     }
   }
 
-  Future<void> logout({
-    bool keepMessage = false,
-    bool preservePending = false,
-  }) async {
+  Future<void> logout({bool keepMessage = false}) async {
     final old = session;
     _expiry?.cancel();
+    pauseUpload();
     _epoch++;
     session = null;
     identity.signOut();
     exams = [];
     operations = [];
+    unreferencedFiles = 0;
     cursor = null;
     filters = const ExamFilters();
     online = false;
     if (!keepMessage) message = null;
     notifyListeners();
-    if (old != null) {
-      if (preservePending) {
-        await store.clearCache(old.scope);
-      } else {
-        await store.clearScope(old.scope);
-      }
-    }
+    // Ending access is independent of destruction. Keep all private files and
+    // operations locked to the verified owner until a retention policy exists.
+    if (old != null) await store.clearCache(old.scope);
   }
 
   @override
   void dispose() {
     _expiry?.cancel();
+    pauseUpload();
     _epoch++;
     api.close();
     super.dispose();

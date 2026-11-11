@@ -132,9 +132,42 @@ class _PatientShellState extends State<PatientShell>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    c.setForeground(state == AppLifecycleState.resumed);
     if (state == AppLifecycleState.resumed && c.session != null && !c.busy) {
       c.reconcile();
     }
+  }
+
+  String queueStatus(PendingUpload op) {
+    final l = context.l10n;
+    if (c.sendingId == op.id) return l.queueSending;
+    if (op.fileIssue != null) {
+      return switch (op.fileIssue) {
+        'missing' => l.queueMissing,
+        'incomplete' => l.queueIncomplete,
+        'corrupt' => l.queueCorrupt,
+        _ => l.queueUnreadable,
+      };
+    }
+    if (op.phase == 'processing' || op.phase == 'object_uploaded') {
+      return l.queueVerifying;
+    }
+    if (op.finished || op.phase == 'conflict') {
+      return localizedPhaseLabel(context, op.phase);
+    }
+    if (op.error == 'UPLOAD_PAUSED') return l.queuePaused;
+    if (op.retryAt > DateTime.now().millisecondsSinceEpoch) {
+      final date = DateTime.fromMillisecondsSinceEpoch(op.retryAt);
+      final format = MaterialLocalizations.of(context);
+      return l.queueRetryAfter(
+        format.formatShortDate(date),
+        format.formatTimeOfDay(TimeOfDay.fromDateTime(date)),
+      );
+    }
+    if (!c.online) return l.queueWaitingConnection;
+    return op.attempts == 0
+        ? l.queueAwaitingAuthorization
+        : l.queueReadyToResume;
   }
 
   Widget page(List<Widget> children) =>
@@ -416,7 +449,7 @@ class _PatientShellState extends State<PatientShell>
             children: [
               Text(op.title, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              Text(localizedPhaseLabel(context, op.phase)),
+              Semantics(liveRegion: true, child: Text(queueStatus(op))),
               Text(context.l10n.attemptCount(op.attempts)),
               Text(
                 localizedPendingHelp(
@@ -428,7 +461,13 @@ class _PatientShellState extends State<PatientShell>
               ),
               if (op.canDelete) Text(context.l10n.verifiedLocalCopy),
               const SizedBox(height: 8),
-              if (op.canResume)
+              if (c.sendingId == op.id)
+                OutlinedButton(
+                  onPressed: c.pauseUpload,
+                  child: Text(context.l10n.queuePause),
+                )
+              else if (op.canResume &&
+                  c.session?.permissions.contains('clinical:write') == true)
                 FilledButton(
                   onPressed: c.busy ? null : () => c.resume(op),
                   child: Text(

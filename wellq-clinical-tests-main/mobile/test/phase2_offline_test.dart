@@ -106,16 +106,22 @@ void main() {
           if (r.url.path.endsWith('/status')) {
             return response({
               'status': 'initiated',
+              'upload_id': 'u',
+              'clinical_test_id': 'exam',
               'local_file_can_be_deleted': false,
             });
           }
           if (r.url.path.endsWith('/refresh-url')) {
             refreshes++;
-            return response({'upload': descriptor});
+            return response({'upload_id': 'u', 'upload': descriptor});
           }
           if (r.url.path.endsWith('/complete')) {
             completions++;
-            return response({});
+            return response({
+              'status': 'processing',
+              'upload_id': 'u',
+              'clinical_test_id': 'exam',
+            });
           }
           throw StateError('Unexpected request');
         }),
@@ -127,7 +133,13 @@ void main() {
           return http.Response('', 412); // Immutable object may already exist.
         }),
       );
-      var repo = UploadRepository(api, store, FileVault(root));
+      var now = DateTime.now();
+      var repo = UploadRepository(
+        api,
+        store,
+        FileVault(root),
+        clock: () => now,
+      );
       final op = await repo.queue(
         s,
         await File('assets/synthetic.pdf').readAsBytes(),
@@ -142,7 +154,8 @@ void main() {
       store = LocalStore(NativeDatabase(file));
       await store.recover();
       final recovered = (await store.pending(s.scope)).single;
-      repo = UploadRepository(api, store, FileVault(root));
+      now = DateTime.fromMillisecondsSinceEpoch(recovered.retryAt);
+      repo = UploadRepository(api, store, FileVault(root), clock: () => now);
       await repo.resume(recovered, s, () {});
       expect(recovered.id, op.id);
       expect(recovered.initiateKey, op.initiateKey);
@@ -304,4 +317,5 @@ final descriptor = {
   'signed_url':
       'http://127.0.0.1:8765/object/quarantine/clinical-tests/synthetic',
   'required_headers': {'x-goog-if-generation-match': '0'},
+  'expires_at': '2099-01-01T00:00:00Z',
 };
