@@ -1,6 +1,8 @@
 import '../l10n/localized_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:crypto/crypto.dart';
+import '../domain/pdf_policy.dart';
 import '../application/language_controller.dart';
 import 'language_selector.dart';
 import 'package:file_picker/file_picker.dart';
@@ -736,8 +738,20 @@ class _UploadScreenState extends State<UploadScreen> {
         text: DateTime.now().toIso8601String().substring(0, 10),
       );
   List<int>? bytes;
+  String? selectedHash;
   bool consent = false, synthetic = false;
   String? error;
+  void acceptPdf(List<int> selected) {
+    final snapshot = validatedSyntheticPdfBytes(selected);
+    setState(() {
+      bytes = snapshot;
+      selectedHash = sha256.convert(snapshot).toString();
+      synthetic = false;
+      consent = false;
+      error = null;
+    });
+  }
+
   Future<void> selectPdf() async {
     try {
       final files = await FilePicker.pickFiles(
@@ -746,24 +760,41 @@ class _UploadScreenState extends State<UploadScreen> {
       );
       if (files.isEmpty) return;
       final size = await files.single.length();
-      if (size == null || size > 20 * 1024 * 1024) {
-        if (mounted) setState(() => error = 'fileTooLarge');
-        return;
+      if (size == null || size <= 0) {
+        throw const FormatException('syntheticIntegrityOnly');
       }
-      final selected = verifiedSyntheticBytes(await files.single.readAsBytes());
+      if (size > maxSyntheticPdfBytes) {
+        throw const FormatException('fileTooLarge');
+      }
+      final selected = validatedSyntheticPdfBytes(
+        await files.single.readAsBytes(),
+        fileName: files.single.name,
+      );
+      if (selected.length != size) {
+        throw const FormatException('syntheticIntegrityOnly');
+      }
+      if (mounted) acceptPdf(selected);
+    } on FormatException catch (e) {
       if (mounted) {
         setState(() {
-          bytes = selected;
-          error = null;
+          bytes = null;
+          selectedHash = null;
+          synthetic = false;
+          consent = false;
+          error = e.message == 'fileTooLarge'
+              ? 'fileTooLarge'
+              : 'syntheticIntegrityOnly';
         });
-      }
-    } on FormatException {
-      if (mounted) {
-        setState(() => error = 'syntheticIntegrityOnly');
       }
     } catch (_) {
       if (mounted) {
-        setState(() => error = 'pickerUnavailable');
+        setState(() {
+          bytes = null;
+          selectedHash = null;
+          synthetic = false;
+          consent = false;
+          error = 'pickerUnavailable';
+        });
       }
     }
   }
@@ -789,7 +820,8 @@ class _UploadScreenState extends State<UploadScreen> {
       OutlinedButton.icon(
         onPressed: () async {
           final data = await rootBundle.load('assets/synthetic.pdf');
-          if (mounted) setState(() => bytes = data.buffer.asUint8List());
+          final selected = verifiedSyntheticBytes(data.buffer.asUint8List());
+          if (mounted) acceptPdf(selected);
         },
         icon: const Icon(Icons.science_outlined),
         label: Text(context.l10n.useTestPdf),
@@ -805,7 +837,11 @@ class _UploadScreenState extends State<UploadScreen> {
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
               builder: (_) => SyntheticPdfScreen(
-                load: () async => verifiedSyntheticBytes(bytes!),
+                expectedSha256: selectedHash!,
+                load: () async => verifiedSyntheticBytes(
+                  bytes!,
+                  expectedSha256: selectedHash!,
+                ),
               ),
             ),
           ),
@@ -855,8 +891,18 @@ class _UploadScreenState extends State<UploadScreen> {
         onPressed: bytes == null || !synthetic || !consent || widget.c.busy
             ? null
             : () async {
+                List<int> selected;
+                try {
+                  selected = verifiedSyntheticBytes(
+                    bytes!,
+                    expectedSha256: selectedHash!,
+                  );
+                } on FormatException {
+                  setState(() => error = 'syntheticIntegrityOnly');
+                  return;
+                }
                 final before = widget.c.operations.length;
-                await widget.c.queue(bytes!, title.text, date.text);
+                await widget.c.queue(selected, title.text, date.text);
                 if (!mounted) return;
                 if (widget.c.operations.length > before) {
                   widget.queued();

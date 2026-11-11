@@ -1,30 +1,33 @@
 import '../l10n/localized_copy.dart';
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfrx/pdfrx.dart';
 import '../domain/sample_policy.dart';
+import '../domain/pdf_policy.dart';
 
-Uint8List verifiedSyntheticBytes(List<int> bytes) {
-  if (bytes.length > 20 * 1024 * 1024 ||
-      sha256.convert(bytes).toString() != syntheticPdfSha256) {
-    throw const FormatException('Synthetic PDF integrity check failed');
-  }
-  return Uint8List.fromList(bytes);
-}
+Uint8List verifiedSyntheticBytes(
+  List<int> bytes, {
+  String expectedSha256 = syntheticPdfSha256,
+}) => verifiedPdfBytes(bytes, expectedSha256: expectedSha256);
 
 // Memory-only source. No download, cache, external links or export action.
 class SyntheticPdfScreen extends StatefulWidget {
-  const SyntheticPdfScreen({super.key, required this.load});
+  const SyntheticPdfScreen({
+    super.key,
+    required this.load,
+    this.expectedSha256 = syntheticPdfSha256,
+  });
   final Future<Uint8List> Function() load;
+  final String expectedSha256;
   @override
   State<SyntheticPdfScreen> createState() => _SyntheticPdfScreenState();
 }
 
 class _SyntheticPdfScreenState extends State<SyntheticPdfScreen> {
-  late final Future<Uint8List> data = Future<Uint8List>.sync(
-    widget.load,
-  ).then(verifiedSyntheticBytes);
+  late final Future<Uint8List> data = Future<Uint8List>.sync(widget.load).then(
+    (bytes) =>
+        verifiedSyntheticBytes(bytes, expectedSha256: widget.expectedSha256),
+  );
   final controller = PdfViewerController();
   final budget = PdfImageCacheBudget(maximumBytes: 32 * 1024 * 1024);
   bool ready = false;

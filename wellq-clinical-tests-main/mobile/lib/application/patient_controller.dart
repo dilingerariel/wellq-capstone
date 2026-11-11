@@ -7,8 +7,7 @@ import '../domain/models.dart';
 import '../data/api.dart';
 import '../data/local_store.dart';
 import '../data/uploads.dart';
-import 'package:crypto/crypto.dart';
-import '../domain/sample_policy.dart';
+import '../domain/pdf_policy.dart';
 import '../domain/exam_query.dart';
 
 class PatientController extends ChangeNotifier {
@@ -266,7 +265,10 @@ class PatientController extends ChangeNotifier {
     }
   }
 
-  Future<List<int>?> document(String examId) async {
+  Future<List<int>?> document(String examId) async =>
+      (await documentWithIntegrity(examId))?.bytes;
+
+  Future<VerifiedPdfDocument?> documentWithIntegrity(String examId) async {
     final s = session;
     if (s == null) return null;
     final check = guard();
@@ -274,13 +276,10 @@ class PatientController extends ChangeNotifier {
     for (final op in await store.pending(s.scope)) {
       if (op.examId != examId) continue;
       final file = uploads.vault.resolve(op.file);
-      if (!await file.exists() || await file.length() > 20 * 1024 * 1024) {
-        return null;
-      }
-      final bytes = await file.readAsBytes();
+      final bytes = await uploads.vault.verified(file, op);
       check();
-      if (sha256.convert(bytes).toString() != syntheticPdfSha256) return null;
-      return bytes;
+      if (bytes == null) return null;
+      return VerifiedPdfDocument(bytes, op.initiate['sha256'] as String);
     }
     return null;
   }

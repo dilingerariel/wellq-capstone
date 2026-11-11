@@ -86,35 +86,29 @@ void main() {
       api.close();
     },
   );
-  test(
-    'only reviewed synthetic PDF can be persisted; path escape rejected',
-    () async {
-      final api = ApiClient();
-      final repo = UploadRepository(api, db, FileVault(root));
-      await expectLater(
-        repo.queue(
-          patient(),
-          utf8.encode('%PDF real patient'),
-          'SYNTHETIC',
-          '2026-11-08',
-          () {},
+  test('invalid PDF cannot be persisted; path escape rejected', () async {
+    final api = ApiClient();
+    final repo = UploadRepository(api, db, FileVault(root));
+    await expectLater(
+      repo.queue(
+        patient(),
+        utf8.encode('%PDF real patient'),
+        'SYNTHETIC',
+        '2026-11-08',
+        () {},
+      ),
+      throwsA(
+        isA<ApiFailure>().having(
+          (e) => e.code,
+          'code',
+          'INVALID_SYNTHETIC_PDF',
         ),
-        throwsA(
-          isA<ApiFailure>().having(
-            (e) => e.code,
-            'code',
-            'ONLY_BUNDLED_SYNTHETIC_PDF',
-          ),
-        ),
-      );
-      expect(
-        () => FileVault(root).resolve('../original.pdf'),
-        throwsStateError,
-      );
-      expect(() => db.check('production/patient'), throwsStateError);
-      api.close();
-    },
-  );
+      ),
+    );
+    expect(() => FileVault(root).resolve('../original.pdf'), throwsStateError);
+    expect(() => db.check('production/patient'), throwsStateError);
+    api.close();
+  });
   for (final status in [401, 403, 409, 428, 422, 429, 502, 503]) {
     test(
       'HTTP $status stays explicit and does not echo private errors',

@@ -187,7 +187,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syntheticPdfOnly =>
-      'Use the synthetic test PDF. Do not select real medical documents.';
+      'Select a synthetic test PDF or use the included example. Do not select real medical documents.';
 
   @override
   String get useTestPdf => 'Use test PDF';
@@ -231,7 +231,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syntheticIntegrityOnly =>
-      'Only an intact copy of the included synthetic PDF is allowed.';
+      'Invalid, incomplete or integrity-mismatched PDF. Select a valid synthetic PDF without changing its stored copy.';
 
   @override
   String get pickerUnavailable =>

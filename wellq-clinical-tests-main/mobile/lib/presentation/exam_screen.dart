@@ -20,6 +20,7 @@ class _ExamScreenState extends State<ExamScreen> {
   Json? detail, extraction, frozen;
   ExtractionDraft? draft;
   String? error, key, latestStatus;
+  String? localDocumentHash;
   bool loading = true,
       identity = false,
       checked = false,
@@ -36,11 +37,12 @@ class _ExamScreenState extends State<ExamScreen> {
       final d = await widget.c.detail(widget.exam.id);
       detailRead = true;
       if (!mounted) return;
-      final local = await widget.c.document(widget.exam.id);
+      final local = await widget.c.documentWithIntegrity(widget.exam.id);
       if (!mounted) return;
       setState(() {
         detail = d;
         hasDocument = local != null;
+        localDocumentHash = local?.sha256;
       });
       if (['rejected', 'failed'].contains(d['status'])) {
         setState(() {
@@ -359,12 +361,16 @@ class _ExamScreenState extends State<ExamScreen> {
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => SyntheticPdfScreen(
+                    expectedSha256: localDocumentHash!,
                     load: () async {
                       final bytes = await widget.c.document(widget.exam.id);
                       if (bytes == null) {
                         throw const FormatException('Document unavailable');
                       }
-                      return verifiedSyntheticBytes(bytes);
+                      return verifiedSyntheticBytes(
+                        bytes,
+                        expectedSha256: localDocumentHash!,
+                      );
                     },
                   ),
                 ),

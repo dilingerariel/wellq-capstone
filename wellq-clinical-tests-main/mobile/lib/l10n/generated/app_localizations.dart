@@ -431,7 +431,7 @@ abstract class AppLocalizations {
   /// No description provided for @syntheticPdfOnly.
   ///
   /// In es, this message translates to:
-  /// **'Usa el PDF sintético de prueba. No selecciones documentos médicos reales.'**
+  /// **'Selecciona un PDF sintético de prueba o usa el ejemplo incluido. No selecciones documentos médicos reales.'**
   String get syntheticPdfOnly;
 
   /// No description provided for @useTestPdf.
@@ -509,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @syntheticIntegrityOnly.
   ///
   /// In es, this message translates to:
-  /// **'Solo se admite una copia íntegra del PDF sintético incluido.'**
+  /// **'PDF inválido, incompleto o con integridad incorrecta. Selecciona un PDF sintético válido sin modificar su copia guardada.'**
   String get syntheticIntegrityOnly;
 
   /// No description provided for @pickerUnavailable.
