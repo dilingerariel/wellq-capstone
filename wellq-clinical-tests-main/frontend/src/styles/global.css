@@ -178,6 +178,11 @@ main:focus {
   border-radius: 8px;
   color: var(--muted);
   font-weight: 550;
+  min-height: 48px;
+  overflow-wrap: anywhere;
+}
+.sidebar nav a svg {
+  flex-shrink: 0;
 }
 .sidebar nav a:hover {
   background: var(--canvas);
@@ -186,6 +191,11 @@ main:focus {
 .sidebar nav a.active {
   background: var(--accent-soft);
   color: var(--accent-text);
+  box-shadow: inset 3px 0 0 var(--accent-text);
+  font-weight: 650;
+}
+.sidebar nav a:focus-visible {
+  outline-offset: 2px;
 }
 .sidebar-bottom {
   margin-top: auto;
@@ -213,12 +223,13 @@ main:focus {
   flex-direction: column;
 }
 .topbar {
-  height: 80px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 38px;
+  padding: 14px 38px;
+  flex-wrap: wrap;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
@@ -228,6 +239,32 @@ main:focus {
   gap: 12px;
   color: var(--muted);
   font-size: 12px;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  min-width: 0;
+}
+.breadcrumb-trail svg {
+  flex-shrink: 0;
+}
+.breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.breadcrumb-link:hover {
+  color: var(--accent-text);
+  background: var(--accent-soft);
 }
 .breadcrumb strong {
   font-weight: 550;
@@ -800,7 +837,7 @@ dd {
     padding-right: 12px;
   }
   .topbar {
-    padding: 0 24px;
+    padding: 14px 24px;
   }
   .content {
     padding: 24px;

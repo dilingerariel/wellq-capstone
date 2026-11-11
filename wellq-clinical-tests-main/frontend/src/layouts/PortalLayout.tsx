@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   Activity,
@@ -42,18 +42,25 @@ export function PortalLayout() {
     previousPath.current = location.pathname
   }, [location.pathname])
   const home = runtime.role === 'clinician' ? '/clinical' : '/patient'
+  const examPage = location.pathname.startsWith('/exams/')
   const title =
     location.pathname === '/history'
       ? 'recordsHistoryNav'
       : location.pathname === '/reports'
         ? 'recordsReportsNav'
-        : location.pathname.startsWith('/exams')
-          ? 'exams'
-          : location.pathname === '/upload'
-            ? 'uploadTitle'
-            : location.pathname === '/catalog'
-              ? 'catalog'
-              : 'overview'
+        : examPage
+          ? location.pathname.endsWith('/clinical-review')
+            ? 'clinicalWorkTitle'
+            : location.pathname.endsWith('/extraction')
+              ? 'reviewTitle'
+              : 'examDetail'
+          : location.pathname === '/exams'
+            ? 'exams'
+            : location.pathname === '/upload'
+              ? 'uploadTitle'
+              : location.pathname === '/catalog'
+                ? 'catalog'
+                : 'overview'
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -128,7 +135,7 @@ export function PortalLayout() {
         </aside>
         <div className="main-shell">
           <header className="topbar">
-            <div className="breadcrumb">
+            <nav className="breadcrumb" aria-label={t('navigationTrail')}>
               <button
                 className="icon-button mobile-menu"
                 aria-label={t(open ? 'closeMenu' : 'menu')}
@@ -147,10 +154,22 @@ export function PortalLayout() {
               >
                 {open ? <X size={21} /> : <Menu size={21} />}
               </button>
-              <span>{t(runtime.role === 'clinician' ? 'clinical' : 'patient')}</span>
-              <ChevronRight size={13} aria-hidden="true" />
-              <strong>{t(title)}</strong>
-            </div>
+              <div className="breadcrumb-trail">
+                <Link className="breadcrumb-link" to={home}>
+                  {t(runtime.role === 'clinician' ? 'clinical' : 'patient')}
+                </Link>
+                <ChevronRight size={13} aria-hidden="true" />
+                {examPage && (
+                  <>
+                    <Link className="breadcrumb-link" to="/exams">
+                      {t('exams')}
+                    </Link>
+                    <ChevronRight size={13} aria-hidden="true" />
+                  </>
+                )}
+                <strong aria-current="page">{t(title)}</strong>
+              </div>
+            </nav>
             <div className="toolbar">
               <label className="sr-only" htmlFor="language">
                 {t('language')}

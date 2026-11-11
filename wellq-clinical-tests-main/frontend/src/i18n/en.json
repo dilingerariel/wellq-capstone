@@ -261,6 +261,7 @@
   "catalog": "Marker catalog",
   "clinical": "Clinical workspace",
   "patient": "My workspace",
+  "navigationTrail": "Current location",
   "workspace": "WORKSPACE",
   "resources": "RESOURCES",
   "menu": "Open navigation",

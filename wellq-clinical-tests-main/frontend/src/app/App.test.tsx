@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -16,6 +16,22 @@ function portal(path = '/exams') {
   )
 }
 describe('portal navigation and states', () => {
+  it('returns from an exam through the contextual navigation trail', async () => {
+    const user = userEvent.setup()
+    portal()
+    await user.click(
+      await screen.findByRole('link', { name: 'Panel de laboratorio · DEMO' }, { timeout: 5000 }),
+    )
+    await screen.findByRole('heading', { name: es.documentInfo }, { timeout: 5000 })
+    const trail = screen.getByRole('navigation', { name: es.navigationTrail })
+    expect(within(trail).getByText(es.examDetail)).toHaveAttribute('aria-current', 'page')
+    await user.click(within(trail).getByRole('link', { name: es.exams }))
+    expect(
+      await screen.findByRole('link', { name: 'Panel de laboratorio · DEMO' }),
+    ).toBeInTheDocument()
+    await user.click(within(trail).getByRole('link', { name: es.clinical }))
+    expect(await screen.findByRole('heading', { name: es.clinicalTitle })).toBeInTheDocument()
+  }, 15000)
   it('has matching Spanish and English dictionaries', () =>
     expect(Object.keys(es).sort()).toEqual(Object.keys(en).sort()))
   it('lists synthetic exams and navigates to real document metadata', async () => {
