@@ -24,9 +24,9 @@ import { ClinicianController } from '../features/clinician/controller'
 import { clinicianApi } from '../features/clinician/model'
 import { reportingApi, type ReportingApi } from '../features/records/model'
 import { ReportExportController } from '../features/records/export-controller'
+import { resolveDataMode } from './data-mode'
 
-const mode = import.meta.env.VITE_DATA_MODE || 'demo'
-if (mode !== 'demo' && mode !== 'api') throw new Error('VITE_DATA_MODE must be demo or api')
+const mode = resolveDataMode(import.meta.env.VITE_DATA_MODE, import.meta.env.PROD)
 interface Runtime {
   pdfExportEnabled: boolean
   reporting: ReportingApi
