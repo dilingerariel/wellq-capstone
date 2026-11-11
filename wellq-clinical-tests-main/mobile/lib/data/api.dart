@@ -1,11 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 
 import 'package:http/http.dart' as http;
 
 import '../domain/models.dart';
+import '../domain/retry_after.dart';
+
+// Same compilation constants as Flutter kDebugMode. Keeping the HTTP clients
+// independent of dart:ui also permits low-memory native Dart integration tests.
+const _debugIdentity =
+    !bool.fromEnvironment('dart.vm.product') &&
+    !bool.fromEnvironment('dart.vm.profile');
 
 abstract interface class IdentityAdapter {
   Future<Session> connect();
@@ -111,7 +117,7 @@ class ApiClient {
         throw ApiFailure(
           res.statusCode,
           code,
-          retryAfter: int.tryParse(res.headers['retry-after'] ?? '') ?? 0,
+          retryAfter: retryAfterSeconds(res.headers['retry-after']),
         );
       }
       return res;
@@ -202,7 +208,7 @@ class ApiClient {
           res.statusCode,
           'STORAGE_UPLOAD_FAILED',
           storage: true,
-          retryAfter: int.tryParse(res.headers['retry-after'] ?? '') ?? 0,
+          retryAfter: retryAfterSeconds(res.headers['retry-after']),
         );
       }
     } on SocketException {
@@ -226,7 +232,7 @@ class LoopbackIdentity implements IdentityAdapter {
   final bool enabled;
   @override
   Future<Session> connect() async {
-    if (!enabled || !kDebugMode) {
+    if (!enabled || !_debugIdentity) {
       throw const ApiFailure(403, 'DEBUG_IDENTITY_DISABLED');
     }
     await api.ready();
