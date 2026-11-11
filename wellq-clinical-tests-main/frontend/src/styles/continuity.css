@@ -35,6 +35,117 @@
   flex-wrap: wrap;
   gap: 10px;
 }
+.access-card {
+  width: min(100%, 540px);
+  min-width: 0;
+  margin: clamp(12px, 5vh, 56px) auto;
+  padding: clamp(20px, 4vw, 42px);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 5%);
+  overflow-wrap: anywhere;
+}
+.access-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
+}
+.access-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.access-brand small {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.75rem;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.access-intro h1 {
+  font-size: clamp(1.65rem, 3vw, 2rem);
+  letter-spacing: -0.6px;
+  margin-bottom: 12px;
+}
+.access-intro p {
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+.access-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.access-status-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.access-help,
+.access-offline,
+.access-footnote {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.access-help {
+  margin: 14px 0 24px;
+}
+.access-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+.access-actions .button {
+  width: 100%;
+  min-height: 48px;
+  white-space: normal;
+  text-align: center;
+}
+.access-offline {
+  margin: 14px 0 0;
+}
+.access-footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin: 24px 0 0;
+}
+.access-footnote svg,
+.access-status svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.access-spinner {
+  animation: access-spin 1.5s linear infinite;
+}
+@keyframes access-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .access-spinner {
+    animation: none;
+  }
+}
 .connection-indicator {
   font-size: 12px;
   font-weight: 600;
