@@ -1,5 +1,8 @@
 # WellQ móvil · fase 3.1
 
+La guía actual del recorrido del paciente está en [PATIENT_DEMO.md](PATIENT_DEMO.md).
+Los apartados históricos siguientes conservan el contexto de sus fases.
+
 Estado: implementación funcional local con validación Flutter en Ubuntu WSL2;
 sin merge ni publicación. El runner de Windows continúa bloqueado por Control
 de aplicaciones y no se modificaron sus protecciones.

@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'Sesión de paciente'**
   String get patientSession;
 
+  /// No description provided for @renewPatientSession.
+  ///
+  /// In es, this message translates to:
+  /// **'Renovar sesión y consultar estados'**
+  String get renewPatientSession;
+
   /// No description provided for @syntheticProfile.
   ///
   /// In es, this message translates to:

@@ -42,6 +42,7 @@
   "appPreferences": "Application preferences.",
   "changeAppearance": "Switch light / dark theme",
   "patientSession": "Patient session",
+  "renewPatientSession": "Renew session and check statuses",
   "syntheticProfile": "Synthetic development profile. Not for clinical use.",
   "syncStatus": "Sync status",
   "developmentInfo": "Development information",

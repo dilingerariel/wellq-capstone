@@ -42,6 +42,7 @@
   "appPreferences": "Preferencias de la aplicación.",
   "changeAppearance": "Cambiar tema claro / oscuro",
   "patientSession": "Sesión de paciente",
+  "renewPatientSession": "Renovar sesión y consultar estados",
   "syntheticProfile": "Perfil sintético de desarrollo. Sin uso clínico.",
   "syncStatus": "Estado de sincronización",
   "developmentInfo": "Información de desarrollo",

@@ -143,6 +143,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get patientSession => 'Sesión de paciente';
 
   @override
+  String get renewPatientSession => 'Renovar sesión y consultar estados';
+
+  @override
   String get syntheticProfile =>
       'Perfil sintético de desarrollo. Sin uso clínico.';
 

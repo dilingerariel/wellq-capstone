@@ -681,6 +681,11 @@ class _PatientShellState extends State<PatientShell>
       title: Text(context.l10n.patientSession),
       subtitle: Text(context.l10n.syntheticProfile),
     ),
+    OutlinedButton.icon(
+      onPressed: c.busy ? null : c.reconcile,
+      icon: const Icon(Icons.refresh),
+      label: Text(context.l10n.renewPatientSession),
+    ),
     ListTile(
       leading: const Icon(Icons.sync_outlined),
       title: Text(context.l10n.syncStatus),
@@ -739,7 +744,7 @@ class _UploadScreenState extends State<UploadScreen> {
       );
   List<int>? bytes;
   String? selectedHash;
-  bool consent = false, synthetic = false;
+  bool consent = false, synthetic = false, selecting = false;
   String? error;
   void acceptPdf(List<int> selected) {
     final snapshot = validatedSyntheticPdfBytes(selected);
@@ -753,6 +758,8 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> selectPdf() async {
+    if (selecting) return;
+    setState(() => selecting = true);
     try {
       final files = await FilePicker.pickFiles(
         type: FileType.custom,
@@ -796,6 +803,30 @@ class _UploadScreenState extends State<UploadScreen> {
           error = 'pickerUnavailable';
         });
       }
+    } finally {
+      if (mounted) setState(() => selecting = false);
+    }
+  }
+
+  Future<void> selectSample() async {
+    if (selecting) return;
+    setState(() => selecting = true);
+    try {
+      final data = await rootBundle.load('assets/synthetic.pdf');
+      final selected = verifiedSyntheticBytes(data.buffer.asUint8List());
+      if (mounted) acceptPdf(selected);
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          bytes = null;
+          selectedHash = null;
+          synthetic = false;
+          consent = false;
+          error = 'syntheticIntegrityOnly';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => selecting = false);
     }
   }
 
@@ -816,35 +847,34 @@ class _UploadScreenState extends State<UploadScreen> {
       ),
       const SizedBox(height: 8),
       Text(context.l10n.syntheticPdfOnly),
+      if (selecting) const LinearProgressIndicator(),
       const SizedBox(height: 16),
       OutlinedButton.icon(
-        onPressed: () async {
-          final data = await rootBundle.load('assets/synthetic.pdf');
-          final selected = verifiedSyntheticBytes(data.buffer.asUint8List());
-          if (mounted) acceptPdf(selected);
-        },
+        onPressed: selecting ? null : selectSample,
         icon: const Icon(Icons.science_outlined),
         label: Text(context.l10n.useTestPdf),
       ),
       TextButton.icon(
-        onPressed: selectPdf,
+        onPressed: selecting ? null : selectPdf,
         icon: const Icon(Icons.attach_file),
         label: Text(context.l10n.selectTestPdf),
       ),
       if (bytes != null) ...[
         Text(context.l10n.selectedPdf(bytes!.length)),
         TextButton.icon(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => SyntheticPdfScreen(
-                expectedSha256: selectedHash!,
-                load: () async => verifiedSyntheticBytes(
-                  bytes!,
-                  expectedSha256: selectedHash!,
+          onPressed: selecting
+              ? null
+              : () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => SyntheticPdfScreen(
+                      expectedSha256: selectedHash!,
+                      load: () async => verifiedSyntheticBytes(
+                        bytes!,
+                        expectedSha256: selectedHash!,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
           icon: const Icon(Icons.picture_as_pdf_outlined),
           label: Text(context.l10n.viewDocument),
         ),
@@ -888,7 +918,12 @@ class _UploadScreenState extends State<UploadScreen> {
           style: TextStyle(color: Theme.of(context).colorScheme.error),
         ),
       FilledButton.icon(
-        onPressed: bytes == null || !synthetic || !consent || widget.c.busy
+        onPressed:
+            bytes == null ||
+                !synthetic ||
+                !consent ||
+                selecting ||
+                widget.c.busy
             ? null
             : () async {
                 List<int> selected;
