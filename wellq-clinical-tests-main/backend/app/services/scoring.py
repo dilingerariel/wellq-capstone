@@ -5,11 +5,12 @@ import json
 import math
 import calendar
 from copy import deepcopy
+from decimal import Decimal, InvalidOperation
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List, Tuple
 from pymongo.database import Database
 
-from app.services.catalog import catalog_service, PILLAR_THEORETICAL_WEIGHTS
+from app.services.catalog import catalog_service
 from app.services.references import effective_reference, reference_status
 from app.models.scoring import (
     PillarScore, PillarContribution, ScoreFlag, FlagSeverity,
@@ -18,7 +19,7 @@ from app.models.scoring import (
 
 logger = logging.getLogger(__name__)
 
-SCORING_VERSION = "score-v1.0"
+SCORING_VERSION = "score-v1.1"
 CATALOG_VERSION = "cat-2026.08"
 
 class ScoringEngine:
@@ -29,7 +30,34 @@ class ScoringEngine:
     @staticmethod
     def publication_allowed():
         from app.config import settings
-        return settings.CATALOG_CLINICALLY_APPROVED or settings.ENVIRONMENT == "test"
+        return settings.ENVIRONMENT == "test" or (
+            settings.CATALOG_CLINICALLY_APPROVED and catalog_service.definition_complete)
+
+    @staticmethod
+    def coverage_weights(catalog_map, pillar):
+        """Exact decimal weight sum; invalid definitions fail closed per pillar."""
+        try:
+            weights = [Decimal(str(item.get("pillar_weights", {}).get(pillar, 0)))
+                       for item in catalog_map.values()]
+            if any(not w.is_finite() or w < 0 for w in weights):
+                return None
+            total = sum(weights, Decimal(0))
+            return total if total > 0 else None
+        except (InvalidOperation, TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def aggregate_index(pillars, flags):
+        """Keep unrounded inputs through aggregation; round only output values."""
+        if not pillars:
+            return None, 0.0, None
+        if any(not 0 < c <= 1 or not 0 <= s <= 100 for c, s in pillars):
+            raise ValueError("Invalid pillar aggregation input")
+        base = math.fsum(c * s for c, s in pillars) / math.fsum(c for c, _ in pillars)
+        penalty = min(20.0, math.fsum(
+            10.0 if f.severity == FlagSeverity.CRITICAL else
+            5.0 if f.severity == FlagSeverity.HIGH else 0.0 for f in flags))
+        return round(base, 1), penalty, max(0.0, round(base - penalty, 1))
 
     def snapshot_publishable(self, snapshot):
         from app.config import settings
@@ -110,7 +138,8 @@ class ScoringEngine:
         marker_code: str,
         value: float,
         reference: Optional[dict] = None,
-        catalog_item: Optional[dict] = None
+        catalog_item: Optional[dict] = None,
+        round_result: bool = True,
     ) -> Tuple[Optional[float], Optional[ScoreFlag]]:
         """
         Paso 1: Cálculo del subscore (0-100) y generación de banderas clínicas.
@@ -168,11 +197,15 @@ class ScoringEngine:
             else:
                 s = 0.0
 
-        s = max(0.0, min(100.0, round(s, 1)))
+        s = max(0.0, min(100.0, s))
+        if round_result:
+            s = round(s, 1)
 
         # Evaluar banderas clínicas (§8.6)
         flag: Optional[ScoreFlag] = None
-        if (Cl is not None and v < Cl) or (Ch is not None and v > Ch):
+        low_bad = directionality != "lower_better" and L is not None and v < L
+        high_bad = directionality != "higher_better" and H is not None and v > H
+        if (low_bad and Cl is not None and v < Cl) or (high_bad and Ch is not None and v > Ch):
             flag = ScoreFlag(
                 code=f"{marker_code}_critical",
                 severity=FlagSeverity.CRITICAL,
@@ -181,7 +214,7 @@ class ScoringEngine:
                 unit=catalog_item.get("canonical_unit"),
                 message=f"Valor crítico fuera de rango seguro ({v} {catalog_item.get('canonical_unit', '')})"
             )
-        elif (L is not None and v < L) or (H is not None and v > H):
+        elif low_bad or high_bad:
             dev = ((L - v if L is not None and v < L else v - H) / amplitude
                    if amplitude is not None else None)
             if dev is not None and dev > 0.25:
@@ -257,7 +290,8 @@ class ScoringEngine:
                 marker_code=code,
                 value=float(val),
                 reference=m.get("reference"),
-                catalog_item=cat
+                catalog_item=cat,
+                round_result=False,
             )
             if subscore is None:
                 excluded.append({"marker_code": code, "reason": self.exclusion_reason(code, m.get("reference"))})
@@ -292,19 +326,19 @@ class ScoringEngine:
 
         # 2. Agregación por pilar (§8.4)
         pillars: Dict[str, PillarScore] = {}
-        publishable_pillars: List[PillarScore] = []
+        publishable_pillars = []
 
         for pilar_key in ["cardio", "joint", "muscle", "bone"]:
-            t_weight = PILLAR_THEORETICAL_WEIGHTS.get(pilar_key, 1.0)
+            t_weight = self.coverage_weights(catalog_map, pilar_key)
             contributions: List[PillarContribution] = []
-            a_weight_sum = 0.0
+            a_weight_sum = Decimal(0)
             weighted_score_sum = 0.0
 
             for code, data in active_subscores.items():
                 p_weights = data["cat"].get("pillar_weights", {})
                 w_i = p_weights.get(pilar_key)
-                if w_i and w_i > 0:
-                    a_weight_sum += w_i
+                if t_weight is not None and w_i and w_i > 0:
+                    a_weight_sum += Decimal(str(w_i))
                     weighted_score_sum += w_i * data["subscore"]
                     contributions.append(
                         PillarContribution(
@@ -319,16 +353,17 @@ class ScoringEngine:
                         )
                     )
 
-            coverage = round(a_weight_sum / max(t_weight, 1e-6), 2)
+            coverage = float(a_weight_sum / t_weight) if t_weight is not None else 0.0
+            raw_score = weighted_score_sum / float(a_weight_sum) if a_weight_sum else None
 
             if coverage >= 0.60:
                 confidence = ScoreConfidence.HIGH
                 pillar_status = "published"
-                p_score = round(weighted_score_sum / max(a_weight_sum, 1e-6), 1)
+                p_score = round(raw_score, 1)
             elif coverage >= 0.35:
                 confidence = ScoreConfidence.MEDIUM
                 pillar_status = "published"
-                p_score = round(weighted_score_sum / max(a_weight_sum, 1e-6), 1)
+                p_score = round(raw_score, 1)
             else:
                 confidence = ScoreConfidence.INSUFFICIENT
                 pillar_status = "insufficient_data"
@@ -343,28 +378,14 @@ class ScoringEngine:
             )
             pillars[pilar_key] = p_obj
             if pillar_status == "published" and p_score is not None:
-                publishable_pillars.append(p_obj)
+                publishable_pillars.append((coverage, raw_score))
 
         # 3. Índice de Laboratorio Global (§8.5)
         lab_index: Optional[float] = None
         base_score: Optional[float] = None
         penalty_applied: float = 0.0
 
-        if publishable_pillars:
-            sum_weighted_pillars = sum(p.coverage * (p.score or 0.0) for p in publishable_pillars)
-            sum_coverages = sum(p.coverage for p in publishable_pillars)
-            base_score = round(sum_weighted_pillars / max(sum_coverages, 1e-6), 1)
-
-            # Penalización por banderas activas
-            flag_penalties = 0.0
-            for f in active_flags:
-                if f.severity == FlagSeverity.CRITICAL:
-                    flag_penalties += 10.0
-                elif f.severity == FlagSeverity.HIGH:
-                    flag_penalties += 5.0
-
-            penalty_applied = min(20.0, flag_penalties)
-            lab_index = max(0.0, round(base_score - penalty_applied, 1))
+        base_score, penalty_applied, lab_index = self.aggregate_index(publishable_pillars, active_flags)
 
         # 4. Snapshot inmutable (§8.8)
         snapshot_id = f"sc_{uuid.uuid4().hex[:16]}"
@@ -392,6 +413,9 @@ class ScoringEngine:
             "input_markers": [self.marker_input(m) for m in raw_markers],
             "catalog_clinically_approved": settings.CATALOG_CLINICALLY_APPROVED,
             "parameters": {"coverage_high": 0.60, "coverage_medium": 0.35,
+                           "coverage_basis": "defined_catalog_weights",
+                           "catalog_definition_complete": catalog_service.definition_complete,
+                           "technical_only": not catalog_service.definition_complete or not settings.CATALOG_CLINICALLY_APPROVED,
                            "critical_penalty": 10, "high_penalty": 5, "penalty_cap": 20},
         }
 
@@ -424,8 +448,16 @@ class ScoringEngine:
             parent = db.clinical_tests.find_one({"clinical_test_id": marker["clinical_test_id"],
                                                 "patient_id": patient_id, "deleted_at": None})
             value = marker.get("value_canonical")
-            if not parent or value is None or not math.isfinite(float(value)):
+            cat = catalog_service.get_marker(marker["marker_code"])
+            try:
+                numeric = not isinstance(value, bool) and value is not None and math.isfinite(float(value))
+            except (TypeError, ValueError, OverflowError):
+                numeric = False
+            if not parent or not numeric:
                 excluded.append({"marker_code": marker["marker_code"], "reason": "deleted_or_invalid_source"})
+                continue
+            if not cat or marker.get("unit_canonical") != cat.get("canonical_unit"):
+                excluded.append({"marker_code": marker["marker_code"], "reason": "UNKNOWN_MARKER_OR_UNIT_MISMATCH"})
                 continue
             valid.append(marker)
         return valid, excluded

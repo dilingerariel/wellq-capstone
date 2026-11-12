@@ -190,6 +190,9 @@ _CENSORED_RE = re.compile(r"^\s*(<=|>=|<|>|≤|≥)\s*(.+)$")
 class CatalogService:
     version = "cat-2026.08"
     clinically_validated = False
+    # Initial selection, not the complete proposed Table 21. A flag alone
+    # cannot turn this partial definition into a clinically approved catalogue.
+    definition_complete = False
     def __init__(self):
         self.catalog_by_code: Dict[str, dict] = {item["marker_code"]: item for item in INITIAL_MARKER_CATALOG}
 
