@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test'
 import { readFileSync, writeFileSync } from 'node:fs'
 
-test('authorized clinician reviews the exact Flutter-created exam', async ({ page }) => {
+test('authorized clinician reviews the exact exam created by the mobile clients', async ({
+  page,
+}) => {
   test.skip(
     process.env.WELLQ_CROSS_E2E !== '1',
     'Requires a new isolated stack and Flutter handoff',
@@ -28,7 +30,11 @@ test('authorized clinician reviews the exact Flutter-created exam', async ({ pag
     }
   })
   await page.goto(base)
-  await page.getByRole('button', { name: 'Profesional sintético', exact: true }).click()
+  const signIn = page.getByRole('button', { name: 'Iniciar sesión', exact: true })
+  const legacyClinician = page.getByRole('button', { name: 'Profesional sintético', exact: true })
+  await expect(signIn.or(legacyClinician).first()).toBeVisible()
+  if (await legacyClinician.isVisible()) await legacyClinician.click()
+  else await signIn.click()
   await page
     .getByRole('textbox', { name: 'ID del paciente autorizado', exact: true })
     .fill(data.patient)

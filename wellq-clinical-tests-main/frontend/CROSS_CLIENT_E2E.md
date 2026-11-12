@@ -1,8 +1,86 @@
 # Synthetic Flutter → FastAPI → React handoff
 
-Status: **prepared; the complete E2E has not run**. This is test infrastructure,
-not a production identity integration or evidence that the three-client journey
-already passes. Base: `f52c064993cd08e30fb3bd60c5fa109b923f15d9`.
+Status: the isolated **Flutter-engine** runner below remains prepared, not run.
+The same mobile Dart clients have now completed the real HTTP/SQLite/React
+handoff using the existing synthetic integration (see the low-memory path).
+This does not certify the Flutter UI, Android, iOS or production providers.
+Original runner base: `f52c064993cd08e30fb3bd60c5fa109b923f15d9`.
+
+## Verified low-memory path (Windows native Dart)
+
+`mobile/tool/patient_journey.dart` reuses the actual mobile `LoopbackIdentity`,
+`ApiClient`, `UploadRepository`, `FileVault`, `LocalStore` and `ExtractionDraft`.
+The HTTP layer uses the same debug/profile/product compilation constants as
+Flutter, without depending on dart:ui. Production and profile identity rejection
+are checked separately; the application entry point also retains `kDebugMode`.
+No additional identity provider, JWT signing key or database seed is introduced.
+
+On 2026-11-11 the existing owned project `wellq-int-39706292db88` was used:
+patient login/read access; a new synthetic PDF queued in a temporary private
+directory; SQLite reopen; a real signed PUT whose successful response was
+deliberately dropped by the test client; explicit retry with persisted keys;
+durable reception, annotated extraction and idempotent patient confirmation.
+Playwright then reviewed and clinically validated that exact exam in React,
+checking both `expected_version` values. A separate Dart process read the final
+state and checked that professional private notes were not exposed.
+
+This is real FastAPI HTTP and MongoDB, with the existing explicit storage,
+annotated-AI and scanner doubles. It is not an Android/Flutter-widget execution
+or a production integration. The response loss is deliberately injected at the
+client after a real successful PUT; no existing services are fault-injected.
+The original isolated runner and its resource gate are unchanged.
+
+The tool requires a private JSON manifest: `synthetic_only: true`,
+`project: "wellq-int-39706292db88"`, unique `run: "native-journey-..."`, and
+`tenant`, `patient`, `clinician` from the existing verified synthetic fixture.
+Do not include tokens. `upload` additionally requires `write_authorized: true`,
+creates **one new exam**, and refuses a previously used manifest. `offline`
+creates one separate local-only operation; `verify` checks it from a new process
+with identical fields, zero attempts and intact PDF. No run deletes its files.
+
+From `wellq-clinical-tests-main/mobile`, with the guarded bridge already ready:
+
+```powershell
+$dart = 'C:\Dev\tools\flutter\bin\cache\dart-sdk\bin\dart.exe'
+# Set this to your separately prepared private synthetic manifest, not Android data.
+& $dart run tool/patient_journey.dart access $manifest
+# Only for an explicitly authorized NEW synthetic exam:
+& $dart run tool/patient_journey.dart upload $manifest
+& $dart run tool/patient_journey.dart offline $manifest
+```
+
+Then run the single existing Playwright test from `frontend`, without webServer
+startup or API mocks:
+
+```powershell
+$env:WELLQ_CROSS_E2E='1'
+$env:WELLQ_CROSS_MANIFEST=$manifest
+$env:WELLQ_CROSS_WEB='http://127.0.0.1:5178/clinical'
+node node_modules/@playwright/test/cli.js test --config playwright.cross.config.ts
+```
+
+Finally, from `mobile`: `& $dart run tool/patient_journey.dart verify $manifest`.
+The browser test supports both the explicit professional sign-in gate and the
+older isolated synthetic role switch. It never bypasses the session manager.
+The local handoff, temporary SQLite/PDF paths and integrity evidence for the
+executed run are under ignored `backend/integration/.runtime/login-repair/`.
+
+Executed checks: access 4; upload/recovery 17; local-only pending save 6; final
+patient/cold-process verification 13; one real Playwright review/validation test.
+These stage counts overlap and are not a unique Flutter-test count. Existing
+records and all 2,296 original objects retained their hashes. The normal API
+flow added one exam, its extraction/marker, four object-store files and one
+**unapproved synthetic** score snapshot in test mode. No weights, approval
+flags, identity relationships or preexisting clinical records were changed.
+The patient score endpoint still returned 403. Production clinical publication
+requires external approval; test-mode score behavior is not medical validation.
+
+For the actual Flutter UI, use a **separately authorized empty emulator** when
+memory permits: reverse only that emulator's port 8765 to the host, then
+`flutter run --debug -d emulator-<id> --dart-define=WELLQ_SYNTHETIC=true`.
+Choose **Conectar paciente sintético**. Do not use `Mobile.ps1 Live` (it starts
+the habitual environment), do not select the protected physical phone, and do
+not interpret the native Dart handoff as emulator validation.
 
 ## Intended journey
 
