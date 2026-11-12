@@ -49,10 +49,10 @@ class Session {
     if (role != 'patient' ||
         !patient.startsWith('synthetic-local-patient-') ||
         !tenant.startsWith('synthetic-local-') ||
-        !permissions.contains('clinical:read') ||
-        expired) {
+        !permissions.contains('clinical:read')) {
       throw const ApiFailure(403, 'SYNTHETIC_PATIENT_REQUIRED');
     }
+    if (expired) throw const ApiFailure(401, 'SESSION_EXPIRED');
   }
   final String token, patient, tenant, role;
   final Set<String> permissions;

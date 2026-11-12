@@ -129,8 +129,12 @@ Future<void> main() async {
       var rejected = false;
       try {
         Session.fromJson({...session, ...changes});
-      } on ApiFailure {
-        rejected = true;
+      } on ApiFailure catch (e) {
+        rejected = changes['expiresAt'] == 1
+            ? e.status == 401 &&
+                  e.code == 'SESSION_EXPIRED' &&
+                  e.message == 'errorSession'
+            : e.status == 403;
       }
       check(rejected, 'session metadata rejected');
     }
