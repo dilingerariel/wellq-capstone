@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import '../domain/models.dart';
+import '../domain/endpoint_policy.dart';
 import '../domain/retry_after.dart';
 
 // Same compilation constants as Flutter kDebugMode. Keeping the HTTP clients
@@ -71,7 +72,8 @@ class ApiClient {
   ApiClient({http.Client? client, http.Client? storageClient})
     : client = client ?? http.Client(),
       storageClient = storageClient ?? http.Client();
-  static final origin = Uri.parse('http://127.0.0.1:8765');
+  static final endpoint = EndpointPolicy.environment();
+  static final origin = endpoint.origin;
   final http.Client client, storageClient;
   Future<http.Response> send(
     String method,
@@ -163,11 +165,7 @@ class ApiClient {
     UploadCancellation? cancellation,
   }) async {
     final uri = Uri.parse(descriptor['signed_url'] as String);
-    if (uri.scheme != 'http' ||
-        uri.host != '127.0.0.1' ||
-        uri.port != 8765 ||
-        uri.userInfo.isNotEmpty ||
-        !uri.path.startsWith('/object/quarantine/clinical-tests/')) {
+    if (!endpoint.acceptsUpload(uri)) {
       throw const ApiFailure(403, 'STORAGE_ORIGIN_DENIED', storage: true);
     }
     final headers = Map<String, String>.from(
@@ -232,7 +230,7 @@ class LoopbackIdentity implements IdentityAdapter {
   final bool enabled;
   @override
   Future<Session> connect() async {
-    if (!enabled || !_debugIdentity) {
+    if (!enabled || !_debugIdentity || !ApiClient.endpoint.local) {
       throw const ApiFailure(403, 'DEBUG_IDENTITY_DISABLED');
     }
     await api.ready();
@@ -277,4 +275,49 @@ class LoopbackIdentity implements IdentityAdapter {
 
   @override
   void signOut() {} // Controller owns RAM tokens. No signing or persisted JWT.
+}
+
+/// Explicit isolated demo only. Access passes are entered at runtime, never
+/// compiled into the APK; renewal uses the still-valid RAM session.
+class DemoIdentity implements IdentityAdapter {
+  DemoIdentity(this.api, {required this.enabled});
+  final ApiClient api;
+  final bool enabled;
+  String? _accessCode;
+  Session? _session;
+  void authorize(String code) => _accessCode = code;
+  @override
+  Future<Session> connect() async {
+    if (!enabled || !_debugIdentity || ApiClient.endpoint.local) {
+      throw const ApiFailure(403, 'DEBUG_IDENTITY_DISABLED');
+    }
+    final code = _accessCode;
+    _accessCode = null;
+    if (code == null && _session == null) {
+      throw const ApiFailure(401, 'DEMO_ACCESS_REQUIRED');
+    }
+    final data = await api.json(
+      'POST',
+      code != null ? '/__wellq_demo/session' : '/__wellq_demo/refresh',
+      body: code == null ? null : {'accessCode': code},
+      session: code == null ? _session : null,
+    );
+    return _session = Session.fromJson(data);
+  }
+
+  @override
+  void signOut() {
+    final previous = _session;
+    _accessCode = null;
+    _session = null;
+    if (previous != null && !previous.expired) {
+      // Local logout is immediate even offline. Best-effort public revocation;
+      // no clinical request, retry queue or persisted credential is created.
+      unawaited(
+        api
+            .json('POST', '/__wellq_demo/logout', session: previous)
+            .then<void>((_) {}, onError: (Object _) {}),
+      );
+    }
+  }
 }

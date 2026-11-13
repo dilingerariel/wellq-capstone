@@ -146,6 +146,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get renewPatientSession => 'Renovar sesión y consultar estados';
 
   @override
+  String get demoAccessCode => 'Código de acceso de demostración';
+
+  @override
+  String get demoAccessHelp =>
+      'Acceso sintético temporal. No es un OTP ni una identidad productiva.';
+
+  @override
   String get syntheticProfile =>
       'Perfil sintético de desarrollo. Sin uso clínico.';
 

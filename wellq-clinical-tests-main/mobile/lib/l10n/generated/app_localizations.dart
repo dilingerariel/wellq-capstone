@@ -356,6 +356,18 @@ abstract class AppLocalizations {
   /// **'Renovar sesión y consultar estados'**
   String get renewPatientSession;
 
+  /// No description provided for @demoAccessCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de acceso de demostración'**
+  String get demoAccessCode;
+
+  /// No description provided for @demoAccessHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Acceso sintético temporal. No es un OTP ni una identidad productiva.'**
+  String get demoAccessHelp;
+
   /// No description provided for @syntheticProfile.
   ///
   /// In es, this message translates to:

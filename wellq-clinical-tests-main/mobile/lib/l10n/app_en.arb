@@ -43,6 +43,8 @@
   "changeAppearance": "Switch light / dark theme",
   "patientSession": "Patient session",
   "renewPatientSession": "Renew session and check statuses",
+  "demoAccessCode": "Demonstration access code",
+  "demoAccessHelp": "Temporary synthetic access. This is not an OTP or a production identity.",
   "syntheticProfile": "Synthetic development profile. Not for clinical use.",
   "syncStatus": "Sync status",
   "developmentInfo": "Development information",
