@@ -6,6 +6,11 @@ class EndpointPolicy {
     origin = Uri.parse(configured);
     local = configured == 'http://127.0.0.1:8765';
     if (local) return;
+    // Separate isolated demo over an explicitly configured ADB loopback only.
+    // This does not enable LoopbackIdentity or arbitrary cleartext hosts.
+    if (configured == 'http://127.0.0.1:9080' && trustedHost == '127.0.0.1') {
+      return;
+    }
     if (origin.scheme != 'https' ||
         trustedHost.isEmpty ||
         origin.host != trustedHost.toLowerCase() ||

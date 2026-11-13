@@ -32,6 +32,13 @@ Future<void> main() async {
     }
   }
   check(EndpointPolicy('http://127.0.0.1:8765', '').local);
+  final demoLocal = EndpointPolicy('http://127.0.0.1:9080', '127.0.0.1');
+  check(!demoLocal.local);
+  check(
+    demoLocal.acceptsUpload(
+      Uri.parse('http://127.0.0.1:9080/object/quarantine/clinical-tests/a'),
+    ),
+  );
   final policy = EndpointPolicy('https://demo.example', 'demo.example');
   check(
     policy.acceptsUpload(
@@ -53,7 +60,11 @@ Future<void> main() async {
   final api = ApiClient(
     client: MockClient((request) async {
       calls++;
-      check(request.url.origin == 'https://demo.example');
+      const expectedOrigin = String.fromEnvironment(
+        'WELLQ_DEMO_ORIGIN',
+        defaultValue: 'https://demo.example',
+      );
+      check(request.url.origin == Uri.parse(expectedOrigin).origin);
       check(
         request.url.path ==
             switch (calls) {
