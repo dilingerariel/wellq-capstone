@@ -37,13 +37,15 @@ class ScoringEngine:
     def coverage_weights(catalog_map, pillar):
         """Exact decimal weight sum; invalid definitions fail closed per pillar."""
         try:
-            weights = [Decimal(str(item.get("pillar_weights", {}).get(pillar, 0)))
-                       for item in catalog_map.values()]
+            raw = [item.get("pillar_weights", {}).get(pillar, 0) for item in catalog_map.values()]
+            if any(isinstance(w, bool) or not isinstance(w, (int, float)) for w in raw):
+                return None
+            weights = [Decimal(str(w)) for w in raw]
             if any(not w.is_finite() or w < 0 for w in weights):
                 return None
             total = sum(weights, Decimal(0))
             return total if total > 0 else None
-        except (InvalidOperation, TypeError, ValueError):
+        except (InvalidOperation, TypeError, ValueError, AttributeError):
             return None
 
     @staticmethod
@@ -69,7 +71,7 @@ class ScoringEngine:
     def publication_stamp(self):
         from app.config import settings
         return {"subscore_catalog_hash": catalog_service.content_hash(),
-                "subscore_clinically_approved": settings.CATALOG_CLINICALLY_APPROVED}
+                "subscore_clinically_approved": bool(settings.CATALOG_CLINICALLY_APPROVED and catalog_service.definition_complete)}
 
     def published_subscore(self, marker):
         from app.config import settings
@@ -106,9 +108,13 @@ class ScoringEngine:
         amplitude = H - L if L is not None and H is not None else None
         opt = catalog_item.get("optimal_range") or {}
         crit = catalog_item.get("critical_range") or {}
-        raw = {"L": L, "H": H, "Ol": opt.get("low", L), "Oh": opt.get("high", H),
-               "Cl": crit.get("low", L - .5 * amplitude if amplitude is not None else None) if L is not None else None,
-               "Ch": crit.get("high", H + .5 * amplitude if amplitude is not None else None) if H is not None else None}
+        raw = {"L": L, "H": H,
+               "Ol": opt.get("low") if opt.get("low") is not None else L,
+               "Oh": opt.get("high") if opt.get("high") is not None else H,
+               "Cl": (crit.get("low") if crit.get("low") is not None else
+                      L - .5 * amplitude if amplitude is not None else None) if L is not None else None,
+               "Ch": (crit.get("high") if crit.get("high") is not None else
+                      H + .5 * amplitude if amplitude is not None else None) if H is not None else None}
         try:
             params = {k: float(v) if v is not None else None for k, v in raw.items()}
         except (TypeError, ValueError, OverflowError):
@@ -167,13 +173,13 @@ class ScoringEngine:
             if Ol <= v <= Oh:
                 s = 100.0
             elif L <= v < Ol:
-                s = 100.0 - 30.0 * (Ol - v) / max(Ol - L, 1e-6)
+                s = 100.0 - 30.0 * (Ol - v) / (Ol - L)
             elif Oh < v <= H:
-                s = 100.0 - 30.0 * (v - Oh) / max(H - Oh, 1e-6)
+                s = 100.0 - 30.0 * (v - Oh) / (H - Oh)
             elif Cl <= v < L:
-                s = 70.0 - 70.0 * (L - v) / max(L - Cl, 1e-6)
+                s = 70.0 - 70.0 * (L - v) / (L - Cl)
             elif H < v <= Ch:
-                s = 70.0 - 70.0 * (v - H) / max(Ch - H, 1e-6)
+                s = 70.0 - 70.0 * (v - H) / (Ch - H)
             else:
                 s = 0.0
 
@@ -181,9 +187,9 @@ class ScoringEngine:
             if v <= Oh:
                 s = 100.0
             elif Oh < v <= H:
-                s = 100.0 - 30.0 * (v - Oh) / max(H - Oh, 1e-6)
+                s = 100.0 - 30.0 * (v - Oh) / (H - Oh)
             elif H < v <= Ch:
-                s = 70.0 - 70.0 * (v - H) / max(Ch - H, 1e-6)
+                s = 70.0 - 70.0 * (v - H) / (Ch - H)
             else:
                 s = 0.0
 
@@ -191,9 +197,9 @@ class ScoringEngine:
             if v >= Ol:
                 s = 100.0
             elif L <= v < Ol:
-                s = 100.0 - 30.0 * (Ol - v) / max(Ol - L, 1e-6)
+                s = 100.0 - 30.0 * (Ol - v) / (Ol - L)
             elif Cl <= v < L:
-                s = 70.0 - 70.0 * (L - v) / max(L - Cl, 1e-6)
+                s = 70.0 - 70.0 * (L - v) / (L - Cl)
             else:
                 s = 0.0
 
@@ -335,6 +341,8 @@ class ScoringEngine:
             weighted_score_sum = 0.0
 
             for code, data in active_subscores.items():
+                if t_weight is None:
+                    continue
                 p_weights = data["cat"].get("pillar_weights", {})
                 w_i = p_weights.get(pilar_key)
                 if t_weight is not None and w_i and w_i > 0:
@@ -411,7 +419,7 @@ class ScoringEngine:
             "catalog_snapshot": catalog_service.list_catalog(),
             "source_digest": self.source_digest(raw_markers),
             "input_markers": [self.marker_input(m) for m in raw_markers],
-            "catalog_clinically_approved": settings.CATALOG_CLINICALLY_APPROVED,
+            "catalog_clinically_approved": bool(settings.CATALOG_CLINICALLY_APPROVED and catalog_service.definition_complete),
             "parameters": {"coverage_high": 0.60, "coverage_medium": 0.35,
                            "coverage_basis": "defined_catalog_weights",
                            "catalog_definition_complete": catalog_service.definition_complete,

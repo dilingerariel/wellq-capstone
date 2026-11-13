@@ -46,6 +46,9 @@ class ProductionIdentityTests(unittest.TestCase):
 
                     synthetic = "https://identity.wellq-integration.invalid"
                     cases = [
+                        ("https://identity.wellq-capstone-demo.invalid", "example-api"),
+                        ("https://identity.example.org", "wellq-capstone-demo-only"),
+                        ("HTTPS://IDENTITY.WELLQ-CAPSTONE-DEMO.INVALID/", "example-api"),
                         (synthetic, "wellq-integration-only"),
                         (synthetic, "example-api"),
                         ("https://identity.example.org", "wellq-integration-only"),

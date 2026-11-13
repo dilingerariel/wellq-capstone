@@ -7,6 +7,46 @@ import pytest
 from app.tenancy import TenantDatabase
 
 
+@pytest.mark.parametrize(
+    "tenant,doctor", [("clinic-a", "doctor-a"), ("clinic-b", "doctor-b")]
+)
+def test_exclusive_patient_requires_its_own_clinical_relationship(
+    clinics, tenant, doctor
+):
+    db = TenantDatabase(clinics["raw"], tenant)
+    doc = db.clinical_tests.find_one({})
+    doc.pop("_id")
+    patient = "exclusive-" + tenant
+    doc.update(
+        patient_id=patient,
+        clinical_test_id="exam-" + patient,
+        upload={
+            "upload_id": patient,
+            "client_upload_id": patient,
+            "status": "initiated",
+        },
+    )
+    db.clinical_tests.insert_one(doc)
+    path = "/api/v1/clinical-tests/exam-" + patient
+    c = clinics["client"]
+    assert c.get(path, headers=headers(clinics, tenant, patient)).status_code == 200
+    assert [
+        x["clinical_test_id"]
+        for x in c.get(
+            "/api/v1/clinical-tests", headers=headers(clinics, tenant, patient)
+        ).json()["items"]
+    ] == ["exam-" + patient]
+    assert c.get(path, headers=headers(clinics, tenant)).status_code == 403
+    hc = headers(clinics, tenant, doctor, "clinician")
+    assert c.get(path, headers=hc).status_code == 403
+    db.patient_access.insert_one(
+        {"patient_id": patient, "authorised_clinicians": [doctor]}
+    )
+    assert c.get(path, headers=hc).status_code == 200
+    foreign = "clinic-b" if tenant == "clinic-a" else "clinic-a"
+    assert c.get(path, headers=headers(clinics, foreign, patient)).status_code == 404
+
+
 @pytest.fixture
 def clinics(env):
     for tenant, doctor in [("clinic-a", "doctor-a"), ("clinic-b", "doctor-b")]:
@@ -124,3 +164,78 @@ def test_scope_cannot_be_overridden_in_query_or_write(clinics):
     assert db.clinical_tests.find_one({"client_id": "clinic-b"}) is None
     with pytest.raises(ValueError, match="Tenant is immutable"):
         db.clinical_tests.update_one({}, {"$set": {"client_id": "clinic-b"}})
+
+
+@pytest.mark.parametrize("suffix", ["lab-score", "lab-report", "markers"])
+def test_other_clinic_relationship_cannot_read_professional_results(clinics, suffix):
+    h = headers(clinics, "clinic-a", "doctor-b", "clinician")
+    r = clinics["client"].get(
+        "/api/v1/patients/shared-patient/" + suffix,
+        headers=h,
+        params={"marker_codes": "glucose"} if suffix == "markers" else {},
+    )
+    assert r.status_code == 403
+    patient = headers(clinics, "clinic-a")
+    if suffix != "markers":
+        assert (
+            clinics["client"]
+            .get("/api/v1/patients/shared-patient/" + suffix, headers=patient)
+            .status_code
+            == 403
+        )
+
+
+@pytest.mark.parametrize(
+    "role,identity,tenant,status",
+    [
+        # PATCH scopes the lookup to the patient: hide existence with 404.
+        ("patient", "other-patient", "clinic-a", 404),
+        ("patient", "shared-patient", "clinic-b", 404),
+        ("clinician", "doctor-a", "clinic-a", 403),
+    ],
+)
+def test_mutations_do_not_cross_patient_tenant_or_role(
+    clinics, role, identity, tenant, status
+):
+    r = clinics["client"].patch(
+        "/api/v1/clinical-tests/exam-clinic-a",
+        headers=headers(clinics, tenant, identity, role),
+        json={"title": "SYNTHETIC DENIED"},
+    )
+    assert r.status_code == status
+    assert (
+        TenantDatabase(clinics["raw"], "clinic-a").clinical_tests.find_one({})["title"]
+        == "SYNTHETIC clinic-a"
+    )
+
+
+def test_signed_download_issued_only_after_document_authorization(
+    clinics, fake_storage
+):
+    db = TenantDatabase(clinics["raw"], "clinic-a")
+    db.clinical_tests.update_one(
+        {},
+        {
+            "$set": {
+                "upload.status": "ready_for_review",
+                "file.verified_at": datetime(2026, 11, 11),
+                "file.generation": 1,
+                "file.gcs_object_key": "private/synthetic-clinic-a.pdf",
+            }
+        },
+    )
+    path = "/api/v1/clinical-tests/exam-clinic-a/download-url"
+    assert (
+        clinics["client"].post(path, headers=headers(clinics, "clinic-a")).status_code
+        == 200
+    )
+    assert (
+        clinics["client"].post(path, headers=headers(clinics, "clinic-b")).status_code
+        == 404
+    )
+    assert (
+        clinics["client"]
+        .post(path, headers=headers(clinics, "clinic-a", "other-patient"))
+        .status_code
+        == 403
+    )

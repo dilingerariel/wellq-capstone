@@ -42,8 +42,8 @@ class Settings(BaseSettings):
             raise RuntimeError("Trusted identity authority is not configured")
         if self.ENVIRONMENT == "production" and (
             self.JWT_ISSUER.strip().rstrip("/").lower()
-            == "https://identity.wellq-integration.invalid"
-            or self.JWT_AUDIENCE.strip() == "wellq-integration-only"
+            in {"https://identity.wellq-integration.invalid", "https://identity.wellq-capstone-demo.invalid"}
+            or self.JWT_AUDIENCE.strip() in {"wellq-integration-only", "wellq-capstone-demo-only"}
         ):
             raise RuntimeError("Synthetic integration identity is forbidden in production")
         if "BEGIN PUBLIC KEY" not in self.JWT_PUBLIC_KEY:

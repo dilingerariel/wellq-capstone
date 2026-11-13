@@ -10,6 +10,10 @@ pesos evita promover 0.349 o 0.599 por redondeo. Pesos inválidos o denominador
 cero no generan un pilar publicable. El índice utiliza subscores/pilares sin
 redondeo intermedio; el redondeo de presentación no alimenta la agregación.
 Las banderas direccionales solo penalizan el lado correspondiente de la regla.
+Se eliminó el epsilon artificial de los divisores: las ramas ya garantizan
+distancias positivas mediante la validación de parámetros. Los rangos estrechos
+siguen exactamente la fórmula; óptimos/críticos ausentes o null usan únicamente
+los valores por defecto documentados (rango normal/extensión del 50 %).
 Las mediciones con unidad canónica incompatible quedan excluidas explícitamente.
 
 La cobertura puede ser 1 respecto de esta selección, **no** de la propuesta

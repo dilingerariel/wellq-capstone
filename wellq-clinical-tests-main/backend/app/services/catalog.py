@@ -176,6 +176,7 @@ INITIAL_MARKER_CATALOG = [
     },
 ]
 
+# Legacy v1.0 metadata only. score-v1.1 derives its denominator from the catalogue.
 PILLAR_THEORETICAL_WEIGHTS = {
     "bone": 1.0,
     "muscle": 1.0,

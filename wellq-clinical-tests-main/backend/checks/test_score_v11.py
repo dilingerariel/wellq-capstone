@@ -81,9 +81,15 @@ def test_partial_catalogue_remains_blocked_even_with_flag(env):
     env["monkeypatch"].setattr(settings, "ENVIRONMENT", "production")
     assert not scoring_engine.publication_allowed()
     assert scoring_engine.compute_patient_score("patient-test", env["db"]) is None
+    env["monkeypatch"].setattr(settings, "ENVIRONMENT", "test")
+    result = scoring_engine.compute_patient_score(
+        "patient-test", env["db"], persist=False
+    )
+    assert result["catalog_clinically_approved"] is False
+    assert scoring_engine.publication_stamp()["subscore_clinically_approved"] is False
 
 
-@pytest.mark.parametrize("weight", [0, -1, float("nan"), float("inf")])
+@pytest.mark.parametrize("weight", [0, -1, float("nan"), float("inf"), "0.3", True])
 def test_invalid_or_zero_denominator_never_publishes(env, weight):
     item = catalog_service.get_marker("glucose")
     item["pillar_weights"] = {"cardio": weight}
@@ -127,3 +133,37 @@ def test_directionality_does_not_penalize_opposite_side(direction, value):
         "glucose", value, catalog_item=item
     )
     assert subscore == 100 and warning is None
+
+
+@pytest.mark.parametrize(
+    "value,expected", [(1e-8, 85), (9e-8, 85), (-2.5e-8, 35), (1.25e-7, 35)]
+)
+def test_valid_small_ranges_follow_exact_formula_without_epsilon(value, expected):
+    item = {
+        "directionality": "two_sided",
+        "canonical_unit": "synthetic-unit",
+        "default_reference": {"low": 0, "high": 1e-7},
+        "optimal_range": {"low": 2e-8, "high": 8e-8},
+        "critical_range": {"low": -5e-8, "high": 1.5e-7},
+    }
+    result, _ = scoring_engine.calculate_subscore(
+        "synthetic", value, catalog_item=item, round_result=False
+    )
+    assert result == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("missing", [{}, {"low": None, "high": None}])
+def test_missing_optimal_and_critical_ranges_use_documented_defaults(missing):
+    item = {
+        "directionality": "two_sided",
+        "canonical_unit": "synthetic-unit",
+        "default_reference": {"low": 0, "high": 10},
+        "optimal_range": missing,
+        "critical_range": missing,
+    }
+    assert (
+        scoring_engine.calculate_subscore("synthetic", 5, catalog_item=item)[0] == 100
+    )
+    assert (
+        scoring_engine.calculate_subscore("synthetic", 12.5, catalog_item=item)[0] == 35
+    )
