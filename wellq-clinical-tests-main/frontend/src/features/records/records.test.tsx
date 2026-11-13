@@ -104,6 +104,8 @@ it('shows authorized zero scores and suppresses unapproved values without invent
   expect(screen.queryByText(es.recordsPublished)).not.toBeInTheDocument()
   expect(screen.queryByText(es.recordsServerScore)).not.toBeInTheDocument()
   expect(screen.getAllByText(es.recordsNoScore).length).toBeGreaterThan(0)
+  expect(screen.getAllByText(new RegExp(es.recordsTechnicalCoverage)).length).toBeGreaterThan(0)
+  expect(screen.queryByText(new RegExp('^' + es.recordsConfidence + ':'))).not.toBeInTheDocument()
 })
 it('requires a matching approved snapshot before displaying a report score, including zero', () => {
   const scores = scoresSchema.parse(syntheticScores())

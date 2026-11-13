@@ -33,12 +33,15 @@ export function ScorePanel({ data }: { data: Scores }) {
               {s.catalog_clinically_approved && p.status === 'published' ? number(p.score) : '—'}
             </strong>
             <span>
-              {t('recordsCoverage')}: {number(p.coverage * 100)}%
+              {t(s.catalog_clinically_approved ? 'recordsCoverage' : 'recordsTechnicalCoverage')}:{' '}
+              {number(p.coverage * 100)}%
             </span>
-            <span>
-              {t('recordsConfidence')}:{' '}
-              {t('recordsConfidence_' + p.confidence, { defaultValue: t('recordsUnknown') })}
-            </span>
+            {s.catalog_clinically_approved && (
+              <span>
+                {t('recordsConfidence')}:{' '}
+                {t('recordsConfidence_' + p.confidence, { defaultValue: t('recordsUnknown') })}
+              </span>
+            )}
             <span>
               {!s.catalog_clinically_approved
                 ? t('recordsNoScore')

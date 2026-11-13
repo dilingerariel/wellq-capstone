@@ -445,6 +445,7 @@
   "recordsPillar_joint": "Articulación",
   "recordsPillar_cardio": "Cardio",
   "recordsCoverage": "Cobertura",
+  "recordsTechnicalCoverage": "Cobertura técnica de esta versión del catálogo",
   "recordsConfidence": "Confianza",
   "recordsConfidence_high": "Alta",
   "recordsConfidence_medium": "Media",

@@ -445,6 +445,7 @@
   "recordsPillar_joint": "Joint",
   "recordsPillar_cardio": "Cardio",
   "recordsCoverage": "Coverage",
+  "recordsTechnicalCoverage": "Technical coverage of this catalog version",
   "recordsConfidence": "Confidence",
   "recordsConfidence_high": "High",
   "recordsConfidence_medium": "Medium",
