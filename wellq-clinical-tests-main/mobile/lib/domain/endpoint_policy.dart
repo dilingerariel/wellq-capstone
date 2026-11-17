@@ -32,11 +32,22 @@ class EndpointPolicy {
   );
   late final Uri origin;
   late final bool local;
-  bool acceptsUpload(Uri uri) =>
-      uri.scheme == origin.scheme &&
-      uri.host == origin.host &&
-      uri.port == origin.port &&
-      uri.userInfo.isEmpty &&
-      !uri.hasFragment &&
-      uri.path.startsWith('/object/quarantine/clinical-tests/');
+  bool acceptsUpload(Uri uri) {
+    final sameOrigin =
+        uri.scheme == origin.scheme &&
+        uri.host == origin.host &&
+        uri.port == origin.port &&
+        (uri.path.startsWith('/object/quarantine/clinical-tests/') ||
+            uri.path == '/api/v1/demo/storage/upload');
+    // Production demo uploads use short-lived GCS V4 signed URLs. Trust only
+    // Google's canonical storage host and the backend-issued quarantine path.
+    final googleStorage =
+        uri.scheme == 'https' &&
+        uri.host == 'storage.googleapis.com' &&
+        uri.port == 443 &&
+        uri.path.contains('/quarantine/clinical-tests/');
+    return (sameOrigin || googleStorage) &&
+        uri.userInfo.isEmpty &&
+        !uri.hasFragment;
+  }
 }

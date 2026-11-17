@@ -164,7 +164,7 @@ class ApiClient {
     List<int> bytes, {
     UploadCancellation? cancellation,
   }) async {
-    final uri = Uri.parse(descriptor['signed_url'] as String);
+    final uri = endpoint.origin.resolve(descriptor['signed_url'] as String);
     if (!endpoint.acceptsUpload(uri)) {
       throw const ApiFailure(403, 'STORAGE_ORIGIN_DENIED', storage: true);
     }
@@ -176,10 +176,23 @@ class ApiClient {
     )) {
       throw const ApiFailure(403, 'STORAGE_HEADER_DENIED', storage: true);
     }
+    final demoCapability =
+        uri.path == '/api/v1/demo/storage/upload' &&
+        headers.entries.any(
+          (entry) =>
+              entry.key.toLowerCase() == 'x-wellq-upload-token' &&
+              entry.value.isNotEmpty,
+        ) &&
+        headers.entries.any(
+          (entry) =>
+              entry.key.toLowerCase() == 'x-wellq-if-absent' &&
+              entry.value == 'true',
+        );
     final generation = headers.entries.where(
       (entry) => entry.key.toLowerCase() == 'x-goog-if-generation-match',
     );
-    if (generation.length != 1 || generation.single.value != '0') {
+    if (!demoCapability &&
+        (generation.length != 1 || generation.single.value != '0')) {
       throw const ApiFailure(
         403,
         'STORAGE_PRECONDITION_REQUIRED',
@@ -277,47 +290,39 @@ class LoopbackIdentity implements IdentityAdapter {
   void signOut() {} // Controller owns RAM tokens. No signing or persisted JWT.
 }
 
-/// Explicit isolated demo only. Access passes are entered at runtime, never
-/// compiled into the APK; renewal uses the still-valid RAM session.
+/// Synthetic demo only. The API issues a patient session for the fixed demo
+/// identity; no token or access code is compiled into or persisted by the app.
 class DemoIdentity implements IdentityAdapter {
   DemoIdentity(this.api, {required this.enabled});
   final ApiClient api;
   final bool enabled;
-  String? _accessCode;
-  Session? _session;
-  void authorize(String code) => _accessCode = code;
   @override
   Future<Session> connect() async {
     if (!enabled || !_debugIdentity || ApiClient.endpoint.local) {
       throw const ApiFailure(403, 'DEBUG_IDENTITY_DISABLED');
     }
-    final code = _accessCode;
-    _accessCode = null;
-    if (code == null && _session == null) {
-      throw const ApiFailure(401, 'DEMO_ACCESS_REQUIRED');
-    }
     final data = await api.json(
       'POST',
-      code != null ? '/__wellq_demo/session' : '/__wellq_demo/refresh',
-      body: code == null ? null : {'accessCode': code},
-      session: code == null ? _session : null,
+      '/api/v1/demo/login',
+      body: {
+        'role': 'patient',
+        'client_id': 'clinica_alemana',
+        'patient_id': 'paciente_ariel_demo',
+      },
     );
-    return _session = Session.fromJson(data);
+    final session = Session.fromJson(data);
+    await api.json(
+      'POST',
+      '/api/v1/demo/link-patient',
+      body: {
+        'patient_id': 'paciente_ariel_demo',
+        'clinic_id': 'clinica_alemana',
+        'clinician_id': 'rene_faundez',
+      },
+    );
+    return session;
   }
 
   @override
-  void signOut() {
-    final previous = _session;
-    _accessCode = null;
-    _session = null;
-    if (previous != null && !previous.expired) {
-      // Local logout is immediate even offline. Best-effort public revocation;
-      // no clinical request, retry queue or persisted credential is created.
-      unawaited(
-        api
-            .json('POST', '/__wellq_demo/logout', session: previous)
-            .then<void>((_) {}, onError: (Object _) {}),
-      );
-    }
-  }
+  void signOut() {} // Controller immediately clears RAM state; JWTs expire server-side.
 }

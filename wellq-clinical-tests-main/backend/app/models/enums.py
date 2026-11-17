@@ -24,6 +24,7 @@ class ScanStatus(str, Enum):
     PENDING = "pending"
     PASSED = "passed"
     FAILED = "failed"
+    NOT_APPLICABLE = "not_applicable"
 
 class ErrorCode(str, Enum):
     INVALID_METADATA = "INVALID_METADATA"

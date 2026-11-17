@@ -427,7 +427,7 @@ def test_openapi_error_envelope_matches_actual_422(env):
     from app.main import app
     from app.models.errors import ErrorResponse
     schema = app.openapi()
-    clinical = [op for path, item in schema["paths"].items() if path.startswith("/api/v1")
+    clinical = [op for path, item in schema["paths"].items() if path.startswith("/api/v1") and not path.startswith("/api/v1/demo")
         for method, op in item.items() if method in ("get", "post", "patch", "delete")]
     assert len(clinical) == 20
     for op in clinical:

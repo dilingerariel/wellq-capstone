@@ -8,7 +8,6 @@ import 'language_selector.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../application/patient_controller.dart';
-import '../data/api.dart' show DemoIdentity;
 import '../domain/models.dart';
 import 'patient_widgets.dart';
 import 'synthetic_pdf_screen.dart';
@@ -411,20 +410,7 @@ class _PatientShellState extends State<PatientShell>
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: c.busy
-                          ? null
-                          : () async {
-                              final identity = c.identity;
-                              if (identity is DemoIdentity) {
-                                final code = await showDialog<String>(
-                                  context: context,
-                                  builder: (_) => const DemoAccessDialog(),
-                                );
-                                if (code == null || !context.mounted) return;
-                                identity.authorize(code);
-                              }
-                              await c.connect();
-                            },
+                      onPressed: c.busy ? null : c.connect,
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 52),
                         padding: const EdgeInsets.symmetric(

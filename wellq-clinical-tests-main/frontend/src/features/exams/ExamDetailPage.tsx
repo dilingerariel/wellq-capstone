@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, FileText, Info } from 'lucide-react'
+import { ArrowLeft, FileText, Info, Eye, LoaderCircle } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRuntime } from '../../app/runtime'
 import { ErrorState, Loading } from '../../components/States'
@@ -14,6 +15,9 @@ export function ExamDetailPage() {
   const { source, canRequest, role, mode } = useRuntime()
   const { patientId } = usePatientScope()
   const { t, i18n } = useTranslation()
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [openingPdf, setOpeningPdf] = useState(false)
+  const [pdfError, setPdfError] = useState(false)
   const query = useQuery({
     queryKey: ['exam', id],
     queryFn: ({ signal }) => source!.detail(id, signal),
@@ -74,6 +78,23 @@ export function ExamDetailPage() {
             {t('reviewTitle')}
           </Link>
         )}
+        {mode === 'api' && (
+          <button className="button secondary" disabled={openingPdf} onClick={async () => {
+            setOpeningPdf(true)
+            setPdfError(false)
+            try {
+              const result = await source!.downloadUrl(id)
+              setPdfUrl(result.url)
+            } catch {
+              setPdfError(true)
+            } finally {
+              setOpeningPdf(false)
+            }
+          }}>
+            {openingPdf ? <LoaderCircle size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+            {t('viewPdf')}
+          </button>
+        )}
         <h2>
           <FileText size={19} aria-hidden="true" />
           {t('documentInfo')}
@@ -91,6 +112,11 @@ export function ExamDetailPage() {
           <p>{exam.notes || t('noNotes')}</p>
         </div>
       </section>
+      {pdfError && <aside className="notice" role="alert"><Info size={19} aria-hidden="true" /><p>{t('pdfUnavailable')}</p></aside>}
+      {pdfUrl && <section className="panel" aria-label={t('viewPdf')}>
+        <iframe src={pdfUrl} title={t('viewPdf')} referrerPolicy="no-referrer"
+          style={{ width: '100%', minHeight: '70vh', border: '1px solid var(--border)', borderRadius: 8 }} />
+      </section>}
       <aside className="notice">
         <Info size={19} aria-hidden="true" />
         <p>{t('detailNotice')}</p>

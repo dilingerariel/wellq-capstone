@@ -46,9 +46,15 @@ class Session {
       expires = DateTime.fromMillisecondsSinceEpoch(
         (j['expiresAt'] as int) * 1000,
       ) {
+    const demoClinics = {'clinica_alemana', 'clinica_santa_maria'};
+    final syntheticPatient =
+        patient.startsWith('synthetic-local-patient-') ||
+        patient == 'paciente_ariel_demo';
+    final syntheticTenant =
+        tenant.startsWith('synthetic-local-') || demoClinics.contains(tenant);
     if (role != 'patient' ||
-        !patient.startsWith('synthetic-local-patient-') ||
-        !tenant.startsWith('synthetic-local-') ||
+        !syntheticPatient ||
+        !syntheticTenant ||
         !permissions.contains('clinical:read')) {
       throw const ApiFailure(403, 'SYNTHETIC_PATIENT_REQUIRED');
     }

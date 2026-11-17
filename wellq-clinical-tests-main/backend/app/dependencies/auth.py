@@ -3,12 +3,25 @@ from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Optional
 import jwt
+from jwt import PyJWKClient, PyJWKClientConnectionError, PyJWKClientError
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.config import settings
 
 security = HTTPBearer(auto_error=False)
 current_identity: ContextVar[Optional["TokenPayload"]] = ContextVar("identity", default=None)
+_jwks_client: Optional[PyJWKClient] = None
+_jwks_client_url: Optional[str] = None
+
+
+def _verification_key(token: str):
+    global _jwks_client, _jwks_client_url
+    if settings.JWT_JWKS_URL:
+        if _jwks_client is None or _jwks_client_url != settings.JWT_JWKS_URL:
+            _jwks_client = PyJWKClient(settings.JWT_JWKS_URL, cache_keys=True)
+            _jwks_client_url = settings.JWT_JWKS_URL
+        return _jwks_client.get_signing_key_from_jwt(token).key
+    return settings.JWT_PUBLIC_KEY
 
 @dataclass(frozen=True)
 class TokenPayload:
@@ -31,7 +44,8 @@ def verify_token(token: str) -> TokenPayload:
     except RuntimeError:
         raise HTTPException(503, detail={"code": "IDENTITY_NOT_CONFIGURED", "message": "Identity unavailable"})
     try:
-        p = jwt.decode(token, settings.JWT_PUBLIC_KEY, algorithms=["RS256"],
+        key = _verification_key(token)
+        p = jwt.decode(token, key, algorithms=["RS256"],
                        issuer=settings.JWT_ISSUER, audience=settings.JWT_AUDIENCE,
                        options={"require": ["exp", "iat", "nbf", "iss", "aud", "sub", "client_id",
                                             "role", "resource_id", "permissions", "capabilities"]})
@@ -54,6 +68,10 @@ def verify_token(token: str) -> TokenPayload:
                 raise ValueError("Invalid grants")
         return TokenPayload(p["sub"], role, p["client_id"], p.get("patient_id"), p.get("clinician_id"),
                             frozenset(p["permissions"]), frozenset(p["capabilities"]), p["exp"])
+    except PyJWKClientConnectionError:
+        raise HTTPException(503, detail={"code": "IDENTITY_UNAVAILABLE", "message": "Identity unavailable"})
+    except PyJWKClientError:
+        raise unauthorized()
     except (jwt.InvalidTokenError, ValueError, TypeError, KeyError):
         raise unauthorized()
 

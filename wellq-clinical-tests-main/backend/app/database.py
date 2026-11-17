@@ -54,6 +54,8 @@ INDEXES = {
     "lab_report_exports": [("tenant_export", [("client_id", 1), ("export_id", 1)]),
                            ("tenant_export_idempotency", [("client_id", 1), ("patient_id", 1), ("clinician_id", 1), ("idempotency_key", 1)])],
     "request_limits": [("tenant_limit", [("client_id", 1), ("key", 1)])],
+    "demo_objects": [("tenant_demo_object", [("client_id", 1), ("object_key", 1)]),
+                      ("tenant_demo_capability", [("client_id", 1), ("capability_id", 1)])],
 }
 REQUIRED_INDEXES = {c: [name for name, _ in items] for c, items in INDEXES.items()}
 

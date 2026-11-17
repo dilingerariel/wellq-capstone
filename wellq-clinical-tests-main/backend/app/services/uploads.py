@@ -39,7 +39,8 @@ def initiate(request, key, patient, db):
     clinical_id, upload_id = "ct_" + identity, "ctu_" + identity
     tenant_path = hashlib.sha256(db.client_id.encode()).hexdigest()
     object_key = f"quarantine/clinical-tests/{tenant_path}/{clinical_id}/original"
-    signed = storage_service.generate_upload_url(object_key, request.mime_type)
+    signed = storage_service.generate_upload_url(object_key, request.mime_type,
+        client_id=db.client_id, size_bytes=request.size_bytes, sha256=request.sha256)
     now = datetime.utcnow()
     doc = {"clinical_test_id": clinical_id, "patient_id": patient, "title": request.title,
         "test_type": request.test_type.value, "test_date": request.test_date, "patient_notes": request.notes,
@@ -71,7 +72,8 @@ def refresh(upload_id, request, key, patient, db):
     if previous: return {"upload_id": upload_id, "status": "initiated", "upload": previous}
     if doc["upload"]["status"] != "initiated": fail("UPLOAD_NOT_REFRESHABLE")
     if doc["upload"].get("refresh_count", 0) >= settings.MAX_URL_REFRESHES_PER_UPLOAD: fail("RATE_LIMITED", 429)
-    signed = storage_service.generate_upload_url(doc["file"]["gcs_object_key"], doc["file"]["mime_type"])
+    signed = storage_service.generate_upload_url(doc["file"]["gcs_object_key"], doc["file"]["mime_type"],
+        client_id=db.client_id, size_bytes=doc["file"]["size_bytes"], sha256=doc["file"]["sha256"])
     db.clinical_tests.update_one({"_id": doc["_id"]}, {"$inc": {"upload.refresh_count": 1},
         "$set": {"upload.refresh_responses." + slot: signed, "upload.expires_at": signed["expires_at"]}})
     return {"upload_id": upload_id, "status": "initiated", "upload": signed}
@@ -82,11 +84,30 @@ def complete(upload_id, request, key, patient, db):
         fail("OBJECT_MISMATCH", 400)
     current = doc["upload"]["status"]
     if current == "initiated":
-        db.clinical_tests.update_one({"_id": doc["_id"], "upload.status": "initiated"}, {"$set": {
-            "upload.status": "processing", "upload.complete_key": key,
-            "upload.job": {"status": "pending", "attempts": 0, "available_at": datetime.utcnow()}}})
-        current = "processing"
-        audit(db, "upload_completed", "clinical_test", doc["clinical_test_id"])
+        if settings.DEMO_MONGO_STORAGE_ENABLED:
+            from app.database import mongodb
+            stored = mongodb.db.demo_objects.find_one({"client_id": db.client_id,
+                "object_key": doc["file"]["gcs_object_key"], "sha256": doc["file"]["sha256"],
+                "size_bytes": doc["file"]["size_bytes"]})
+            if not stored or db.client_id != "clinica_alemana" or doc["patient_id"] != "paciente_ariel_demo":
+                fail("OBJECT_NOT_UPLOADED")
+            secure_key, secure_generation = storage_service.promote(
+                doc["file"]["gcs_object_key"], stored["generation"], stored["sha256"])
+            now = datetime.utcnow()
+            db.clinical_tests.update_one({"_id": doc["_id"], "upload.status": "initiated"}, {"$set": {
+                "file.gcs_object_key": secure_key, "file.generation": secure_generation, "file.verified_at": now,
+                "upload.status": "ready_for_review", "upload.validated_at": now,
+                "upload.processing_status": {"malware_scan": "not_applicable", "mime_validation": "passed"},
+                "upload.job.status": "done", "extraction.status": "not_applicable", "updated_at": now,
+            }})
+            audit(db, "upload_verified_synthetic_demo", "clinical_test", doc["clinical_test_id"])
+            current = "ready_for_review"
+        else:
+            db.clinical_tests.update_one({"_id": doc["_id"], "upload.status": "initiated"}, {"$set": {
+                "upload.status": "processing", "upload.complete_key": key,
+                "upload.job": {"status": "pending", "attempts": 0, "available_at": datetime.utcnow()}}})
+            current = "processing"
+            audit(db, "upload_completed", "clinical_test", doc["clinical_test_id"])
     elif current not in ("processing", "ready_for_review"):
         fail("UPLOAD_CONFLICT")
     return {"clinical_test_id": doc["clinical_test_id"], "upload_id": upload_id, "status": current,
@@ -95,8 +116,12 @@ def complete(upload_id, request, key, patient, db):
 def upload_status(upload_id, patient, db):
     doc = owned(upload_id, patient, db)
     proc = doc["upload"]["processing_status"]
+    fully_scanned = proc == {"malware_scan": "passed", "mime_validation": "passed"}
+    fixed_synthetic = (settings.DEMO_MONGO_STORAGE_ENABLED and doc["file"].get("sha256") ==
+        "3331e1f6f50397609563dacbdf46d5c6f41d3d530c9f8e3697d136915c4907a6" and
+        proc == {"malware_scan": "not_applicable", "mime_validation": "passed"})
     safe = (doc["upload"]["status"] == "ready_for_review" and bool(doc["file"].get("verified_at"))
-        and bool(doc["file"].get("generation")) and proc == {"malware_scan": "passed", "mime_validation": "passed"})
+        and bool(doc["file"].get("generation")) and (fully_scanned or fixed_synthetic))
     at = doc["upload"].get("validated_at")
     return {"clinical_test_id": doc["clinical_test_id"], "upload_id": upload_id, "status": doc["upload"]["status"],
             "processing": proc, "local_file_can_be_deleted": safe, "error": doc["upload"].get("rejection"),

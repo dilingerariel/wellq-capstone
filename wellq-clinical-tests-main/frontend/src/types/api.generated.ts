@@ -1,5 +1,5 @@
 // Generated from backend/docs/openapi.json. Do not edit.
-// Source SHA-256: 6485022d0f0a6111a1f7806d2333d31dce6f225367e0390853ecb16b506d5b2f
+// Source SHA-256: e0464fe981b8e6c8aae866d2254c3d626e7d94b405c75f6f489841d50ad6bc7a
 export type CatalogItemResponse = { "catalog_version"?: string; "clinically_validated"?: boolean; "marker_code": string; "name": string; "panel_code": string; "specimen": string; "canonical_unit": string; "supported_units": Array<string>; "pillars": Array<string>; "typical_range": { [key: string]: unknown } }
 
 export type ClinicalTestResponse = { "clinical_version"?: string | null; "clinical_test_id": string; "patient_id": string; "title": string; "test_type": TestType; "test_date": string; "notes"?: string | null; "case_id"?: string | null; "appointment_id"?: string | null; "file": FileInfo; "status": UploadStatus; "review": ReviewInfo; "created_at": string; "updated_at": string }
@@ -88,7 +88,7 @@ export type ReviewRequest = { "expected_version"?: string | null; "review_status
 
 export type ReviewStatus = "not_reviewed" | "reviewed"
 
-export type ScanStatus = "pending" | "passed" | "failed"
+export type ScanStatus = "pending" | "passed" | "failed" | "not_applicable"
 
 export type ScoreConfidence = "high" | "medium" | "insufficient"
 

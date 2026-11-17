@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
 
 import '../domain/models.dart';
+import '../domain/sample_policy.dart';
 import 'file_vault.dart';
 export 'file_vault.dart';
 import 'api.dart';
@@ -70,7 +71,8 @@ class UploadRepository {
         'test_type': 'blood_test',
         'title': title.trim(),
         'test_date': date,
-        'ai_consent': true,
+        // The fixed presentation PDF is synthetic and is never sent to an AI provider.
+        'ai_consent': false,
       },
     });
     await store.enqueue(op);
@@ -186,7 +188,9 @@ class UploadRepository {
     if (phase == 'confirmed') {
       final processing = s['processing'];
       if (processing is! Map ||
-          processing['malware_scan'] != 'passed' ||
+          !(processing['malware_scan'] == 'passed' ||
+              (processing['malware_scan'] == 'not_applicable' &&
+                  op.initiate['sha256'] == syntheticPdfSha256)) ||
           processing['mime_validation'] != 'passed') {
         throw const ApiFailure(502, 'UNVERIFIED_READY_RESPONSE');
       }

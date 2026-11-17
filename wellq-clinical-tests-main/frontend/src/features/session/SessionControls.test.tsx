@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useRuntime } from '../../app/runtime'
 import i18n from '../../i18n'
 import es from '../../i18n/es.json'
@@ -20,6 +20,8 @@ function gate(path = '/clinical') {
   )
 }
 beforeEach(async () => {
+  delete window.wellqIdentity
+  delete window.wellqDemoSelection
   await i18n.changeLanguage('es')
   state = {
     mode: 'api',
@@ -33,6 +35,11 @@ beforeEach(async () => {
     reloadIdentity: vi.fn(),
     signOut: vi.fn(),
   }
+})
+afterEach(() => {
+  delete window.wellqIdentity
+  delete window.wellqDemoSelection
+  vi.unstubAllGlobals()
 })
 
 describe('delegated access presentation', () => {
@@ -109,5 +116,43 @@ describe('delegated access presentation', () => {
   })
   it('keeps dictionary keys aligned', () => {
     expect(Object.keys(es).sort()).toEqual(Object.keys(en).sort())
+  })
+  it('passes the selected demo clinic and clinician to the identity adapter', async () => {
+    window.wellqIdentity = { demoLogin: true, getSession: async () => null }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'clinica_alemana',
+              name: 'Clinica Alemana',
+              clinicians: [{ id: 'rene_faundez', name: 'Rene Faundez' }],
+            },
+            {
+              id: 'clinica_santa_maria',
+              name: 'Clinica Santa Maria',
+              clinicians: [{ id: 'clinico_demo_sm', name: 'Clinico sintetico Santa Maria' }],
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    )
+    gate()
+    const user = userEvent.setup()
+    await user.selectOptions(
+      await screen.findByLabelText('Clínica (Tenant):'),
+      'clinica_santa_maria',
+    )
+    await user.selectOptions(screen.getByLabelText('Médico / Profesional:'), 'clinico_demo_sm')
+    await user.click(screen.getByRole('button', { name: es.signIn }))
+    expect(window.wellqDemoSelection).toEqual({
+      role: 'clinician',
+      clientId: 'clinica_santa_maria',
+      clinicianId: 'clinico_demo_sm',
+      patientId: 'paciente_ariel_demo',
+    })
+    expect(state.signIn).toHaveBeenCalledOnce()
   })
 })

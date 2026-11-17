@@ -106,7 +106,7 @@ def test_openapi_contract(env):
     from app.main import app
     schema = app.openapi()
     operations = [(path, verb, op) for path, item in schema["paths"].items()
-                  for verb, op in item.items() if path.startswith("/api/v1") and verb in ("get", "post", "patch", "delete")]
+                  for verb, op in item.items() if path.startswith("/api/v1") and not path.startswith("/api/v1/demo") and verb in ("get", "post", "patch", "delete")]
     assert len(operations) == 20
     for path, verb, op in operations:
         assert op.get("security"), (path, verb)

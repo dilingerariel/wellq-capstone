@@ -5360,7 +5360,8 @@
         "enum": [
           "pending",
           "passed",
-          "failed"
+          "failed",
+          "not_applicable"
         ],
         "title": "ScanStatus"
       },

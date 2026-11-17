@@ -38,8 +38,10 @@ class LocalStore extends GeneratedDatabase {
     },
   );
   void check(String scope) {
-    if (!scope.startsWith('synthetic-local-') ||
-        !scope.contains('/synthetic-local-patient-')) {
+    final localScope = scope.startsWith('synthetic-local-') &&
+        scope.contains('/synthetic-local-patient-');
+    final demoScope = scope == 'clinica_alemana/paciente_ariel_demo';
+    if (!localScope && !demoScope) {
       throw StateError('Synthetic scope required');
     }
   }

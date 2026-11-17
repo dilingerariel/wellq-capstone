@@ -154,7 +154,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syntheticProfile =>
-      'Synthetic development profile. Not for clinical use.';
+      'Ariel Rodriguez (synthetic profile; not for clinical use).';
 
   @override
   String get syncStatus => 'Sync status';

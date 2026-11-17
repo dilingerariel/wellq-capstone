@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -25,6 +25,12 @@ export function PatientScope({ children }: { children: ReactNode }) {
   } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) })
   const patientId =
     mode === 'demo' ? 'demo-patient' : role === 'patient' ? session?.resourceId || '' : selected
+  useEffect(() => {
+    if (mode === 'api' && role === 'clinician' && session?.tenantId === 'clinica_alemana' &&
+        session.resourceId === 'rene_faundez' && import.meta.env.VITE_DEMO_AUTH_ENABLED === 'true') {
+      setSelected('paciente_ariel_demo')
+    }
+  }, [mode, role, session?.tenantId, session?.resourceId])
   return (
     <Context.Provider value={{ patientId }}>
       {role === 'clinician' && (

@@ -14,6 +14,7 @@ __pycache__/
 .env
 *.env
 backend/.env
+backend/.wellq-demo-jwt-private.pem
 
 # Testing & Coverage
 .pytest_cache/

@@ -68,30 +68,35 @@ Future<void> main() async {
       check(
         request.url.path ==
             switch (calls) {
-              1 => '/__wellq_demo/session',
-              2 => '/__wellq_demo/refresh',
-              _ => '/__wellq_demo/logout',
+              1 || 3 => '/api/v1/demo/login',
+              2 || 4 => '/api/v1/demo/link-patient',
+              _ => '',
             },
       );
-      if (calls == 1) {
-        check(jsonDecode(request.body)['accessCode'] == 'synthetic-invitation');
-      } else {
-        check(
-          request.headers['Authorization'] == 'Bearer synthetic-wire-token',
+      if (calls == 1 || calls == 3) {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        check(body['role'] == 'patient');
+        check(body['client_id'] == 'clinica_alemana');
+        check(body['patient_id'] == 'paciente_ariel_demo');
+        return http.Response(
+          jsonEncode({
+            'accessToken': 'synthetic-wire-token',
+            'tenantId': 'clinica_alemana',
+            'resourceId': 'paciente_ariel_demo',
+            'role': 'patient',
+            'permissions': ['clinical:read', 'clinical:write'],
+            'capabilities': [],
+            'expiresAt': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 120,
+          }),
+          200,
         );
       }
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      check(body['patient_id'] == 'paciente_ariel_demo');
+      check(body['clinic_id'] == 'clinica_alemana');
+      check(body['clinician_id'] == 'rene_faundez');
       validatedRequests++;
-      return http.Response(
-        jsonEncode({
-          'accessToken': 'synthetic-wire-token',
-          'tenantId': 'synthetic-local-demo-clinic-a',
-          'resourceId': 'synthetic-local-patient-demo-a',
-          'role': 'patient',
-          'permissions': ['clinical:read'],
-          'expiresAt': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 120,
-        }),
-        200,
-      );
+      return http.Response(jsonEncode({'status': 'linked'}), 200);
     }),
   );
   final identity = DemoIdentity(api, enabled: true);
@@ -108,18 +113,14 @@ Future<void> main() async {
       bool.fromEnvironment('dart.vm.product') ||
       bool.fromEnvironment('dart.vm.profile');
   if (release) {
-    identity.authorize('synthetic-invitation');
     await denied(identity.connect, 403);
     check(calls == 0);
   } else {
-    await denied(identity.connect, 401);
-    identity.authorize('synthetic-invitation');
     check((await identity.connect()).role == 'patient');
     await identity.connect();
     identity.signOut();
     await Future<void>.delayed(Duration.zero);
-    await denied(identity.connect, 401);
-    check(calls == 3 && validatedRequests == 3);
+    check(calls == 4 && validatedRequests == 2);
   }
   await denied(LoopbackIdentity(api, enabled: true).connect, 403);
   await denied(DemoIdentity(api, enabled: false).connect, 403);

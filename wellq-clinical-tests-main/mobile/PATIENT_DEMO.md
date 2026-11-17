@@ -1,10 +1,12 @@
 # Recorrido del paciente para la demostración
 
 Solo desarrollo debug e información sintética. El profesional usa React; la
-app del paciente no ofrece Score ni interpretación médica. OTP, solicitud y
-reenvío de códigos requieren todavía un contrato de identidad autorizado.
-`IdentityAdapter` conserva el punto de integración; no hay códigos universales,
-registro público, contraseñas ni un proveedor productivo implementado.
+app del paciente no ofrece Score ni interpretación médica. El acceso demo usa
+`POST /api/v1/demo/login` para el paciente fijo `paciente_ariel_demo` y luego lo
+vincula a Clinica Alemana (`clinica_alemana`) con `POST /api/v1/demo/link-patient`.
+El backend debe ser una instancia demo aislada, con `ENVIRONMENT=test`,
+`WELLQ_DEMO_AUTH_ENABLED=true`, MongoDB solo sintético y una única instancia
+API. Esta autoridad demo no sustituye el proveedor productivo de identidad.
 
 ## Abrir en una instalación independiente
 
@@ -16,11 +18,18 @@ si hace falta; no usar el arranque habitual que ejecuta semillas.
 Desde `wellq-clinical-tests-main/mobile`, con el SDK local:
 
 ```powershell
-# Sustituir el ejemplo solo por el ID del emulador independiente autorizado.
+# Sustituir dominio e ID por los del backend demo y el emulador independiente.
 $patientEmulator = 'emulator-5554'
-C:\Dev\tools\android-sdk\platform-tools\adb.exe -s $patientEmulator reverse tcp:8765 tcp:8765
-C:\Dev\tools\flutter\bin\flutter.bat run --debug -d $patientEmulator --dart-define=WELLQ_SYNTHETIC=true
+C:\Dev\tools\flutter\bin\flutter.bat run --debug -d $patientEmulator `
+  --dart-define=WELLQ_SYNTHETIC=true `
+  --dart-define=WELLQ_DEMO_IDENTITY=true `
+  --dart-define=WELLQ_DEMO_ORIGIN=https://api-demo.example.com `
+  --dart-define=WELLQ_DEMO_HOST=api-demo.example.com
 ```
+
+Reemplazar el dominio de ejemplo por el dominio HTTPS del backend demo. El
+botón inicia sesión directamente; los tokens se mantienen en RAM y no se
+incluyen en el APK ni en SQLite. No compilar este modo para profile/release.
 
 No se ejecutaron esos comandos contra Android durante esta validación.
 Release y profile conservan el bloqueo de la identidad sintética.

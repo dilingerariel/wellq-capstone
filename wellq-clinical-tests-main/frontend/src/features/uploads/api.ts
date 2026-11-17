@@ -36,7 +36,7 @@ const status = z.object({
   upload_id: z.string(),
   status: z.enum(statuses),
   processing: z.object({
-    malware_scan: z.enum(['pending', 'passed', 'failed']),
+    malware_scan: z.enum(['pending', 'passed', 'failed', 'not_applicable']),
     mime_validation: z.enum(['pending', 'passed', 'failed']),
   }),
   local_file_can_be_deleted: z.boolean(),

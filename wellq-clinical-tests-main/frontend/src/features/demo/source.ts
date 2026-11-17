@@ -75,4 +75,8 @@ export const demoSource: ClinicalSource = {
       },
     ]
   },
+  async downloadUrl(_id, signal) {
+    check(signal)
+    throw new ApiError(404, 'NOT_FOUND')
+  },
 }

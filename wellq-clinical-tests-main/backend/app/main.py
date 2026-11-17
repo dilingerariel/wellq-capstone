@@ -5,12 +5,14 @@ from pymongo.errors import PyMongoError, DuplicateKeyError
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, mongodb
 from app.dependencies.auth import current_identity
-from app.routes import clinical_tests, extractions, scoring
+from app.routes import clinical_tests, extractions, scoring, demo
 from contextlib import asynccontextmanager
 from app.models.errors import ErrorResponse
 
 @asynccontextmanager
 async def lifespan(app):
+    if settings.DEMO_AUTH_ENABLED and settings.ENVIRONMENT != "production":
+        demo.prepare_demo_identity()
     connect_to_mongo()
     try:
         yield
@@ -31,9 +33,13 @@ app = FastAPI(title=settings.APP_NAME, version="1.1.0",
                   429: "Rate limit (Retry-After where applicable)",
                   503: "Dependency unavailable (Retry-After for database failures)",
               }.items()})
-app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS,
-                   allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "DELETE"],
-                   allow_headers=["Authorization", "Content-Type", "Idempotency-Key"])
+cors_origins = settings.CORS_ORIGINS
+if not cors_origins and settings.ENVIRONMENT != "production":
+    cors_origins = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5178", "http://127.0.0.1:5178"]
+app.add_middleware(CORSMiddleware, allow_origins=cors_origins,
+                   allow_credentials=False, allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+                   allow_headers=["Authorization", "Content-Type", "Idempotency-Key", "X-WellQ-Local",
+                                  "X-WellQ-Upload-Token", "X-WellQ-If-Absent"])
 
 @app.middleware("http")
 async def identity_scope(request: Request, call_next):
@@ -53,7 +59,7 @@ async def database_error(request, exc):
         content={"detail": {"code": "RETRYABLE_CONFLICT", "message": "Retry with the same idempotency key"}},
         headers={"Retry-After": "2"})
 
-for router in (clinical_tests.router, extractions.router, scoring.router):
+for router in (clinical_tests.router, extractions.router, scoring.router, demo.router):
     app.include_router(router, prefix="/api/v1")
 
 @app.get("/health")
