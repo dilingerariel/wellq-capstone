@@ -43,6 +43,7 @@ class UploadRepository {
     List<int> bytes,
     String title,
     String date,
+    bool aiConsent,
     void Function() check,
   ) async {
     if (session.expired || !session.permissions.contains('clinical:write')) {
@@ -71,8 +72,9 @@ class UploadRepository {
         'test_type': 'blood_test',
         'title': title.trim(),
         'test_date': date,
-        // The fixed presentation PDF is synthetic and is never sent to an AI provider.
-        'ai_consent': false,
+        // The upload screen collects explicit opt-in before the synthetic PDF
+        // can be sent to the approved demo extraction provider.
+        'ai_consent': aiConsent,
       },
     });
     await store.enqueue(op);

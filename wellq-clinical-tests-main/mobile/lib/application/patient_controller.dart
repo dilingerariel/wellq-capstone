@@ -210,12 +210,17 @@ class PatientController extends ChangeNotifier {
         operations = await store.pending(s.scope);
         check();
       });
-  Future<void> queue(List<int> bytes, String title, String date) =>
+  Future<void> queue(
+    List<int> bytes,
+    String title,
+    String date,
+    bool aiConsent,
+  ) =>
       _run(() async {
         final s = session;
         if (s == null) return;
         final check = guard();
-        await uploads.queue(s, bytes, title, date, check);
+        await uploads.queue(s, bytes, title, date, aiConsent, check);
         check();
         operations = await store.pending(s.scope);
         check();

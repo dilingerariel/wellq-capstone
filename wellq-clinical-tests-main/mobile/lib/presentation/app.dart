@@ -1065,7 +1065,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   return;
                 }
                 final before = widget.c.operations.length;
-                await widget.c.queue(selected, title.text, date.text);
+                await widget.c.queue(selected, title.text, date.text, consent);
                 if (!mounted) return;
                 if (widget.c.operations.length > before) {
                   widget.queued();
