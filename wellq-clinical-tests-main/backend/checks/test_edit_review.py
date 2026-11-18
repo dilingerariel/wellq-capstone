@@ -52,6 +52,32 @@ def test_original_g06_another_reviewer_cannot_replace_first(env,fake_storage):
     assert review(env,cid,'doctor-2').status_code==409
     assert env['db'].clinical_tests.find_one({'clinical_test_id':cid})['review']['reviewed_by']=='doctor-1'
 
+
+def test_fixed_synthetic_demo_pdf_can_be_reviewed_without_malware_scan(env,fake_storage):
+    from app.config import settings
+    from app.tenancy import TenantDatabase
+    from app.services.clinical_version import clinical_version
+    cid=create(env,True)
+    env['monkeypatch'].setattr(settings,'DEMO_MONGO_STORAGE_ENABLED',True)
+    env['monkeypatch'].setattr(settings,'DEMO_AUTH_ENABLED',True)
+    env['raw'].clinical_tests.update_one({'clinical_test_id':cid},{'$set':{
+        'client_id':'clinica_alemana',
+        'file.mime_type':'application/pdf',
+        'file.size_bytes':2485,
+        'file.sha256':'3331e1f6f50397609563dacbdf46d5c6f41d3d530c9f8e3697d136915c4907a6',
+        'upload.processing_status':{'malware_scan':'not_applicable','mime_validation':'passed'}}})
+    env['raw'].patient_access.update_one({'patient_id':'patient-test'},
+        {'$set':{'client_id':'clinica_alemana','authorised_clinicians':['doctor-1']}})
+    db=TenantDatabase(env['raw'],'clinica_alemana')
+    doc=db.clinical_tests.find_one({'clinical_test_id':cid})
+    response=env['client'].patch('/api/v1/clinical-tests/'+cid+'/review',
+        json={'review_status':'reviewed','review_note':'Synthetic demo review',
+              'expected_version':clinical_version(db,doc)},
+        headers={'Authorization':'Bearer '+env['token']('clinician','doctor-1','clinica_alemana'),
+                 'Idempotency-Key':'synthetic-review'})
+    assert response.status_code==200, response.text
+    assert response.json()['review']['status']=='reviewed'
+
 @pytest.mark.parametrize('body,status',[
  ({},422),({'unknown':'value'},422),({'file_name':'new.pdf'},422),({'reviewed_by':'doctor-2'},422),
  ({'title':None},422),({'test_type':None},422),({'test_date':None},422),({'title':''},422),
