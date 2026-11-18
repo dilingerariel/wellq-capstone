@@ -15,6 +15,11 @@ from app.services.catalog import catalog_service
 class GeminiProviderError(RuntimeError):
     """Safe provider failure; never carries request, response, or API-key data."""
 
+    def __init__(self, code: str, *, retryable: bool = False):
+        self.safe_code = code
+        self.retryable = retryable
+        super().__init__(code)
+
 
 _SCHEMA = {
     "type": "OBJECT",
@@ -75,9 +80,9 @@ class GeminiDeveloperProvider:
 
     def extract(self, data: bytes, mime_type: str) -> dict:
         if not self._api_key:
-            raise GeminiProviderError("AI provider credentials are not configured")
+            raise GeminiProviderError("AI_CONFIGURATION_MISSING")
         if mime_type not in {"application/pdf", "image/jpeg", "image/png"}:
-            raise GeminiProviderError("Unsupported document format for AI extraction")
+            raise GeminiProviderError("AI_UNSUPPORTED_FORMAT")
 
         markers = [{"marker_code": item["marker_code"], "name": item["name"], "panel_code": item["panel_code"]}
                    for item in catalog_service.list_catalog()]
@@ -109,11 +114,17 @@ class GeminiDeveloperProvider:
         except urllib.error.HTTPError as exc:
             # Do not attach Google's response body or request URL (which may contain
             # sensitive metadata) to errors recorded by the durable worker.
-            if exc.code in (408, 429) or 500 <= exc.code <= 599:
-                raise GeminiProviderError("AI provider temporarily unavailable") from None
-            raise GeminiProviderError("AI provider rejected the extraction request") from None
+            if exc.code == 429:
+                raise GeminiProviderError("AI_RATE_LIMITED", retryable=True) from None
+            if exc.code in (408, 500, 502, 503, 504) or 500 <= exc.code <= 599:
+                raise GeminiProviderError("AI_PROVIDER_UNAVAILABLE", retryable=True) from None
+            if exc.code in (401, 403):
+                raise GeminiProviderError("AI_AUTH_REJECTED") from None
+            if exc.code == 404:
+                raise GeminiProviderError("AI_MODEL_NOT_FOUND") from None
+            raise GeminiProviderError("AI_REQUEST_REJECTED") from None
         except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError):
-            raise GeminiProviderError("AI provider temporarily unavailable") from None
+            raise GeminiProviderError("AI_PROVIDER_UNAVAILABLE", retryable=True) from None
 
         try:
             candidates = response_data["candidates"]
@@ -130,7 +141,7 @@ class GeminiDeveloperProvider:
                 output["page_count"] = 1
             return output
         except (KeyError, IndexError, TypeError, ValueError):
-            raise GeminiProviderError("AI provider returned an invalid extraction payload") from None
+            raise GeminiProviderError("AI_RESPONSE_INVALID") from None
 
 
 def configured_extraction_provider():

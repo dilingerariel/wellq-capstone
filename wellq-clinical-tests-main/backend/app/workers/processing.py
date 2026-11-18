@@ -5,8 +5,11 @@ An atomic lease fences final DB writes. GCS effects use immutable generations.
 """
 import time
 import uuid
+import logging
 from datetime import datetime, timedelta
 from pymongo import ReturnDocument
+from pymongo.errors import PyMongoError
+from fastapi import HTTPException
 from app.config import settings
 from app.database import mongodb, connect_to_mongo
 from app.tenancy import TenantDatabase
@@ -15,6 +18,8 @@ from app.services.file_validation import validate_document, scanner, FileRejecte
 from app.services.extractor import extraction_engine
 from app.services.audit import audit
 from app.services.clinical_dates import ClinicalDateError
+
+logger = logging.getLogger(__name__)
 
 def run_once(raw_db, kind="upload", now=None):
     now = now or datetime.utcnow()
@@ -72,7 +77,9 @@ def run_once(raw_db, kind="upload", now=None):
                 live = dict(fence); live[field + ".lease_until"] = {"$gt": datetime.utcnow()}
                 if not db.clinical_tests.find_one(live):
                     raise RuntimeError("Extraction lease expired")
-                db.clinical_tests.update_one(live, {"$set": {field + ".status": "done"}})
+                db.clinical_tests.update_one(live, {"$set": {field + ".status": "done"},
+                                                    "$unset": {field + ".error_code": "",
+                                                               field + ".available_at": ""}})
                 audit(db, "document_extracted", "extraction", extraction["extraction_id"])
     except Exception as exc:
         # Persist only a bounded code, never exception/provider/file content.
@@ -80,12 +87,36 @@ def run_once(raw_db, kind="upload", now=None):
         job = doc["upload"]["job"] if kind == "upload" else doc["extraction_job"]
         exhausted = job["attempts"] >= settings.JOB_MAX_ATTEMPTS
         invalid_date = isinstance(exc, ClinicalDateError)
-        status = "failed" if rejected or exhausted or invalid_date else "pending"
+        provider_code = getattr(exc, "safe_code", None)
+        provider_retryable = getattr(exc, "retryable", True)
+        http_detail = exc.detail if isinstance(exc, HTTPException) and isinstance(exc.detail, dict) else {}
+        storage_unavailable = http_detail.get("code") == "STORAGE_UNAVAILABLE"
+        output_invalid = exc.__class__.__name__ == "ValidationError"
+        extraction_unavailable = exc.__class__.__name__ == "ExtractionUnavailable"
+        database_unavailable = isinstance(exc, PyMongoError)
+        terminal_provider_error = provider_code is not None and not provider_retryable
+        status = "failed" if (rejected or exhausted or invalid_date or terminal_provider_error
+                               or output_invalid) else "pending"
         safe_codes = {"SIZE_REJECTED", "OBJECT_MISMATCH", "MIME_MISMATCH", "CONTENT_INVALID",
                       "DOCUMENT_CORRUPT", "MALWARE_DETECTED", "OBJECT_OWNERSHIP_MISMATCH"}
-        code = str(exc) if rejected and str(exc) in safe_codes else "FILE_REJECTED" if rejected else "DEPENDENCY_UNAVAILABLE"
+        if rejected:
+            code = str(exc) if str(exc) in safe_codes else "FILE_REJECTED"
+        elif provider_code:
+            code = provider_code
+        elif storage_unavailable:
+            code = "STORAGE_UNAVAILABLE"
+        elif database_unavailable:
+            code = "DATABASE_UNAVAILABLE"
+        elif extraction_unavailable:
+            code = "EXTRACTION_PREREQUISITE_FAILED"
+        elif output_invalid:
+            code = "EXTRACTION_OUTPUT_INVALID"
+        else:
+            code = "DEPENDENCY_UNAVAILABLE"
         if invalid_date:
             code = "INVALID_CLINICAL_DATE"
+        logger.warning("WellQ %s job failed with safe code %s and type %s",
+                       kind, code, type(exc).__name__)
         changes = {field + ".status": status, field + ".error_code": code,
                    field + ".available_at": now + timedelta(seconds=min(3600, 2 ** job["attempts"]) + __import__("secrets").randbelow(3))}
         if kind == "upload" and status == "failed":

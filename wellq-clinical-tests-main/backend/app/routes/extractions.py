@@ -129,6 +129,13 @@ async def get_extraction(
 
     # §7.4.1: GET nunca lanza el extractor; 409 EXTRACTION_NOT_READY si está en cola o procesando
     extraction_info = doc.get("extraction")
+    extraction_job = doc.get("extraction_job") or {}
+    if extraction_job.get("error_code") not in (None, "INVALID_CLINICAL_DATE"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "EXTRACTION_PROCESSING_FAILED",
+                    "message": "La extracción requiere atención del servicio antes de estar disponible"},
+        )
     if (user.role == "patient" and (extraction_info or {}).get("status") == "extraction_failed"
             and (doc.get("extraction_job") or {}).get("error_code") == "INVALID_CLINICAL_DATE"):
         raise HTTPException(409, detail={"code": "INVALID_CLINICAL_DATE",
