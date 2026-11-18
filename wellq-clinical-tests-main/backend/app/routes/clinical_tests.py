@@ -44,7 +44,10 @@ def _process_one_synthetic_demo_extraction():
     from app.database import mongodb
     from app.workers.processing import run_once
     if mongodb.db is not None:
-        run_once(mongodb.db, "extraction")
+        claimed = run_once(mongodb.db, "extraction")
+        logger.info("WellQ synthetic extraction worker invoked; claimed_job=%s", bool(claimed))
+    else:
+        logger.warning("WellQ synthetic extraction worker invoked without a database connection")
 
 
 # ============ ENDPOINT 1: INITIATE UPLOAD ============
@@ -95,13 +98,24 @@ async def complete_upload(
     db: Database = Depends(get_database),
 ):
     result = uploads.complete(upload_id, request, idempotency_key, current_patient, db)
-    if (settings.DEMO_AUTH_ENABLED and settings.DEMO_MONGO_STORAGE_ENABLED
-            and settings.ENVIRONMENT != "production" and settings.AI_PROVIDER_APPROVED
-            and settings.AI_PROVIDER == "gemini_api" and settings.GEMINI_API_KEY):
-        doc = db.clinical_tests.find_one({"upload.upload_id": upload_id, "patient_id": current_patient,
-                                          "deleted_at": None})
-        if (doc and doc.get("ai_consent") and doc.get("extraction_job", {}).get("status") == "pending"):
+    runtime_checks = {
+        "demo_auth": settings.DEMO_AUTH_ENABLED,
+        "demo_storage": settings.DEMO_MONGO_STORAGE_ENABLED,
+        "non_production": settings.ENVIRONMENT != "production",
+        "provider_approved": settings.AI_PROVIDER_APPROVED,
+        "gemini_provider": settings.AI_PROVIDER == "gemini_api",
+        "api_key_present": bool(settings.GEMINI_API_KEY),
+    }
+    missing_checks = [name for name, passed in runtime_checks.items() if not passed]
+    doc = db.clinical_tests.find_one({"upload.upload_id": upload_id, "patient_id": current_patient,
+                                      "deleted_at": None})
+    if doc and doc.get("ai_consent") and doc.get("extraction_job", {}).get("status") == "pending":
+        if not missing_checks:
+            logger.info("WellQ synthetic extraction task scheduled")
             background_tasks.add_task(_process_one_synthetic_demo_extraction)
+        else:
+            logger.warning("WellQ synthetic extraction task not scheduled; missing checks=%s",
+                           ",".join(missing_checks))
     return result
 
 # ============ ENDPOINT 4: UPLOAD STATUS ============
