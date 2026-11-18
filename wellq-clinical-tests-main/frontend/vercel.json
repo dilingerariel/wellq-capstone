@@ -49,7 +49,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets/|wellq\\.svg|manifest\\.webmanifest|sw\\.js).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
