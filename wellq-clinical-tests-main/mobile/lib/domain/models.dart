@@ -40,6 +40,7 @@ class Session {
       patient = j['resourceId'] as String,
       tenant = j['tenantId'] as String,
       role = j['role'] as String,
+      displayName = j['displayName'] as String?,
       permissions = Set<String>.unmodifiable(
         (j['permissions'] as List).cast<String>(),
       ),
@@ -49,7 +50,8 @@ class Session {
     const demoClinics = {'clinica_alemana', 'clinica_santa_maria'};
     final syntheticPatient =
         patient.startsWith('synthetic-local-patient-') ||
-        patient == 'paciente_ariel_demo';
+        patient == 'paciente_ariel_demo' ||
+        RegExp(r'^[a-f0-9]{32}$').hasMatch(patient);
     final syntheticTenant =
         tenant.startsWith('synthetic-local-') || demoClinics.contains(tenant);
     if (role != 'patient' ||
@@ -61,6 +63,7 @@ class Session {
     if (expired) throw const ApiFailure(401, 'SESSION_EXPIRED');
   }
   final String token, patient, tenant, role;
+  final String? displayName;
   final Set<String> permissions;
   final DateTime expires;
   bool get expired => !expires.isAfter(DateTime.now());

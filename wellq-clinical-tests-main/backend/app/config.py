@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     DEMO_JWT_PRIVATE_KEY: Optional[str] = Field(None, validation_alias="WELLQ_DEMO_JWT_PRIVATE_KEY")
     DEMO_MONGO_STORAGE_ENABLED: bool = Field(False, validation_alias="WELLQ_DEMO_MONGO_STORAGE_ENABLED")
     DEMO_PUBLIC_API_BASE_URL: Optional[str] = Field(None, validation_alias="WELLQ_DEMO_PUBLIC_API_BASE_URL")
+    LEGACY_DEMO_LOGIN_ENABLED: bool = Field(False, validation_alias="WELLQ_LEGACY_DEMO_LOGIN_ENABLED")
+    PLATFORM_ADMIN_EMAIL: Optional[str] = Field(None, validation_alias="WELLQ_PLATFORM_ADMIN_EMAIL")
+    PLATFORM_ADMIN_PASSWORD_HASH: Optional[str] = Field(None, validation_alias="WELLQ_PLATFORM_ADMIN_PASSWORD_HASH")
 
     def validate_identity(self):
         if self.DEMO_MONGO_STORAGE_ENABLED and (not self.DEMO_AUTH_ENABLED or self.ENVIRONMENT == "production"):

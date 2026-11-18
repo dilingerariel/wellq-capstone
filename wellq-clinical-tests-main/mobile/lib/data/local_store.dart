@@ -41,7 +41,10 @@ class LocalStore extends GeneratedDatabase {
     final localScope = scope.startsWith('synthetic-local-') &&
         scope.contains('/synthetic-local-patient-');
     final demoScope = scope == 'clinica_alemana/paciente_ariel_demo';
-    if (!localScope && !demoScope) {
+    final registeredPatientScope = RegExp(
+      r'^(clinica_alemana|clinica_santa_maria)/[a-f0-9]{32}$',
+    ).hasMatch(scope);
+    if (!localScope && !demoScope && !registeredPatientScope) {
       throw StateError('Synthetic scope required');
     }
   }

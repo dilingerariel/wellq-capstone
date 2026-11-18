@@ -70,7 +70,7 @@ Future<void> main() async {
       controller: PatientController(
         api,
         const bool.fromEnvironment('WELLQ_DEMO_IDENTITY')
-            ? DemoIdentity(api, enabled: enabled)
+            ? PatientAccountIdentity(api, enabled: enabled)
             : LoopbackIdentity(api, enabled: enabled),
         store,
         root,

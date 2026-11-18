@@ -1,4 +1,4 @@
-import { sessionSchema, type IdentityProvider, type PortalSession } from '../types/session'
+import { sessionSchema, type IdentityProvider, type LoginInput, type PatientRegistrationInput, type PortalSession } from '../types/session'
 
 export type SessionPhase =
   'unverified' | 'loading' | 'authenticated' | 'signed-out' | 'unavailable' | 'expired' | 'error'
@@ -91,14 +91,29 @@ export class SessionManager {
     })
     return this.flight
   }
-  async signIn() {
+  async signIn(input?: LoginInput) {
     const provider = this.provider()
     if (!provider?.signIn) return false
     const generation = ++this.generation
     this.flight = null
     this.commit(null, 'loading')
     try {
-      await provider.signIn()
+      await provider.signIn(input)
+      if (generation !== this.generation) return false
+      return this.verify(false, true)
+    } catch {
+      if (generation === this.generation) this.commit(null, 'error')
+      return false
+    }
+  }
+  async registerPatient(input: PatientRegistrationInput) {
+    const provider = this.provider()
+    if (!provider?.registerPatient) return false
+    const generation = ++this.generation
+    this.flight = null
+    this.commit(null, 'loading')
+    try {
+      await provider.registerPatient(input)
       if (generation !== this.generation) return false
       return this.verify(false, true)
     } catch {

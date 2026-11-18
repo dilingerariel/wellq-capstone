@@ -55,6 +55,13 @@ def require_demo_auth() -> None:
         raise HTTPException(status_code=404, detail={"code": "NOT_FOUND", "message": "Not found"})
 
 
+def require_legacy_demo_login() -> None:
+    """Legacy public token minting is off unless an operator explicitly enables it."""
+    if not settings.LEGACY_DEMO_LOGIN_ENABLED:
+        raise HTTPException(status_code=404, detail={"code": "NOT_FOUND", "message": "Not found"})
+    require_demo_auth()
+
+
 def require_demo_storage() -> None:
     require_demo_auth()
     if not settings.DEMO_MONGO_STORAGE_ENABLED:
@@ -201,7 +208,7 @@ async def link_patient(request: LinkPatientRequest) -> Dict[str, Any]:
     Asocia un `patient_id` con un `clinic_id` (y opcionalmente `clinician_id`)
     guardando o actualizando la relación en la colección `patient_access`.
     """
-    require_demo_auth()
+    require_legacy_demo_login()
     if (request.patient_id != "paciente_ariel_demo" or request.clinic_id != "clinica_alemana"
             or request.clinician_id != "rene_faundez"):
         raise HTTPException(status_code=422, detail={"code": "INVALID_DEMO_LINK", "message": "Invalid demo identity"})
@@ -247,7 +254,7 @@ async def link_patient(request: LinkPatientRequest) -> Dict[str, Any]:
 @router.get("/patient-links/{patient_id}", summary="Consultar clínicas vinculadas a un paciente")
 async def get_patient_links(patient_id: str) -> Dict[str, Any]:
     """Devuelve los registros en patient_access para este paciente."""
-    require_demo_auth()
+    require_legacy_demo_login()
     if patient_id != "paciente_ariel_demo":
         raise HTTPException(status_code=404, detail={"code": "NOT_FOUND", "message": "Not found"})
     raw_db = mongodb.db
@@ -272,7 +279,7 @@ async def demo_login(request: DemoLoginRequest) -> Dict[str, Any]:
     Genera un token JWT RS256 válido para la clínica y médico o paciente seleccionados.
     Cumple con el esquema requerido por el Portal React y la App Móvil.
     """
-    require_demo_auth()
+    require_legacy_demo_login()
     clinic = next((item for item in CLINICS_CATALOG if item["id"] == request.client_id), None)
     clinician_id = request.clinician_id
     if request.role == "clinician" and clinician_id is None and clinic:

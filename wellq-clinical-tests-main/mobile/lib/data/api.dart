@@ -19,6 +19,17 @@ abstract interface class IdentityAdapter {
   void signOut();
 }
 
+abstract interface class PatientAccountIdentityAdapter implements IdentityAdapter {
+  Future<Session> login(String email, String password);
+  Future<Session> registerPatient({
+    required String displayName,
+    required String email,
+    required String password,
+    required String clinicId,
+    required String clinicianId,
+  });
+}
+
 class UploadCancellation {
   final _signal = Completer<void>();
   Future<void> get signal => _signal.future;
@@ -150,6 +161,17 @@ class ApiClient {
     );
     try {
       return jsonDecode(res.body) as Json;
+    } catch (_) {
+      throw const ApiFailure(502, 'INVALID_RESPONSE');
+    }
+  }
+
+  Future<List<Json>> list(String path) async {
+    final response = await send('GET', path);
+    try {
+      return (jsonDecode(response.body) as List)
+          .map((value) => Map<String, dynamic>.from(value as Map))
+          .toList(growable: false);
     } catch (_) {
       throw const ApiFailure(502, 'INVALID_RESPONSE');
     }
@@ -325,4 +347,59 @@ class DemoIdentity implements IdentityAdapter {
 
   @override
   void signOut() {} // Controller immediately clears RAM state; JWTs expire server-side.
+}
+
+/// Password login and patient-only self-registration for the isolated demo API.
+/// Credentials and access tokens exist in memory only; SQLite stores no secrets.
+class PatientAccountIdentity implements PatientAccountIdentityAdapter {
+  PatientAccountIdentity(this.api, {required this.enabled});
+  final ApiClient api;
+  final bool enabled;
+  Session? _session;
+
+  void _requireEnabled() {
+    if (!enabled || !_debugIdentity || ApiClient.endpoint.local) {
+      throw const ApiFailure(403, 'DEBUG_IDENTITY_DISABLED');
+    }
+  }
+
+  @override
+  Future<Session> connect() async {
+    _requireEnabled();
+    final session = _session;
+    if (session == null || session.expired) {
+      throw const ApiFailure(401, 'SESSION_EXPIRED');
+    }
+    return session;
+  }
+
+  @override
+  Future<Session> login(String email, String password) async {
+    _requireEnabled();
+    final value = await api.json('POST', '/api/v1/auth/login', body: {
+      'email': email.trim(), 'password': password, 'role': 'patient',
+    });
+    _session = Session.fromJson(value);
+    return _session!;
+  }
+
+  @override
+  Future<Session> registerPatient({
+    required String displayName,
+    required String email,
+    required String password,
+    required String clinicId,
+    required String clinicianId,
+  }) async {
+    _requireEnabled();
+    final value = await api.json('POST', '/api/v1/auth/patient/register', body: {
+      'display_name': displayName.trim(), 'email': email.trim(), 'password': password,
+      'clinic_id': clinicId, 'clinician_id': clinicianId,
+    });
+    _session = Session.fromJson(value);
+    return _session!;
+  }
+
+  @override
+  void signOut() { _session = null; }
 }

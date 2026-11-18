@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { lazy, Suspense, type ReactNode } from 'react'
 import type { Role } from '../types/session'
 import { useRuntime } from './runtime'
+import { AdminPage } from '../features/session/AdminPage'
 import { PortalLayout } from '../layouts/PortalLayout'
 import { Loading } from '../components/States'
 const OverviewPage = lazy(() =>
@@ -62,6 +63,7 @@ export function App() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
+        <Route path="/admin" element={<AdminPage />} />
         <Route element={<PortalLayout />}>
           <Route index element={<Home />} />
           <Route

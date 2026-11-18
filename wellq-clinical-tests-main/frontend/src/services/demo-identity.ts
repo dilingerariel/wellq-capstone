@@ -1,4 +1,4 @@
-import type { IdentityProvider, PortalSession } from '../types/session'
+import type { IdentityProvider, LoginInput, PatientRegistrationInput, PortalSession } from '../types/session'
 
 let currentSession: PortalSession | null = null
 
@@ -69,5 +69,57 @@ export const demoIdentity: IdentityProvider = {
 export function initDemoIdentity() {
   if (typeof window !== 'undefined' && !window.wellqIdentity) {
     window.wellqIdentity = demoIdentity
+  }
+}
+
+/** Password-based synthetic accounts. State is memory-only; no token/password is persisted. */
+export const accountIdentity: IdentityProvider = {
+  accountAuth: true,
+  getSession: async () => currentSession && currentSession.expiresAt * 1000 > Date.now() ? currentSession : null,
+  refreshSession: async () => currentSession && currentSession.expiresAt * 1000 > Date.now() ? currentSession : null,
+  signIn: async (input?: LoginInput) => {
+    if (!input) throw new Error('Credentials required')
+    const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1'
+    const response = await fetch(`${apiBase}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      redirect: 'error',
+      body: JSON.stringify({ email: input.email, password: input.password, role: input.role }),
+    })
+    if (!response.ok) throw new Error(`Sign in failed: ${response.status}`)
+    currentSession = (await response.json()) as PortalSession
+  },
+  registerPatient: async (input: PatientRegistrationInput) => {
+    const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1'
+    const response = await fetch(`${apiBase}/auth/patient/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      redirect: 'error',
+      body: JSON.stringify({
+        display_name: input.displayName,
+        email: input.email,
+        password: input.password,
+        clinic_id: input.clinicId,
+        clinician_id: input.clinicianId,
+      }),
+    })
+    if (!response.ok) throw new Error(`Registration failed: ${response.status}`)
+    currentSession = (await response.json()) as PortalSession
+  },
+  signOut: async () => {
+    currentSession = null
+    notify()
+  },
+  subscribe: (fn) => {
+    listeners.add(fn)
+    return () => listeners.delete(fn)
+  },
+}
+
+export function initAccountIdentity() {
+  if (typeof window !== 'undefined' && !window.wellqIdentity) {
+    window.wellqIdentity = accountIdentity
   }
 }

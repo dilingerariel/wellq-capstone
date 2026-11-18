@@ -5,7 +5,7 @@ from pymongo.errors import PyMongoError, DuplicateKeyError
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, mongodb
 from app.dependencies.auth import current_identity
-from app.routes import clinical_tests, extractions, scoring, demo
+from app.routes import clinical_tests, extractions, scoring, demo, auth
 from contextlib import asynccontextmanager
 from app.models.errors import ErrorResponse
 
@@ -59,7 +59,7 @@ async def database_error(request, exc):
         content={"detail": {"code": "RETRYABLE_CONFLICT", "message": "Retry with the same idempotency key"}},
         headers={"Retry-After": "2"})
 
-for router in (clinical_tests.router, extractions.router, scoring.router, demo.router):
+for router in (clinical_tests.router, extractions.router, scoring.router, demo.router, auth.router):
     app.include_router(router, prefix="/api/v1")
 
 @app.get("/health")

@@ -30,6 +30,7 @@ class TokenPayload:
     client_id: str
     patient_id: Optional[str] = None
     clinician_id: Optional[str] = None
+    admin_id: Optional[str] = None
     permissions: frozenset[str] = field(default_factory=frozenset)
     capabilities: frozenset[str] = field(default_factory=frozenset)
     expires_at: int | None = None
@@ -57,17 +58,19 @@ def verify_token(token: str) -> TokenPayload:
         if not (p["iat"] <= p["nbf"] < p["exp"] <= p["iat"] + settings.JWT_MAX_LIFETIME_SECONDS):
             raise ValueError("Invalid lifetime")
         role = p["role"]
-        if role not in ("patient", "clinician"):
+        if role not in ("patient", "clinician", "admin"):
             raise ValueError("Invalid role")
-        own = "patient_id" if role == "patient" else "clinician_id"
-        other = "clinician_id" if role == "patient" else "patient_id"
-        if p.get(own) != p["resource_id"] or p.get(other) is not None:
+        own = {"patient": "patient_id", "clinician": "clinician_id", "admin": "admin_id"}[role]
+        others = {"patient": ("clinician_id", "admin_id"),
+                  "clinician": ("patient_id", "admin_id"),
+                  "admin": ("patient_id", "clinician_id")}[role]
+        if p.get(own) != p["resource_id"] or any(p.get(other) is not None for other in others):
             raise ValueError("Inconsistent identity")
         for name in ("permissions", "capabilities"):
             if not isinstance(p[name], list) or any(not isinstance(x, str) for x in p[name]):
                 raise ValueError("Invalid grants")
         return TokenPayload(p["sub"], role, p["client_id"], p.get("patient_id"), p.get("clinician_id"),
-                            frozenset(p["permissions"]), frozenset(p["capabilities"]), p["exp"])
+                            p.get("admin_id"), frozenset(p["permissions"]), frozenset(p["capabilities"]), p["exp"])
     except PyJWKClientConnectionError:
         raise HTTPException(503, detail={"code": "IDENTITY_UNAVAILABLE", "message": "Identity unavailable"})
     except PyJWKClientError:
@@ -80,8 +83,18 @@ async def get_current_user(request: Request,
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise unauthorized()
     user = verify_token(credentials.credentials)
+    if user.role == "admin":
+        raise HTTPException(403, detail={"code": "CLINICAL_ROLE_REQUIRED", "message": "Clinical account required"})
     current_identity.set(user)
     request.state.identity = user
+    if user.role == "clinician" and user.sub.startswith("account:clinician:"):
+        # Admin deactivation takes effect immediately, even for an unexpired JWT.
+        from app.database import get_database
+        account = get_database().user_accounts.find_one({
+            "role": "clinician", "clinician_id": user.clinician_id, "active": True,
+        }, {"_id": 1})
+        if account is None:
+            raise HTTPException(403, detail={"code": "ACCOUNT_DISABLED", "message": "Clinical account is unavailable"})
     template = getattr(request.scope.get("route"), "path", "")
     permission = "clinical:read" if request.method == "GET" else "clinical:write"
     if template.endswith("/export"):
@@ -108,6 +121,16 @@ async def get_current_user(request: Request,
     db.request_limits.update_one({"key": key}, {"$inc": {"count": 1}, "$setOnInsert": {"expires_at": now + timedelta(minutes=2)}}, upsert=True)
     if db.request_limits.find_one({"key": key})["count"] > settings.MAX_REQUESTS_PER_MINUTE:
         raise HTTPException(429, detail={"code": "RATE_LIMITED", "message": "Request limit"}, headers={"Retry-After": "60"})
+    return user
+
+async def get_platform_admin(request: Request,
+                             credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        raise unauthorized()
+    user = verify_token(credentials.credentials)
+    if user.role != "admin" or not user.admin_id:
+        raise HTTPException(403, detail={"code": "ADMIN_REQUIRED", "message": "Administrator account required"})
+    request.state.identity = user
     return user
 
 async def get_current_patient(user: TokenPayload = Depends(get_current_user)) -> str:

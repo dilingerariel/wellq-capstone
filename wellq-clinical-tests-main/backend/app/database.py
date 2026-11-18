@@ -56,6 +56,7 @@ INDEXES = {
     "request_limits": [("tenant_limit", [("client_id", 1), ("key", 1)])],
     "demo_objects": [("tenant_demo_object", [("client_id", 1), ("object_key", 1)]),
                       ("tenant_demo_capability", [("client_id", 1), ("capability_id", 1)])],
+    "user_accounts": [("tenant_email", [("email", 1)])],
 }
 REQUIRED_INDEXES = {c: [name for name, _ in items] for c, items in INDEXES.items()}
 

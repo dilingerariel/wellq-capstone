@@ -8,20 +8,35 @@ export const sessionSchema = z.object({
   permissions: z.array(z.string()),
   capabilities: z.array(z.string()),
   expiresAt: z.number().int().positive(),
+  displayName: z.string().optional(),
 })
 export type PortalSession = z.infer<typeof sessionSchema>
 export type Role = PortalSession['role']
+export interface LoginInput {
+  email: string
+  password: string
+  role: Role
+}
+export interface PatientRegistrationInput {
+  displayName: string
+  email: string
+  password: string
+  clinicId: string
+  clinicianId: string
+}
 export interface IdentityProvider {
   demoLogin?: boolean
+  accountAuth?: boolean
   getSession: () => Promise<unknown>
-  signIn?: () => Promise<void>
+  signIn?: (input?: LoginInput) => Promise<void>
+  registerPatient?: (input: PatientRegistrationInput) => Promise<void>
   signOut?: () => Promise<void>
   refreshSession?: () => Promise<unknown>
   subscribe?: (callback: () => void) => () => void
 }
 declare global {
   interface Window {
-    /** Supplied by the trusted identity host, before mounting React. No login endpoint is invented. */
+    /** In-memory auth adapter injected before React mounts. Tokens are not persisted by this portal. */
     wellqIdentity?: IdentityProvider
     wellqDemoSelection?: {
       role?: Role

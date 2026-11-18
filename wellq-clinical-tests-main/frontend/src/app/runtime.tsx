@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { apiSource, type ClinicalSource } from '../services/clinical'
-import type { PortalSession, Role } from '../types/session'
+import type { LoginInput, PatientRegistrationInput, PortalSession, Role } from '../types/session'
 import { SessionManager, type SessionPhase } from '../services/session'
 import { Connectivity, type ConnectionStatus } from '../services/connectivity'
 import { ReadRecovery, recoverInvalidatedReads } from '../services/synchronization'
@@ -46,7 +46,8 @@ interface Runtime {
   canRequest: boolean
   setDemoRole: (role: Role) => void
   reloadIdentity: () => void
-  signIn: () => void
+  signIn: (input?: LoginInput) => Promise<boolean>
+  registerPatient: (input: PatientRegistrationInput) => Promise<boolean>
   signOut: () => void
   checkConnection: () => void
   canSignIn: boolean
@@ -448,13 +449,25 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
             }
           })
         },
-        signIn: () => {
-          void manager.signIn().then((valid) => {
+        signIn: (input) => {
+          const operation = manager.signIn(input)
+          void operation.then((valid) => {
             if (valid) {
               approval.version = network.getSnapshot().recovery
               setApprovedRecovery(approval.version)
             }
           })
+          return operation
+        },
+        registerPatient: (input) => {
+          const operation = manager.registerPatient(input)
+          void operation.then((valid) => {
+            if (valid) {
+              approval.version = network.getSnapshot().recovery
+              setApprovedRecovery(approval.version)
+            }
+          })
+          return operation
         },
         signOut: () => {
           void manager.signOut()

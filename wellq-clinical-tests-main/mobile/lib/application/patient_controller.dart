@@ -99,6 +99,42 @@ class PatientController extends ChangeNotifier {
   Future<void> connect() => _run(() async {
     final ticket = _epoch;
     final fresh = await identity.connect();
+    await _acceptSession(fresh, ticket);
+  });
+
+  Future<void> login(String email, String password) => _run(() async {
+    final adapter = identity;
+    if (adapter is! PatientAccountIdentityAdapter) {
+      throw const ApiFailure(403, 'ACCOUNT_AUTH_UNAVAILABLE');
+    }
+    final ticket = _epoch;
+    final fresh = await adapter.login(email, password);
+    await _acceptSession(fresh, ticket);
+  });
+
+  Future<void> registerPatient({
+    required String displayName,
+    required String email,
+    required String password,
+    required String clinicId,
+    required String clinicianId,
+  }) => _run(() async {
+    final adapter = identity;
+    if (adapter is! PatientAccountIdentityAdapter) {
+      throw const ApiFailure(403, 'ACCOUNT_AUTH_UNAVAILABLE');
+    }
+    final ticket = _epoch;
+    final fresh = await adapter.registerPatient(
+      displayName: displayName,
+      email: email,
+      password: password,
+      clinicId: clinicId,
+      clinicianId: clinicianId,
+    );
+    await _acceptSession(fresh, ticket);
+  });
+
+  Future<void> _acceptSession(Session fresh, int ticket) async {
     if (ticket != _epoch) return;
     final old = session;
     if (old != null &&
@@ -124,7 +160,7 @@ class PatientController extends ChangeNotifier {
     operations = await store.pending(fresh.scope);
     check();
     await _readExams(fresh, check);
-  });
+  }
   Future<void> _readExams(
     Session s,
     void Function() check, {

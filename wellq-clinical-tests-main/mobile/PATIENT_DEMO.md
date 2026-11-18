@@ -1,9 +1,11 @@
 # Recorrido del paciente para la demostración
 
 Solo desarrollo debug e información sintética. El profesional usa React; la
-app del paciente no ofrece Score ni interpretación médica. El acceso demo usa
-`POST /api/v1/demo/login` para el paciente fijo `paciente_ariel_demo` y luego lo
-vincula a Clinica Alemana (`clinica_alemana`) con `POST /api/v1/demo/link-patient`.
+app del paciente no ofrece Score ni interpretación médica. La cuenta demo del
+paciente inicia sesión con `POST /api/v1/auth/login` o se registra con
+`POST /api/v1/auth/patient/register`. El servidor genera su `patient_id` y
+vincula la cuenta a una clínica y un clínico activo. Los clínicos no se pueden
+registrar desde la app; solo el administrador los crea en el portal.
 El backend debe ser una instancia demo aislada, con `ENVIRONMENT=test`,
 `WELLQ_DEMO_AUTH_ENABLED=true`, MongoDB solo sintético y una única instancia
 API. Esta autoridad demo no sustituye el proveedor productivo de identidad.
@@ -36,8 +38,9 @@ Release y profile conservan el bloqueo de la identidad sintética.
 
 ## Demostrar el recorrido
 
-1. Pulsar **Conectar paciente sintético**. Comprobar Inicio y Mis exámenes.
-2. En **Cargar**, elegir exclusivamente un PDF sintético o el PDF de prueba.
+1. Iniciar sesión o registrar paciente, seleccionando una clínica y un clínico activo.
+   El correo debe ser único y la contraseña debe tener al menos 12 caracteres.
+2. Comprobar Inicio y Mis exámenes. En **Cargar**, elegir exclusivamente el PDF sintético.
    Abrir su visor, volver y completar título, fecha y ambos consentimientos.
 3. **Guardar como pendiente** conserva el PDF privado y su SHA-256. No envía.
    Mientras se selecciona/lee un archivo no se permite guardar ni abrir otro

@@ -5,7 +5,7 @@ from copy import deepcopy
 session_context = ContextVar("mongo_session", default=None)
 COLLECTIONS = frozenset({"clinical_tests", "clinical_test_extractions", "clinical_markers", "marker_catalog",
                          "score_snapshots", "patient_access", "lab_report_exports", "audit_events", "audit_logs",
-                         "request_limits", "clinical_result_history", "demo_objects"})
+                         "request_limits", "clinical_result_history", "demo_objects", "user_accounts"})
 
 class TenantCollection:
     def __init__(self, collection, client_id):

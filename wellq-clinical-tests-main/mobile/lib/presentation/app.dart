@@ -8,6 +8,7 @@ import 'language_selector.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../application/patient_controller.dart';
+import '../data/api.dart';
 import '../domain/models.dart';
 import 'patient_widgets.dart';
 import 'synthetic_pdf_screen.dart';
@@ -105,7 +106,15 @@ class PatientShell extends StatefulWidget {
 class _PatientShellState extends State<PatientShell>
     with WidgetsBindingObserver {
   int tab = 0;
+  final _name = TextEditingController(),
+      _email = TextEditingController(),
+      _password = TextEditingController(),
+      _passwordConfirm = TextEditingController();
+  bool _registering = false, _loadingClinics = false;
+  String _selectedClinic = '', _selectedClinician = '', _accountError = '';
+  List<Json> _clinics = [];
   PatientController get c => widget.c;
+  bool get _accountAuth => c.identity is PatientAccountIdentityAdapter;
   List<String> get labels => [
     context.l10n.home,
     context.l10n.exams,
@@ -126,9 +135,69 @@ class _PatientShellState extends State<PatientShell>
     WidgetsBinding.instance.addObserver(this);
   }
 
+  Future<void> _loadClinics() async {
+    if (!_accountAuth || _loadingClinics || _clinics.isNotEmpty) return;
+    setState(() => _loadingClinics = true);
+    try {
+      final values = await c.api.list('/api/v1/auth/clinics');
+      if (!mounted) return;
+      setState(() {
+        _clinics = values;
+        _selectedClinic = values.isEmpty ? '' : values.first['id'] as String;
+        final doctors = values.isEmpty ? const <dynamic>[] : values.first['clinicians'] as List;
+        _selectedClinician = doctors.isEmpty ? '' : doctors.first['id'] as String;
+      });
+    } on ApiFailure catch (e) {
+      if (mounted) setState(() => _accountError = cSafeError(e));
+    } finally {
+      if (mounted) setState(() => _loadingClinics = false);
+    }
+  }
+
+  String cSafeError(ApiFailure error) => switch (error.status) {
+    404 => 'El registro no está habilitado en este entorno.',
+    429 => 'Demasiados intentos. Espera unos minutos.',
+    >= 500 => 'Servicio temporalmente no disponible. Intenta más tarde.',
+    _ => 'No se pudo cargar el catálogo de clínicas.',
+  };
+
+  Future<void> _submitAccount() async {
+    setState(() => _accountError = '');
+    if (_email.text.trim().isEmpty || _password.text.isEmpty) {
+      setState(() => _accountError = 'Ingresa tu correo y contraseña.');
+      return;
+    }
+    if (_registering && (_name.text.trim().length < 2 || _password.text.length < 12 ||
+        _password.text != _passwordConfirm.text ||
+        _selectedClinic.isEmpty || _selectedClinician.isEmpty)) {
+      setState(() => _accountError = 'Completa los datos; usa una contraseña de 12 caracteres y confirma que coincidan.');
+      return;
+    }
+    if (_registering) {
+      await c.registerPatient(displayName: _name.text, email: _email.text,
+          password: _password.text, clinicId: _selectedClinic,
+          clinicianId: _selectedClinician);
+    } else {
+      await c.login(_email.text, _password.text);
+    }
+    if (mounted && c.session != null) {
+      _password.clear();
+      _passwordConfirm.clear();
+      setState(() { _registering = false; _accountError = ''; tab = 0; });
+    } else if (mounted) {
+      setState(() => _accountError = c.message == null
+          ? 'No se pudo completar el acceso. Revisa los datos e inténtalo de nuevo.'
+          : context.l10n.safeMessage(c.message!));
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _name.dispose();
+    _email.dispose();
+    _password.dispose();
+    _passwordConfirm.dispose();
     super.dispose();
   }
 
@@ -409,20 +478,68 @@ class _PatientShellState extends State<PatientShell>
                       ),
                     ),
                     const SizedBox(height: 24),
-                    FilledButton.icon(
+                    if (_accountAuth) ...[
+                      if (_registering) ...[
+                        TextField(controller: _name, textCapitalization: TextCapitalization.words,
+                          autofillHints: const [AutofillHints.name], decoration: const InputDecoration(labelText: 'Nombre completo')),
+                        TextField(controller: _email, keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email], decoration: const InputDecoration(labelText: 'Correo electrónico')),
+                        TextField(controller: _password, obscureText: true, maxLength: 128,
+                          autofillHints: const [AutofillHints.newPassword], decoration: const InputDecoration(labelText: 'Contraseña (mínimo 12 caracteres)')),
+                        TextField(controller: _passwordConfirm, obscureText: true, maxLength: 128,
+                          autofillHints: const [AutofillHints.newPassword], decoration: const InputDecoration(labelText: 'Confirmar contraseña')),
+                        const SizedBox(height: 10),
+                        if (_clinics.isNotEmpty) ...[
+                          DropdownButtonFormField<String>(value: _selectedClinic.isEmpty ? null : _selectedClinic,
+                            decoration: const InputDecoration(labelText: 'Clínica donde recibe atención'),
+                            items: _clinics.map((clinic) => DropdownMenuItem(value: clinic['id'] as String,
+                              child: Text(clinic['name'] as String))).toList(),
+                            onChanged: c.busy ? null : (value) => setState(() {
+                              _selectedClinic = value ?? '';
+                              final clinic = _clinics.firstWhere((item) => item['id'] == _selectedClinic);
+                              final doctors = clinic['clinicians'] as List;
+                              _selectedClinician = doctors.isEmpty ? '' : doctors.first['id'] as String;
+                            })),
+                          const SizedBox(height: 10),
+                          Builder(builder: (context) {
+                            final matches = _clinics.where((item) => item['id'] == _selectedClinic).toList();
+                            final clinic = matches.isEmpty ? null : matches.first;
+                            final doctors = clinic == null ? <dynamic>[] : clinic['clinicians'] as List;
+                            return DropdownButtonFormField<String>(value: _selectedClinician.isEmpty ? null : _selectedClinician,
+                              decoration: const InputDecoration(labelText: 'Profesional que lo atiende'),
+                              items: doctors.map((doctor) => DropdownMenuItem(value: doctor['id'] as String,
+                                child: Text(doctor['name'] as String))).toList(),
+                              onChanged: c.busy ? null : (value) => setState(() => _selectedClinician = value ?? ''));
+                          }),
+                        ] else ...[
+                          if (_loadingClinics) const LinearProgressIndicator(),
+                          if (!_loadingClinics && _accountError.isEmpty)
+                            const Text('No hay profesionales activos disponibles. Contacta a la clínica para que registre a tu profesional.'),
+                          if (!_loadingClinics) OutlinedButton.icon(onPressed: _loadClinics,
+                            icon: const Icon(Icons.refresh), label: const Text('Volver a consultar clínicas')),
+                        ],
+                      ] else ...[
+                        TextField(controller: _email, keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email], decoration: const InputDecoration(labelText: 'Correo electrónico')),
+                        TextField(controller: _password, obscureText: true, maxLength: 128,
+                          autofillHints: const [AutofillHints.password], decoration: const InputDecoration(labelText: 'Contraseña')),
+                      ],
+                      if (_accountError.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 10),
+                        child: Text(_accountError, style: TextStyle(color: colors.error))),
+                      const SizedBox(height: 12),
+                      FilledButton.icon(onPressed: c.busy || (_registering && _clinics.isEmpty) ? null : _submitAccount,
+                        style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
+                        icon: Icon(_registering ? Icons.person_add_alt_1 : Icons.login),
+                        label: Text(_registering ? 'Crear cuenta de paciente' : 'Iniciar sesión')),
+                      TextButton(onPressed: c.busy ? null : () {
+                        setState(() { _registering = !_registering; _accountError = ''; });
+                        if (_registering) _loadClinics();
+                      }, child: Text(_registering ? 'Ya tengo cuenta · Iniciar sesión' : 'Nuevo paciente · Registrarme')),
+                    ] else FilledButton.icon(
                       onPressed: c.busy ? null : c.connect,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(0, 52),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                      ),
+                      style: FilledButton.styleFrom(minimumSize: const Size(0, 52), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)),
                       icon: const Icon(Icons.login, size: 20),
-                      label: Text(
-                        l.connectSynthetic,
-                        textAlign: TextAlign.center,
-                      ),
+                      label: Text(l.connectSynthetic, textAlign: TextAlign.center),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -679,8 +796,19 @@ class _PatientShellState extends State<PatientShell>
     ListTile(
       leading: Icon(Icons.person_outline),
       title: Text(context.l10n.patientSession),
-      subtitle: Text(context.l10n.syntheticProfile),
+      subtitle: Text(c.session?.displayName ?? context.l10n.syntheticProfile),
     ),
+    if (c.session != null)
+      ListTile(
+        leading: const Icon(Icons.badge_outlined),
+        title: const Text('ID de paciente'),
+        subtitle: SelectableText(c.session!.patient),
+        trailing: IconButton(
+          tooltip: 'Copiar ID',
+          icon: const Icon(Icons.copy_outlined),
+          onPressed: () => Clipboard.setData(ClipboardData(text: c.session!.patient)),
+        ),
+      ),
     OutlinedButton.icon(
       onPressed: c.busy ? null : c.reconcile,
       icon: const Icon(Icons.refresh),
