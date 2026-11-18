@@ -40,7 +40,7 @@ def initiate(request, key, patient, db):
     tenant_path = hashlib.sha256(db.client_id.encode()).hexdigest()
     object_key = f"quarantine/clinical-tests/{tenant_path}/{clinical_id}/original"
     signed = storage_service.generate_upload_url(object_key, request.mime_type,
-        client_id=db.client_id, size_bytes=request.size_bytes, sha256=request.sha256)
+        client_id=db.client_id, patient_id=patient, size_bytes=request.size_bytes, sha256=request.sha256)
     now = datetime.utcnow()
     doc = {"clinical_test_id": clinical_id, "patient_id": patient, "title": request.title,
         "test_type": request.test_type.value, "test_date": request.test_date, "patient_notes": request.notes,
@@ -73,7 +73,7 @@ def refresh(upload_id, request, key, patient, db):
     if doc["upload"]["status"] != "initiated": fail("UPLOAD_NOT_REFRESHABLE")
     if doc["upload"].get("refresh_count", 0) >= settings.MAX_URL_REFRESHES_PER_UPLOAD: fail("RATE_LIMITED", 429)
     signed = storage_service.generate_upload_url(doc["file"]["gcs_object_key"], doc["file"]["mime_type"],
-        client_id=db.client_id, size_bytes=doc["file"]["size_bytes"], sha256=doc["file"]["sha256"])
+        client_id=db.client_id, patient_id=patient, size_bytes=doc["file"]["size_bytes"], sha256=doc["file"]["sha256"])
     db.clinical_tests.update_one({"_id": doc["_id"]}, {"$inc": {"upload.refresh_count": 1},
         "$set": {"upload.refresh_responses." + slot: signed, "upload.expires_at": signed["expires_at"]}})
     return {"upload_id": upload_id, "status": "initiated", "upload": signed}
@@ -89,7 +89,8 @@ def complete(upload_id, request, key, patient, db):
             stored = mongodb.db.demo_objects.find_one({"client_id": db.client_id,
                 "object_key": doc["file"]["gcs_object_key"], "sha256": doc["file"]["sha256"],
                 "size_bytes": doc["file"]["size_bytes"]})
-            if not stored or db.client_id != "clinica_alemana" or doc["patient_id"] != "paciente_ariel_demo":
+            if (not stored or db.client_id != "clinica_alemana"
+                    or stored.get("patient_id") != doc["patient_id"]):
                 fail("OBJECT_NOT_UPLOADED")
             secure_key, secure_generation = storage_service.promote(
                 doc["file"]["gcs_object_key"], stored["generation"], stored["sha256"])

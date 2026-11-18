@@ -65,7 +65,7 @@ class StorageService:
             raise unavailable()
 
     def generate_upload_url(self, object_key, content_type, expiration_minutes=15,
-                            client_id=None, size_bytes=None, sha256=None):
+                            client_id=None, patient_id=None, size_bytes=None, sha256=None):
         if not object_key.startswith("quarantine/clinical-tests/"):
             raise ValueError("Quarantine upload required")
         ttl = min(expiration_minutes, settings.SIGNED_URL_EXPIRATION_MINUTES)
@@ -74,7 +74,9 @@ class StorageService:
                     or sha256 != "3331e1f6f50397609563dacbdf46d5c6f41d3d530c9f8e3697d136915c4907a6"
                     or size_bytes != 2485):
                 raise HTTPException(422, detail={"code": "SYNTHETIC_FILE_REQUIRED", "message": "Only the fixed synthetic PDF is accepted"})
-            token = self._demo_token("demo_upload", object_key, client_id, ttl,
+            if not isinstance(patient_id, str) or not patient_id:
+                raise HTTPException(403, detail={"code": "PATIENT_REQUIRED", "message": "Patient identity required"})
+            token = self._demo_token("demo_upload", object_key, client_id, ttl, patient_id=patient_id,
                                      expected_size=size_bytes, expected_sha256=sha256)
             url = self._demo_base_url() + "/api/v1/demo/storage/upload"
             return {"method": "PUT", "signed_url": url,

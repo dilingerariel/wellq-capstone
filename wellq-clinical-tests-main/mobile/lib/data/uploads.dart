@@ -183,7 +183,18 @@ class UploadRepository {
         throw const ApiFailure(502, 'UNEXPECTED_UPLOAD_REGRESSION');
       }
       // A successful PUT is a durable checkpoint even if complete was lost.
-      if (op.phase == 'complete_pending' || op.phase == 'conflict') return;
+      // OBJECT_NOT_UPLOADED was the old demo backend's hard-coded rejection of
+      // newly registered patient IDs. After that backend is fixed, safely retry
+      // the same completion request and idempotency key for the stored object.
+      if (op.phase == 'conflict') {
+        if (op.error == 'OBJECT_NOT_UPLOADED' &&
+            op.payload['sync_step'] == 'complete') {
+          phase = 'complete_pending';
+        } else {
+          return;
+        }
+      }
+      if (op.phase == 'complete_pending') return;
     }
     if (phase == 'confirmed') {
       final processing = s['processing'];
@@ -297,7 +308,7 @@ class UploadRepository {
     }
 
     authorized();
-    if (op.phase == 'conflict') {
+    if (op.phase == 'conflict' && op.error != 'OBJECT_NOT_UPLOADED') {
       throw const ApiFailure(409, 'RECONCILIATION_REQUIRED');
     }
     if (op.finished || op.phase == 'processing') return;

@@ -83,7 +83,7 @@ def sample_pdf():
 @pytest.fixture
 def fake_storage(env):
     objects = {}
-    def sign(key, content_type, expiration_minutes=15):
+    def sign(key, content_type, expiration_minutes=15, **_constraints):
         return {"method": "PUT", "signed_url": "https://storage.test.invalid/upload", "required_headers": {"Content-Type": content_type},
                 "expires_at": "2099-01-01T00:00:00Z"}
     def read(key, generation=None):

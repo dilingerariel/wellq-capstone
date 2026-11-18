@@ -86,7 +86,14 @@ async def upload_synthetic_object(request: Request):
     token = request.headers.get("x-wellq-upload-token", "")
     claims = verify_storage_capability(token, "demo_upload")
     object_key = claims.get("object_key")
+    patient_id = claims.get("patient_id")
+    from app.database import mongodb
+    account = mongodb.db.user_accounts.find_one({"client_id": claims["client_id"],
+        "patient_id": patient_id, "role": "patient", "active": True}, {"_id": 1})
+    access = mongodb.db.patient_access.find_one({"client_id": claims["client_id"],
+        "patient_id": patient_id}, {"_id": 1})
     if (not isinstance(object_key, str) or not object_key.startswith("quarantine/clinical-tests/")
+            or not isinstance(patient_id, str) or not patient_id or not account or not access
             or claims.get("expected_size") != SYNTHETIC_PDF_SIZE
             or claims.get("expected_sha256") != SYNTHETIC_PDF_SHA256
             or request.headers.get("x-wellq-if-absent") != "true"
@@ -99,9 +106,9 @@ async def upload_synthetic_object(request: Request):
     import hashlib
     if len(data) != SYNTHETIC_PDF_SIZE or hashlib.sha256(data).hexdigest() != SYNTHETIC_PDF_SHA256:
         raise HTTPException(status_code=422, detail={"code": "SYNTHETIC_FILE_REQUIRED", "message": "Only the fixed synthetic PDF is accepted"})
-    from app.database import mongodb
     from pymongo.errors import DuplicateKeyError
     document = {"client_id": claims["client_id"], "object_key": object_key,
+                "patient_id": patient_id,
                 "capability_id": claims["jti"],
                 "content_type": "application/pdf", "size_bytes": len(data),
                 "sha256": SYNTHETIC_PDF_SHA256, "generation": 1, "data": data,
