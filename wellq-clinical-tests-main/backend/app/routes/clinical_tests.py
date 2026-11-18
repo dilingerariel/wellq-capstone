@@ -39,6 +39,14 @@ from app.models.scoring import LabScoreResponse
 router = APIRouter()
 
 
+def _process_one_synthetic_demo_extraction():
+    """Run one queued extraction during the Vercel synthetic-demo request."""
+    from app.database import mongodb
+    from app.workers.processing import run_once
+    if mongodb.db is not None:
+        run_once(mongodb.db, "extraction")
+
+
 # ============ ENDPOINT 1: INITIATE UPLOAD ============
 
 @router.post(
@@ -86,7 +94,15 @@ async def complete_upload(
     current_patient: str = Depends(get_current_patient),
     db: Database = Depends(get_database),
 ):
-    return uploads.complete(upload_id, request, idempotency_key, current_patient, db)
+    result = uploads.complete(upload_id, request, idempotency_key, current_patient, db)
+    if (settings.DEMO_AUTH_ENABLED and settings.DEMO_MONGO_STORAGE_ENABLED
+            and settings.ENVIRONMENT != "production" and settings.AI_PROVIDER_APPROVED
+            and settings.AI_PROVIDER == "gemini_api" and settings.GEMINI_API_KEY):
+        doc = db.clinical_tests.find_one({"upload.upload_id": upload_id, "patient_id": current_patient,
+                                          "deleted_at": None})
+        if (doc and doc.get("ai_consent") and doc.get("extraction_job", {}).get("status") == "pending"):
+            background_tasks.add_task(_process_one_synthetic_demo_extraction)
+    return result
 
 # ============ ENDPOINT 4: UPLOAD STATUS ============
 

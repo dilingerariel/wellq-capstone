@@ -136,6 +136,16 @@ class ExtractionEngine:
             raise ExtractionUnavailable("Verified document required")
         if not doc.get("ai_consent"):
             raise ExtractionUnavailable("Patient AI consent required")
+        if getattr(provider, "synthetic_only", False):
+            # Gemini Developer API is wired only for the fixed, non-identifying
+            # presentation asset. Real clinical PDFs require an approved Vertex AI
+            # deployment, never this developer endpoint.
+            from app.routes.demo import SYNTHETIC_PDF_SHA256, SYNTHETIC_PDF_SIZE
+            if (settings.ENVIRONMENT == "production" or not settings.DEMO_AUTH_ENABLED
+                    or not settings.DEMO_MONGO_STORAGE_ENABLED
+                    or doc.get("file", {}).get("sha256") != SYNTHETIC_PDF_SHA256
+                    or doc.get("file", {}).get("size_bytes") != SYNTHETIC_PDF_SIZE):
+                raise ExtractionUnavailable("Gemini Developer API is restricted to the fixed synthetic demo PDF")
         data, mime, generation = storage_service.read_object(doc["file"]["gcs_object_key"], doc["file"]["generation"])
         if generation != doc["file"]["generation"]:
             raise ExtractionUnavailable("Document generation changed")
@@ -210,4 +220,9 @@ class ExtractionEngine:
             {"$set": {"extraction.extraction_id": extraction["extraction_id"], "extraction.status": state, "updated_at": now}})
         return extraction
 
-extraction_engine = ExtractionEngine()
+def _configured_provider():
+    from app.services.gemini_provider import configured_extraction_provider
+    return configured_extraction_provider()
+
+
+extraction_engine = ExtractionEngine(provider=_configured_provider())

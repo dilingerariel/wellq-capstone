@@ -95,12 +95,18 @@ def complete(upload_id, request, key, patient, db):
             secure_key, secure_generation = storage_service.promote(
                 doc["file"]["gcs_object_key"], stored["generation"], stored["sha256"])
             now = datetime.utcnow()
-            db.clinical_tests.update_one({"_id": doc["_id"], "upload.status": "initiated"}, {"$set": {
+            demo_ai_enabled = bool(doc.get("ai_consent") and settings.AI_PROVIDER_APPROVED
+                                   and settings.AI_PROVIDER == "gemini_api" and settings.GEMINI_API_KEY)
+            demo_fields = {
                 "file.gcs_object_key": secure_key, "file.generation": secure_generation, "file.verified_at": now,
                 "upload.status": "ready_for_review", "upload.validated_at": now,
                 "upload.processing_status": {"malware_scan": "not_applicable", "mime_validation": "passed"},
-                "upload.job.status": "done", "extraction.status": "not_applicable", "updated_at": now,
-            }})
+                "upload.job.status": "done", "extraction.status": "queued" if demo_ai_enabled else "not_applicable",
+                "updated_at": now,
+            }
+            if demo_ai_enabled:
+                demo_fields["extraction_job"] = {"status": "pending", "attempts": 0, "available_at": now}
+            db.clinical_tests.update_one({"_id": doc["_id"], "upload.status": "initiated"}, {"$set": demo_fields})
             audit(db, "upload_verified_synthetic_demo", "clinical_test", doc["clinical_test_id"])
             current = "ready_for_review"
         else:

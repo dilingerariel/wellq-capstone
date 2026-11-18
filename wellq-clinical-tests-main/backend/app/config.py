@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     JOB_MAX_ATTEMPTS: int = 5
     CATALOG_CLINICALLY_APPROVED: bool = False
     AI_PROVIDER_APPROVED: bool = False
+    AI_PROVIDER: Literal["none", "gemini_api"] = "none"
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL_ID: str = "gemini-3.8-flash"
+    GEMINI_TIMEOUT_SECONDS: int = Field(45, ge=5, le=120)
     DEMO_AUTH_ENABLED: bool = Field(False, validation_alias="WELLQ_DEMO_AUTH_ENABLED")
     DEMO_JWT_PRIVATE_KEY: Optional[str] = Field(None, validation_alias="WELLQ_DEMO_JWT_PRIVATE_KEY")
     DEMO_MONGO_STORAGE_ENABLED: bool = Field(False, validation_alias="WELLQ_DEMO_MONGO_STORAGE_ENABLED")

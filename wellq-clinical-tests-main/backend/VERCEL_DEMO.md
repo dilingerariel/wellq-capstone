@@ -23,6 +23,10 @@ Set these API project environment variables for Production, then redeploy:
 | `CORS_ORIGINS` | `["https://wellq-capstone.vercel.app"]` |
 | `WELLQ_PLATFORM_ADMIN_EMAIL` | The single platform administrator's email |
 | `WELLQ_PLATFORM_ADMIN_PASSWORD_HASH` | Scrypt hash; secret value, never the clear-text password |
+| `AI_PROVIDER` | `gemini_api` to process the fixed synthetic presentation PDF |
+| `GEMINI_API_KEY` | Gemini API key; add as a Vercel Secret, never commit it |
+| `GEMINI_MODEL_ID` | `gemini-3.8-flash` (or another model enabled for the key) |
+| `AI_PROVIDER_APPROVED` | `true` only to enable the synthetic-only extraction integration |
 
 Use a dedicated MongoDB database user with only `readWrite` on `wellq_demo`. Vercel Hobby does not provide one fixed egress IP to allowlist; for this synthetic-only demo the Atlas IP rule may need `0.0.0.0/0`. This permits network attempts from any IP, so the separate database user must have a long random password and access only to `wellq_demo`. Never use this configuration for real patient data; remove the broad IP rule and rotate the database password after the presentation. Vercel static egress IPs are a paid-plan feature.
 
@@ -70,4 +74,8 @@ flutter run --debug `
   --dart-define=WELLQ_DEMO_HOST=<api-project>.vercel.app
 ```
 
-The portal account flow is enabled by `VITE_DEMO_AUTH_ENABLED=true` in the frontend build. The patient debug build uses the patient-only registration/login flow when `WELLQ_DEMO_IDENTITY=true`. Patient login, upload link, PDF storage, download, clinic association, and clinician access checks use the Atlas-backed API. Synthetic uploads are validated by their fixed SHA-256 and size; the isolated demo does not invoke ClamAV or AI extraction and does not publish scores.
+The portal account flow is enabled by `VITE_DEMO_AUTH_ENABLED=true` in the frontend build. The patient debug build uses the patient-only registration/login flow when `WELLQ_DEMO_IDENTITY=true`. Patient login, upload link, PDF storage, download, clinic association, and clinician access checks use the Atlas-backed API. Synthetic uploads are validated by their fixed SHA-256 and size; the isolated demo does not invoke ClamAV or publish scores. If the AI settings above are enabled and the patient opted into AI processing, upload completion queues the extraction and the Vercel request processes one synthetic job with Gemini.
+
+## AI data boundary
+
+The Gemini Developer API integration is hard-limited in code to `mobile/assets/synthetic.pdf` (matching its fixed SHA-256 and byte length), and is disabled unless `AI_PROVIDER_APPROVED=true`. Do not put real patient PDFs in this demo. A Developer API paid tier does not use prompts to improve products, but Google's current documentation says abuse-monitoring prompts/responses may be retained for a limited period; workloads requiring guaranteed zero retention or enterprise processing agreements should use Vertex AI instead. Real clinical use therefore requires a separately approved Vertex AI adapter, cloud project, data-processing terms, and a persistent worker deployment. The demo Gemini key alone does not authorize or enable real-patient extraction.
