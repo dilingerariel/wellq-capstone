@@ -468,6 +468,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statusReviewed => 'Con revisión profesional';
 
   @override
+  String get viewReviewResult => 'Ver resultado';
+
+  @override
+  String get reviewResultTitle => 'Resultado de la revisión';
+
+  @override
+  String get reviewResultLabel => 'Comentario de tu clínico';
+
+  @override
+  String get closeResult => 'Cerrar';
+
+  @override
   String get statusReady => 'Pendiente de revisión profesional';
 
   @override

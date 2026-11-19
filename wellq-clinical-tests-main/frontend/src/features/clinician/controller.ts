@@ -87,6 +87,7 @@ export class ClinicianController {
     !!this.state.id &&
     (!!this.pending ||
       this.state.draft.reviewNote !== '' ||
+      this.state.draft.patientMessage !== '' ||
       this.state.draft.clinicalNote !== '' ||
       JSON.stringify(this.state.draft.markers) !==
         JSON.stringify(createDraft(this.state.extraction).markers))
@@ -283,8 +284,12 @@ export class ClinicianController {
         phase: 'done',
         draft:
           action === 'review'
-            ? { ...this.state.draft, reviewNote: '' }
-            : { ...createDraft(this.state.extraction), reviewNote: this.state.draft.reviewNote },
+            ? { ...this.state.draft, reviewNote: '', patientMessage: '' }
+            : {
+                ...createDraft(this.state.extraction),
+                reviewNote: this.state.draft.reviewNote,
+                patientMessage: this.state.draft.patientMessage,
+              },
       })
       this.invalidate()
     } catch (e) {

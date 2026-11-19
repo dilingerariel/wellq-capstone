@@ -82,9 +82,9 @@ export type RefreshUrlResponse = { "upload_id": string; "status": UploadStatus; 
 
 export type ReprocessRequest = { "confirm_reprocess_confirmed"?: boolean }
 
-export type ReviewInfo = { "status": ReviewStatus; "reviewed_at"?: string | null; "reviewed_by"?: string | null }
+export type ReviewInfo = { "status": ReviewStatus; "reviewed_at"?: string | null; "reviewed_by"?: string | null; "patient_message"?: string | null }
 
-export type ReviewRequest = { "expected_version"?: string | null; "review_status"?: string; "review_note"?: string | null }
+export type ReviewRequest = { "expected_version"?: string | null; "review_status"?: string; "review_note"?: string | null; "patient_message"?: string | null }
 
 export type ReviewStatus = "not_reviewed" | "reviewed"
 

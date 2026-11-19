@@ -162,6 +162,11 @@ def format_clinical_test_response(doc: dict, db=None) -> ClinicalTestResponse:
             status=ReviewStatus(doc.get("review", {}).get("status", ReviewStatus.NOT_REVIEWED.value)),
             reviewed_at=reviewed_at,
             reviewed_by=doc.get("review", {}).get("reviewed_by"),
+            patient_message=(
+                doc.get("review", {}).get("patient_message")
+                if doc.get("review", {}).get("status") == ReviewStatus.REVIEWED.value
+                else None
+            ),
         ),
         created_at=created_at,
         updated_at=updated_at,
@@ -560,7 +565,9 @@ async def review_clinical_test(
         raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Document not ready for review"})
     previous = doc.get("review", {})
     if previous.get("status") == "reviewed":
-        if previous.get("reviewed_by") == current_clinician and previous.get("private_note") == request.review_note:
+        if (previous.get("reviewed_by") == current_clinician
+                and previous.get("private_note") == request.review_note
+                and previous.get("patient_message") == request.patient_message):
             return format_clinical_test_response(doc, db)
         raise HTTPException(409, detail={"code": "DOCUMENT_NOT_READY", "message": "Review is immutable"})
     if previous.get("status") != "not_reviewed":
@@ -577,6 +584,7 @@ async def review_clinical_test(
                 "review.reviewed_at": now,
                 "review.reviewed_by": current_clinician,
                 "review.private_note": request.review_note,
+                "review.patient_message": request.patient_message,
                 "updated_at": now,
             }
         }

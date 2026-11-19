@@ -470,6 +470,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusReviewed => 'Professionally reviewed';
 
   @override
+  String get viewReviewResult => 'View result';
+
+  @override
+  String get reviewResultTitle => 'Review result';
+
+  @override
+  String get reviewResultLabel => "Your clinician's comment";
+
+  @override
+  String get closeResult => 'Close';
+
+  @override
   String get statusReady => 'Awaiting professional review';
 
   @override

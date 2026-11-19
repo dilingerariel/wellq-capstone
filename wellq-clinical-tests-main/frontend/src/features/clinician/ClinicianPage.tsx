@@ -275,6 +275,18 @@ export function ClinicianPage() {
                 onChange={(e) => clinician.update({ ...d, reviewNote: e.target.value })}
               />
             </label>
+            <label>
+              {t('clinicalPatientMessage')}
+              <textarea
+                rows={4}
+                maxLength={2000}
+                value={d.patientMessage}
+                disabled={
+                  locked || doc.review.status !== 'not_reviewed' || !grant('clinical:review')
+                }
+                onChange={(e) => clinician.update({ ...d, patientMessage: e.target.value })}
+              />
+            </label>
             <button
               className="button primary"
               disabled={
@@ -337,9 +349,14 @@ export function ClinicianPage() {
           <p>{t(`clinicalAction_${s.action}`)}</p>
           <p>{t('clinicalExplicit')}</p>
           {s.action === 'review' ? (
-            <p>
-              {t('clinicalReviewNote')}: {d.reviewNote || '—'}
-            </p>
+            <>
+              <p>
+                {t('clinicalReviewNote')}: {d.reviewNote || '—'}
+              </p>
+              <p>
+                {t('clinicalPatientMessage')}: {d.patientMessage || '—'}
+              </p>
+            </>
           ) : (
             <>
               <p>

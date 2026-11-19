@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @syntheticProfile.
   ///
   /// In es, this message translates to:
-  /// **'Perfil sintético de desarrollo. Sin uso clínico.'**
+  /// **'Ariel Rodriguez (perfil sintetico; no es uso clinico).'**
   String get syntheticProfile;
 
   /// No description provided for @syncStatus.
@@ -931,6 +931,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Con revisión profesional'**
   String get statusReviewed;
+
+  /// No description provided for @viewReviewResult.
+  String get viewReviewResult;
+
+  /// No description provided for @reviewResultTitle.
+  String get reviewResultTitle;
+
+  /// No description provided for @reviewResultLabel.
+  String get reviewResultLabel;
+
+  /// No description provided for @closeResult.
+  String get closeResult;
 
   /// No description provided for @statusReady.
   ///

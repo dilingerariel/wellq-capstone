@@ -13,6 +13,7 @@ export const documentSchema = examSchema.extend({
     status: z.enum(['not_reviewed', 'reviewed']),
     reviewed_by: z.string().nullable().optional(),
     reviewed_at: z.string().nullable().optional(),
+    patient_message: z.string().nullable().optional(),
   }),
 })
 export type ClinicalDocument = z.infer<typeof documentSchema>
@@ -34,12 +35,14 @@ export type ClinicalExtraction = z.infer<typeof proposalSchema>
 export type Action = 'review' | 'validated' | 'rejected'
 export interface ClinicalDraft {
   reviewNote: string
+  patientMessage: string
   clinicalNote: string
   markers: Record<string, { value: string; unit: string; reason: string }>
 }
 export function createDraft(ext?: Extraction): ClinicalDraft {
   return {
     reviewNote: '',
+    patientMessage: '',
     clinicalNote: '',
     markers: Object.fromEntries(
       (ext ? markersOf(ext) : []).map((m) => [
@@ -55,8 +58,13 @@ export function bodyFor(
   ext?: Extraction,
 ): ReviewRequest | ClinicianValidationRequest {
   if (action === 'review') {
-    if (d.reviewNote.length > 2000) throw new Error('clinicalInvalid')
-    return { review_status: 'reviewed', review_note: d.reviewNote || null }
+    if (d.reviewNote.length > 2000 || d.patientMessage.length > 2000)
+      throw new Error('clinicalInvalid')
+    return {
+      review_status: 'reviewed',
+      review_note: d.reviewNote || null,
+      patient_message: d.patientMessage || null,
+    }
   }
   if (!ext || ext.status !== 'confirmed' || d.clinicalNote.length > 2000)
     throw new Error('clinicalInvalid')

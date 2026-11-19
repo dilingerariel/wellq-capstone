@@ -327,6 +327,37 @@ class _ExamScreenState extends State<ExamScreen> {
                   : context.l10n.reviewPendingUnknown,
             ),
           ),
+          if (detail?['review'] case final Map review)
+            if (review['status'] == 'reviewed')
+              if (review['patient_message'] case final String message)
+                if (message.trim().isNotEmpty)
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.assignment_turned_in_outlined),
+                    label: Text(context.l10n.viewReviewResult),
+                    onPressed: () => showDialog<void>(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        title: Text(context.l10n.reviewResultTitle),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(context.l10n.reviewResultLabel),
+                              const SizedBox(height: 8),
+                              SelectableText(message),
+                            ],
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(dialogContext).pop(),
+                            child: Text(context.l10n.closeResult),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           if (localizedTestTypeLabel(
                 context,
                 detail?['test_type'] as String? ?? widget.exam.testType,
@@ -491,23 +522,6 @@ class _ExamScreenState extends State<ExamScreen> {
               Text(context.l10n.serverDeterminesStatus),
           ],
           const SizedBox(height: 16),
-          OutlinedButton(
-            onPressed: sending || loading
-                ? null
-                : () async {
-                    if (draft != null &&
-                        editable &&
-                        !await ask(
-                          context,
-                          context.l10n.checkCurrentQuestion,
-                          context.l10n.checkCurrentWarning,
-                        )) {
-                      return;
-                    }
-                    await load();
-                  },
-            child: Text(context.l10n.checkCurrentProposal),
-          ),
         ],
       ),
     ),
