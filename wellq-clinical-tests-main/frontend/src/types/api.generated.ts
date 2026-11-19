@@ -1,8 +1,12 @@
 // Generated from backend/docs/openapi.json. Do not edit.
-// Source SHA-256: e0464fe981b8e6c8aae866d2254c3d626e7d94b405c75f6f489841d50ad6bc7a
+// Source SHA-256: 0318a72883d0624a4099c46fd653847887d724e4e176eee756cf9dbca1b69778
+export type AdminLoginRequest = { "email": string; "password": string }
+
 export type CatalogItemResponse = { "catalog_version"?: string; "clinically_validated"?: boolean; "marker_code": string; "name": string; "panel_code": string; "specimen": string; "canonical_unit": string; "supported_units": Array<string>; "pillars": Array<string>; "typical_range": { [key: string]: unknown } }
 
 export type ClinicalTestResponse = { "clinical_version"?: string | null; "clinical_test_id": string; "patient_id": string; "title": string; "test_type": TestType; "test_date": string; "notes"?: string | null; "case_id"?: string | null; "appointment_id"?: string | null; "file": FileInfo; "status": UploadStatus; "review": ReviewInfo; "created_at": string; "updated_at": string }
+
+export type ClinicianCreateRequest = { "display_name": string; "email": string; "password": string; "clinic_id": string }
 
 export type ClinicianValidationRequest = { "expected_version"?: string | null; "validation_status"?: "validated" | "rejected"; "marker_corrections"?: Array<MarkerCorrection> | null; "clinical_note"?: string | null }
 
@@ -11,6 +15,8 @@ export type CompleteUploadRequest = { "client_upload_id": string; "sha256": stri
 export type CompleteUploadResponse = { "clinical_test_id": string; "upload_id": string; "status": UploadStatus; "local_file_can_be_deleted": boolean; "status_url": string }
 
 export type ConfidenceScores = { "value"?: number; "unit"?: number; "reference"?: number; "name"?: number }
+
+export type DemoLoginRequest = { "role"?: "clinician" | "patient"; "client_id"?: string; "clinician_id"?: string | null; "patient_id"?: string | null }
 
 export type DocumentEdits = { "collection_date"?: string | null; "report_date"?: string | null; "document_type"?: DocumentType | null; "identity_confirmed"?: boolean | null }
 
@@ -48,7 +54,11 @@ export type LabReportResponse = { "source_version": string; "generated_at": stri
 
 export type LabScoreResponse = { "current_snapshot": ScoreSnapshotModel; "history"?: Array<ScoreSnapshotModel> | null }
 
+export type LinkPatientRequest = { "patient_id": string; "clinic_id": string; "clinician_id": string }
+
 export type ListClinicalTestsResponse = { "items": Array<{ [key: string]: unknown }>; "next_cursor"?: string | null }
+
+export type LoginRequest = { "email": string; "password": string; "role": string }
 
 export type MarkerCorrection = { "marker_code": string; "value_raw": string; "unit_raw": string; "reason"?: string | null }
 
@@ -67,6 +77,8 @@ export type MarkerStatus = "low" | "normal" | "high" | "critical_low" | "critica
 export type PanelItem = { "panel_code": string; "panel_name_raw": string; "specimen"?: string; "collection_date"?: string | null; "fasting"?: boolean | null; "markers"?: Array<MarkerItem> }
 
 export type PatientConfirmationRequest = { "action"?: "confirm" | "discard"; "extraction_id": string; "acknowledged_marker_codes"?: Array<string>; "document_edits"?: DocumentEdits | null; "marker_edits"?: Array<MarkerEdit> | null }
+
+export type PatientRegistration = { "display_name": string; "email": string; "password": string; "clinic_id": string; "clinician_id": string }
 
 export type PillarContribution = { "marker_code": string; "name": string; "value": number; "unit": string; "subscore": number; "weight": number; "clinical_test_id"?: string | null; "measured_on"?: string | null }
 
