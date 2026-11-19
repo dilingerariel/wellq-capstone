@@ -1,0 +1,2535 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/project">
+  <SaveVersion>12</SaveVersion>
+  <Name>WellQ Medical Exams — Scrum 2026 — Sincronizado con Excel 55-40-5</Name>
+  <Title>Carta Gantt WellQ — 4 sprints, 6 hitos, 57 elementos, responsables individualizados</Title>
+  <Subject>Proyecto Capstone APT - Planificacion Scrum</Subject>
+  <Category>Carta Gantt academica</Category>
+  <Company>Duoc UC - WellQ</Company>
+  <Manager>Equipo WellQ</Manager>
+  <Author>Equipo WellQ</Author>
+  <CreationDate>2026-11-18T12:00:00</CreationDate>
+  <LastSaved>2026-11-18T15:55:00</LastSaved>
+  <ScheduleFromStart>1</ScheduleFromStart>
+  <StartDate>2026-08-26T08:00:00</StartDate>
+  <FinishDate>2026-11-19T17:00:00</FinishDate>
+  <FYStartDate>1</FYStartDate>
+  <CriticalSlackLimit>0</CriticalSlackLimit>
+  <CurrencyDigits>0</CurrencyDigits>
+  <CurrencySymbol>$</CurrencySymbol>
+  <CurrencyCode>CLP</CurrencyCode>
+  <DefaultStartTime>08:00:00</DefaultStartTime>
+  <DefaultFinishTime>17:00:00</DefaultFinishTime>
+  <MinutesPerDay>480</MinutesPerDay>
+  <MinutesPerWeek>3360</MinutesPerWeek>
+  <DaysPerMonth>30</DaysPerMonth>
+  <CalendarUID>1</CalendarUID>
+  <DefaultTaskType>0</DefaultTaskType>
+  <DurationFormat>7</DurationFormat>
+  <WorkFormat>2</WorkFormat>
+  <NewTasksEffortDriven>0</NewTasksEffortDriven>
+  <EditableActualCosts>0</EditableActualCosts>
+  <HonorConstraints>1</HonorConstraints>
+  <InsertedProjectsLikeSummary>0</InsertedProjectsLikeSummary>
+  <MultipleCriticalPaths>0</MultipleCriticalPaths>
+  <Calendars>
+    <Calendar>
+      <UID>1</UID>
+      <Name>Calendario WellQ — lunes a domingo (08:00-12:00 y 13:00-17:00)</Name>
+      <IsBaseCalendar>1</IsBaseCalendar>
+      <BaseCalendarUID>-1</BaseCalendarUID>
+      <WeekDays>
+        <WeekDay>
+          <DayType>1</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>2</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>3</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>4</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>5</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>6</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>7</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>08:00:00</FromTime>
+              <ToTime>12:00:00</ToTime>
+            </WorkingTime>
+            <WorkingTime>
+              <FromTime>13:00:00</FromTime>
+              <ToTime>17:00:00</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+      </WeekDays>
+    </Calendar>
+    <Calendar>
+      <UID>2</UID>
+      <Name>Hito entrega WellQ — 24 horas (solo H5)</Name>
+      <IsBaseCalendar>1</IsBaseCalendar>
+      <BaseCalendarUID>-1</BaseCalendarUID>
+      <WeekDays>
+        <WeekDay>
+          <DayType>1</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>2</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>3</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>4</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>5</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>6</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+        <WeekDay>
+          <DayType>7</DayType>
+          <DayWorking>1</DayWorking>
+          <WorkingTimes>
+            <WorkingTime>
+              <FromTime>00:00:00</FromTime>
+              <ToTime>23:59:59</ToTime>
+            </WorkingTime>
+          </WorkingTimes>
+        </WeekDay>
+      </WeekDays>
+    </Calendar>
+  </Calendars>
+  <Tasks>
+    <Task>
+      <UID>0</UID>
+      <ID>0</ID>
+      <Name>WellQ Medical Exams — Cronograma Scrum 2026</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>0</WBS>
+      <OutlineNumber>0</OutlineNumber>
+      <OutlineLevel>0</OutlineLevel>
+      <Start>2026-08-26T08:00:00</Start>
+      <Finish>2026-11-19T17:00:00</Finish>
+      <Duration>PT688H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Summary>1</Summary>
+      <Milestone>0</Milestone>
+      <PercentComplete>94</PercentComplete>
+      <PercentWorkComplete>94</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <Notes>Cronograma sincronizado con el Excel de WellQ. Participación declarada estimada 55% Juan / 40% Ariel / 5% Benjamín; no es distribución certificada de horas. Porcentaje global 94% conservado del XML base, a validar con evidencias.</Notes>
+    </Task>
+    <Task>
+      <UID>1</UID>
+      <ID>1</ID>
+      <Name>Sprint 1: Visión y levantamiento inicial</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1</WBS>
+      <OutlineNumber>1</OutlineNumber>
+      <OutlineLevel>1</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-08-26T08:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>1</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-08-26T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1
+Tipo en Excel: Sprint
+Fechas planificadas: 2026-08-26 a 2026-09-15.
+Avance indicado en Excel: 100 %.
+La asignación del responsable en resumen corresponde a la coordinación; el detalle de trabajo está en tareas hijas.</Notes>
+    </Task>
+    <Task>
+      <UID>2</UID>
+      <ID>2</ID>
+      <Name>Hito: inicio formal del proyecto WellQ</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>H1</WBS>
+      <OutlineNumber>1.1</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-08-26T08:00:00</Start>
+      <Finish>2026-08-26T08:00:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>1</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-08-26T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: H1
+Tipo en Excel: Hito
+Fechas planificadas: 2026-08-26 a 2026-08-26.
+Avance indicado en Excel: 100 %.</Notes>
+      <ActualStart>2026-08-26T08:00:00</ActualStart>
+      <ActualFinish>2026-08-26T08:00:00</ActualFinish>
+    </Task>
+    <Task>
+      <UID>3</UID>
+      <ID>3</ID>
+      <Name>Sprint Planning 1</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.P</WBS>
+      <OutlineNumber>1.2</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-08-26T08:00:00</Start>
+      <Finish>2026-08-26T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-08-26T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.P
+Tipo en Excel: Evento
+Fechas planificadas: 2026-08-26 a 2026-08-26.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>4</UID>
+      <ID>4</ID>
+      <Name>Identificar problema, alcance y actores del proyecto</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T01</WBS>
+      <OutlineNumber>1.3</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-08-26T08:00:00</Start>
+      <Finish>2026-09-02T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-08-26T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.T01
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-08-26 a 2026-09-02.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>2</PredecessorUID>
+        <Type>3</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>5</UID>
+      <ID>5</ID>
+      <Name>Analizar Documento Maestro y especificaciones de WellQ</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T02</WBS>
+      <OutlineNumber>1.4</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-08-27T08:00:00</Start>
+      <Finish>2026-09-06T17:00:00</Finish>
+      <Duration>PT88H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-08-27T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.T02
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-08-27 a 2026-09-06.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>2</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>6</UID>
+      <ID>6</ID>
+      <Name>Levantar requisitos funcionales y no funcionales</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T03</WBS>
+      <OutlineNumber>1.5</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-03T08:00:00</Start>
+      <Finish>2026-09-10T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-03T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.T03
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-03 a 2026-09-10.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>4</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>7</UID>
+      <ID>7</ID>
+      <Name>Definir roles Scrum y épicas principales</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T04</WBS>
+      <OutlineNumber>1.6</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-07T08:00:00</Start>
+      <Finish>2026-09-12T17:00:00</Finish>
+      <Duration>PT48H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-07T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S1.T04
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-07 a 2026-09-12.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>5</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>8</UID>
+      <ID>8</ID>
+      <Name>Elaborar historias de usuario y criterios de aceptación (03)</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T05</WBS>
+      <OutlineNumber>1.7</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-08T08:00:00</Start>
+      <Finish>2026-09-14T17:00:00</Finish>
+      <Duration>PT56H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-08T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.T05
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-08 a 2026-09-14.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>5</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>9</UID>
+      <ID>9</ID>
+      <Name>Priorizar historias y construir Product Backlog (04)</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T06</WBS>
+      <OutlineNumber>1.8</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-11T08:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-11T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.T06
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-11 a 2026-09-15.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>6</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>10</UID>
+      <ID>10</ID>
+      <Name>Definir criterios de calidad y Definition of Done (10)</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.T07</WBS>
+      <OutlineNumber>1.9</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-11T08:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-11T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S1.T07
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-11 a 2026-09-15.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>6</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>11</UID>
+      <ID>11</ID>
+      <Name>Daily Scrum / seguimiento del Sprint 1</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.D</WBS>
+      <OutlineNumber>1.10</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-08-26T08:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-08-26T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S1.D
+Tipo en Excel: Evento
+Fechas planificadas: 2026-08-26 a 2026-09-15.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>12</UID>
+      <ID>12</ID>
+      <Name>Sprint Review 1</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.R</WBS>
+      <OutlineNumber>1.11</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-15T08:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-15T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S1.R
+Tipo en Excel: Evento
+Fechas planificadas: 2026-09-15 a 2026-09-15.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>13</UID>
+      <ID>13</ID>
+      <Name>Retrospectiva 1</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S1.RET</WBS>
+      <OutlineNumber>1.12</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-15T08:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-15T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S1.RET
+Tipo en Excel: Evento
+Fechas planificadas: 2026-09-15 a 2026-09-15.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>14</UID>
+      <ID>14</ID>
+      <Name>Hito: visión, alcance y backlog inicial</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>H2</WBS>
+      <OutlineNumber>1.13</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-15T17:00:00</Start>
+      <Finish>2026-09-15T17:00:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>1</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-15T17:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: H2
+Tipo en Excel: Hito
+Fechas planificadas: 2026-09-15 a 2026-09-15.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>6</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>15</UID>
+      <ID>15</ID>
+      <Name>Sprint 2: Arquitectura y especificación</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2</WBS>
+      <OutlineNumber>2</OutlineNumber>
+      <OutlineLevel>1</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-16T08:00:00</Start>
+      <Finish>2026-10-06T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>1</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-16T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2
+Tipo en Excel: Sprint
+Fechas planificadas: 2026-09-16 a 2026-10-06.
+Avance indicado en Excel: 100 %.
+La asignación del responsable en resumen corresponde a la coordinación; el detalle de trabajo está en tareas hijas.</Notes>
+    </Task>
+    <Task>
+      <UID>16</UID>
+      <ID>16</ID>
+      <Name>Sprint Planning 2</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.P</WBS>
+      <OutlineNumber>2.1</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-16T08:00:00</Start>
+      <Finish>2026-09-16T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-16T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2.P
+Tipo en Excel: Evento
+Fechas planificadas: 2026-09-16 a 2026-09-16.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>17</UID>
+      <ID>17</ID>
+      <Name>Definir stack FastAPI, MongoDB, Docker y almacenamiento</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T01</WBS>
+      <OutlineNumber>2.2</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-16T08:00:00</Start>
+      <Finish>2026-09-22T17:00:00</Finish>
+      <Duration>PT56H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-16T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2.T01
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-16 a 2026-09-22.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>14</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>18</UID>
+      <ID>18</ID>
+      <Name>Diseñar aislamiento entre clínicas, clínicos y pacientes</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T02</WBS>
+      <OutlineNumber>2.3</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-18T08:00:00</Start>
+      <Finish>2026-09-28T17:00:00</Finish>
+      <Duration>PT88H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-18T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S2.T02
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-18 a 2026-09-28.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>14</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>19</UID>
+      <ID>19</ID>
+      <Name>Modelar documentos MongoDB y relaciones de autorización</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T03</WBS>
+      <OutlineNumber>2.4</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-22T08:00:00</Start>
+      <Finish>2026-10-01T17:00:00</Finish>
+      <Duration>PT80H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-22T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2.T03
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-22 a 2026-10-01.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>14</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>20</UID>
+      <ID>20</ID>
+      <Name>Diagramar casos de uso, clases, componentes y paquetes</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T04</WBS>
+      <OutlineNumber>2.5</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-24T08:00:00</Start>
+      <Finish>2026-10-03T17:00:00</Finish>
+      <Duration>PT80H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-24T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2.T04
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-24 a 2026-10-03.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>17</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>21</UID>
+      <ID>21</ID>
+      <Name>Diagramar actividad, secuencia y despliegue</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T05</WBS>
+      <OutlineNumber>2.6</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-28T08:00:00</Start>
+      <Finish>2026-10-05T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-28T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S2.T05
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-28 a 2026-10-05.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>17</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>22</UID>
+      <ID>22</ID>
+      <Name>Diseñar mockups y criterios iniciales de usabilidad</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T06</WBS>
+      <OutlineNumber>2.7</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-27T08:00:00</Start>
+      <Finish>2026-10-06T17:00:00</Finish>
+      <Duration>PT80H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-27T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2.T06
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-09-27 a 2026-10-06.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>17</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>23</UID>
+      <ID>23</ID>
+      <Name>Borrador técnico inicial de arquitectura y stack (C1)</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.T07</WBS>
+      <OutlineNumber>2.8</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-05T08:00:00</Start>
+      <Finish>2026-10-05T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-05T08:00:00</ConstraintDate>
+      <Notes>Responsable: Benjamín Fernández
+Código en la Carta Gantt Excel: S2.T07
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-05 a 2026-10-05.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>17</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>24</UID>
+      <ID>24</ID>
+      <Name>Daily Scrum / seguimiento del Sprint 2</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.D</WBS>
+      <OutlineNumber>2.9</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-09-16T08:00:00</Start>
+      <Finish>2026-10-06T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-09-16T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S2.D
+Tipo en Excel: Evento
+Fechas planificadas: 2026-09-16 a 2026-10-06.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>25</UID>
+      <ID>25</ID>
+      <Name>Sprint Review 2</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.R</WBS>
+      <OutlineNumber>2.10</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-06T08:00:00</Start>
+      <Finish>2026-10-06T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-06T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S2.R
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-06 a 2026-10-06.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>26</UID>
+      <ID>26</ID>
+      <Name>Retrospectiva 2</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S2.RET</WBS>
+      <OutlineNumber>2.11</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-06T08:00:00</Start>
+      <Finish>2026-10-06T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-06T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S2.RET
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-06 a 2026-10-06.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>27</UID>
+      <ID>27</ID>
+      <Name>Sprint 3: Diseño consolidado y desarrollo backend</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3</WBS>
+      <OutlineNumber>3</OutlineNumber>
+      <OutlineLevel>1</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-07T08:00:00</Start>
+      <Finish>2026-10-27T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>1</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-07T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3
+Tipo en Excel: Sprint
+Fechas planificadas: 2026-10-07 a 2026-10-27.
+Avance indicado en Excel: 100 %.
+La asignación del responsable en resumen corresponde a la coordinación; el detalle de trabajo está en tareas hijas.</Notes>
+    </Task>
+    <Task>
+      <UID>28</UID>
+      <ID>28</ID>
+      <Name>Sprint Planning 3</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.P</WBS>
+      <OutlineNumber>3.1</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-07T08:00:00</Start>
+      <Finish>2026-10-07T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-07T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3.P
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-07 a 2026-10-07.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>29</UID>
+      <ID>29</ID>
+      <Name>Consolidar arquitectura C1 y diagramas de vistas 4+1</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.T01</WBS>
+      <OutlineNumber>3.2</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-07T08:00:00</Start>
+      <Finish>2026-10-12T17:00:00</Finish>
+      <Duration>PT48H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-07T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3.T01
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-07 a 2026-10-12.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>21</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>30</UID>
+      <ID>30</ID>
+      <Name>Revisión técnica, Nielsen y consistencia documental</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.T02</WBS>
+      <OutlineNumber>3.3</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-09T08:00:00</Start>
+      <Finish>2026-10-12T17:00:00</Finish>
+      <Duration>PT32H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-09T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3.T02
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-09 a 2026-10-12.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>22</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>31</UID>
+      <ID>31</ID>
+      <Name>Hito: entrega de avance de arquitectura C1</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>H3</WBS>
+      <OutlineNumber>3.4</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-12T17:00:00</Start>
+      <Finish>2026-10-12T17:00:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>1</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-12T17:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: H3
+Tipo en Excel: Hito
+Fechas planificadas: 2026-10-12 a 2026-10-12.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>23</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>32</UID>
+      <ID>32</ID>
+      <Name>Implementar API FastAPI y persistencia MongoDB</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.T03</WBS>
+      <OutlineNumber>3.5</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-13T08:00:00</Start>
+      <Finish>2026-10-22T17:00:00</Finish>
+      <Duration>PT80H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-13T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3.T03
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-13 a 2026-10-22.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>31</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>33</UID>
+      <ID>33</ID>
+      <Name>Configurar autenticación JWT, permisos y multi-tenant</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.T04</WBS>
+      <OutlineNumber>3.6</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-16T08:00:00</Start>
+      <Finish>2026-10-25T17:00:00</Finish>
+      <Duration>PT80H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-16T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S3.T04
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-16 a 2026-10-25.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>31</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>34</UID>
+      <ID>34</ID>
+      <Name>Implementar jobs persistentes y recuperación ante fallos</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.T05</WBS>
+      <OutlineNumber>3.7</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-20T08:00:00</Start>
+      <Finish>2026-10-27T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-20T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3.T05
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-20 a 2026-10-27.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>31</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>35</UID>
+      <ID>35</ID>
+      <Name>Probar endpoints, contratos OpenAPI y control de acceso</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.T06</WBS>
+      <OutlineNumber>3.8</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-22T08:00:00</Start>
+      <Finish>2026-10-27T17:00:00</Finish>
+      <Duration>PT48H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-22T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S3.T06
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-22 a 2026-10-27.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>31</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>36</UID>
+      <ID>36</ID>
+      <Name>Daily Scrum / seguimiento del Sprint 3</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.D</WBS>
+      <OutlineNumber>3.9</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-07T08:00:00</Start>
+      <Finish>2026-10-27T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-07T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S3.D
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-07 a 2026-10-27.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>37</UID>
+      <ID>37</ID>
+      <Name>Sprint Review 3</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.R</WBS>
+      <OutlineNumber>3.10</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-27T08:00:00</Start>
+      <Finish>2026-10-27T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-27T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S3.R
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-27 a 2026-10-27.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>38</UID>
+      <ID>38</ID>
+      <Name>Retrospectiva 3</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S3.RET</WBS>
+      <OutlineNumber>3.11</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-27T08:00:00</Start>
+      <Finish>2026-10-27T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-27T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S3.RET
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-27 a 2026-10-27.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>39</UID>
+      <ID>39</ID>
+      <Name>Sprint 4: Seguridad, integración y documentación</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4</WBS>
+      <OutlineNumber>4</OutlineNumber>
+      <OutlineLevel>1</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-28T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>1</Summary>
+      <PercentComplete>84</PercentComplete>
+      <PercentWorkComplete>84</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-28T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S4
+Tipo en Excel: Sprint
+Fechas planificadas: 2026-10-28 a 2026-11-17.
+Avance indicado en Excel: 84 %.
+La asignación del responsable en resumen corresponde a la coordinación; el detalle de trabajo está en tareas hijas.</Notes>
+    </Task>
+    <Task>
+      <UID>40</UID>
+      <ID>40</ID>
+      <Name>Sprint Planning 4</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.P</WBS>
+      <OutlineNumber>4.1</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-28T08:00:00</Start>
+      <Finish>2026-10-28T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-28T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S4.P
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-28 a 2026-10-28.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>41</UID>
+      <ID>41</ID>
+      <Name>Integrar ClamAV y validar seguridad de los archivos</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T01</WBS>
+      <OutlineNumber>4.2</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-28T08:00:00</Start>
+      <Finish>2026-11-04T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-28T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.T01
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-10-28 a 2026-11-04.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>34</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>42</UID>
+      <ID>42</ID>
+      <Name>Ejecutar pruebas de aislamiento, auditoría y workers</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T02</WBS>
+      <OutlineNumber>4.3</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-01T08:00:00</Start>
+      <Finish>2026-11-08T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-01T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.T02
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-01 a 2026-11-08.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>33</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>43</UID>
+      <ID>43</ID>
+      <Name>Implementar puntuación y reportería clínica PDF</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T03</WBS>
+      <OutlineNumber>4.4</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-01T08:00:00</Start>
+      <Finish>2026-11-08T17:00:00</Finish>
+      <Duration>PT64H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-01T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S4.T03
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-01 a 2026-11-08.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>35</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>44</UID>
+      <ID>44</ID>
+      <Name>Hito: evidencias de seguridad y backend consolidadas</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>H4</WBS>
+      <OutlineNumber>4.5</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-08T17:00:00</Start>
+      <Finish>2026-11-08T17:00:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>1</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-08T17:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: H4
+Tipo en Excel: Hito
+Fechas planificadas: 2026-11-08 a 2026-11-08.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>41</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>45</UID>
+      <ID>45</ID>
+      <Name>Integrar clínicas, clínicos y pacientes</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T04</WBS>
+      <OutlineNumber>4.6</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-09T08:00:00</Start>
+      <Finish>2026-11-15T17:00:00</Finish>
+      <Duration>PT56H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-09T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.T04
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-09 a 2026-11-15.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>44</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>46</UID>
+      <ID>46</ID>
+      <Name>Integrar interfaces de paciente y portal clínico</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T05</WBS>
+      <OutlineNumber>4.7</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-09T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT72H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-09T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S4.T05
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-09 a 2026-11-17.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>44</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>47</UID>
+      <ID>47</ID>
+      <Name>Verificar conexión del proveedor IA y extracción multimodal</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T06</WBS>
+      <OutlineNumber>4.8</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-09T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT72H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-09T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.T06
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-09 a 2026-11-17.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Extracción real con proveedor IA multimodal pendiente de evidencia. No se declara validada.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>44</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>48</UID>
+      <ID>48</ID>
+      <Name>Actualizar pruebas, requisitos y documentación Scrum</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T07</WBS>
+      <OutlineNumber>4.9</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-12T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT48H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-12T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S4.T07
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-12 a 2026-11-17.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>44</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>49</UID>
+      <ID>49</ID>
+      <Name>Consolidar C2, C3 y C4 y evidencias técnicas</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.T08</WBS>
+      <OutlineNumber>4.10</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-12T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT48H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-12T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.T08
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-12 a 2026-11-17.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>44</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>50</UID>
+      <ID>50</ID>
+      <Name>Daily Scrum / seguimiento del Sprint 4</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.D</WBS>
+      <OutlineNumber>4.11</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-10-28T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT168H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-10-28T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.D
+Tipo en Excel: Evento
+Fechas planificadas: 2026-10-28 a 2026-11-17.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>51</UID>
+      <ID>51</ID>
+      <Name>Sprint Review 4</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.R</WBS>
+      <OutlineNumber>4.12</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-17T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-17T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: S4.R
+Tipo en Excel: Evento
+Fechas planificadas: 2026-11-17 a 2026-11-17.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>52</UID>
+      <ID>52</ID>
+      <Name>Retrospectiva 4</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>S4.RET</WBS>
+      <OutlineNumber>4.13</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-17T08:00:00</Start>
+      <Finish>2026-11-17T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-17T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: S4.RET
+Tipo en Excel: Evento
+Fechas planificadas: 2026-11-17 a 2026-11-17.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Evento Scrum planificado; la fecha no acredita por sí sola la celebración ni acta de reunión.</Notes>
+    </Task>
+    <Task>
+      <UID>53</UID>
+      <ID>53</ID>
+      <Name>Cierre académico y presentación del proyecto</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>C</WBS>
+      <OutlineNumber>5</OutlineNumber>
+      <OutlineLevel>1</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-18T08:00:00</Start>
+      <Finish>2026-11-19T17:00:00</Finish>
+      <Duration>PT16H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>1</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-18T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: C
+Tipo en Excel: Fase
+Fechas planificadas: 2026-11-18 a 2026-11-19.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+La asignación del responsable en resumen corresponde a la coordinación; el detalle de trabajo está en tareas hijas.</Notes>
+    </Task>
+    <Task>
+      <UID>54</UID>
+      <ID>54</ID>
+      <Name>Consolidar documentación y evidencias en GitHub</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>C.T01</WBS>
+      <OutlineNumber>5.1</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-18T08:00:00</Start>
+      <Finish>2026-11-18T17:00:00</Finish>
+      <Duration>PT8H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>100</PercentComplete>
+      <PercentWorkComplete>100</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-18T08:00:00</ConstraintDate>
+      <Notes>Responsable: Ariel Rodríguez
+Código en la Carta Gantt Excel: C.T01
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-18 a 2026-11-18.
+Avance indicado en Excel: 100 %.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>48</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>55</UID>
+      <ID>55</ID>
+      <Name>Hito: entrega de evidencias en GitHub (hasta 23:59)</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>H5</WBS>
+      <OutlineNumber>5.2</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-18T23:59:00</Start>
+      <Finish>2026-11-18T23:59:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>1</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>2</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-18T23:59:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: H5
+Tipo en Excel: Hito
+Fechas planificadas: 2026-11-18 a 2026-11-18.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Fecha límite académica del 18/11/2026 a las 23:59; calendario excepcional de 24 horas. Hito pendiente de acreditación.</Notes>
+      <Deadline>2026-11-18T23:59:00</Deadline>
+      <PredecessorLink>
+        <PredecessorUID>49</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>56</UID>
+      <ID>56</ID>
+      <Name>Ensayar demostración y preparar presentación</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>C.T02</WBS>
+      <OutlineNumber>5.3</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-18T08:00:00</Start>
+      <Finish>2026-11-19T17:00:00</Finish>
+      <Duration>PT16H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>0</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-18T08:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: C.T02
+Tipo en Excel: Tarea
+Fechas planificadas: 2026-11-18 a 2026-11-19.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).</Notes>
+      <PredecessorLink>
+        <PredecessorUID>46</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+    <Task>
+      <UID>57</UID>
+      <ID>57</ID>
+      <Name>Hito: presentación del proyecto WellQ</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <WBS>H6</WBS>
+      <OutlineNumber>5.4</OutlineNumber>
+      <OutlineLevel>2</OutlineLevel>
+      <Priority>500</Priority>
+      <Start>2026-11-19T17:00:00</Start>
+      <Finish>2026-11-19T17:00:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT0H0M0S</Work>
+      <Milestone>1</Milestone>
+      <Summary>0</Summary>
+      <PercentComplete>0</PercentComplete>
+      <PercentWorkComplete>0</PercentWorkComplete>
+      <CalendarUID>1</CalendarUID>
+      <ConstraintType>4</ConstraintType>
+      <ConstraintDate>2026-11-19T17:00:00</ConstraintDate>
+      <Notes>Responsable: Juan Pablo Vega
+Código en la Carta Gantt Excel: H6
+Tipo en Excel: Hito
+Fechas planificadas: 2026-11-19 a 2026-11-19.
+Porcentaje de avance no acreditado en la planilla (0 % o sin registro).
+Presentación del proyecto, NO defensa ni presentación final. 17:00 es hora técnica de planificación, no confirmación del horario académico.</Notes>
+      <PredecessorLink>
+        <PredecessorUID>55</PredecessorUID>
+        <Type>1</Type>
+        <CrossProject>0</CrossProject>
+        <LinkLag>0</LinkLag>
+        <LagFormat>7</LagFormat>
+      </PredecessorLink>
+    </Task>
+  </Tasks>
+  <Resources>
+    <Resource>
+      <UID>0</UID>
+      <ID>0</ID>
+      <Name />
+      <Type>1</Type>
+      <IsNull>1</IsNull>
+    </Resource>
+    <Resource>
+      <UID>2</UID>
+      <ID>1</ID>
+      <Name>Juan Pablo Vega</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <Initials>JPV</Initials>
+      <Group>Individual</Group>
+      <MaxUnits>1</MaxUnits>
+      <CanLevel>0</CanLevel>
+      <AccrueAt>3</AccrueAt>
+      <StandardRate>0</StandardRate>
+      <OvertimeRate>0</OvertimeRate>
+      <CostPerUse>0</CostPerUse>
+      <CalendarUID>1</CalendarUID>
+    </Resource>
+    <Resource>
+      <UID>4</UID>
+      <ID>2</ID>
+      <Name>Ariel Rodríguez</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <Initials>AR</Initials>
+      <Group>Individual</Group>
+      <MaxUnits>1</MaxUnits>
+      <CanLevel>0</CanLevel>
+      <AccrueAt>3</AccrueAt>
+      <StandardRate>0</StandardRate>
+      <OvertimeRate>0</OvertimeRate>
+      <CostPerUse>0</CostPerUse>
+      <CalendarUID>1</CalendarUID>
+    </Resource>
+    <Resource>
+      <UID>3</UID>
+      <ID>3</ID>
+      <Name>Benjamín Fernández</Name>
+      <Type>1</Type>
+      <IsNull>0</IsNull>
+      <Initials>BF</Initials>
+      <Group>Individual</Group>
+      <MaxUnits>1</MaxUnits>
+      <CanLevel>0</CanLevel>
+      <AccrueAt>3</AccrueAt>
+      <StandardRate>0</StandardRate>
+      <OvertimeRate>0</OvertimeRate>
+      <CostPerUse>0</CostPerUse>
+      <CalendarUID>1</CalendarUID>
+    </Resource>
+  </Resources>
+  <StatusDate>2026-11-18T13:25:00</StatusDate>
+  <Assignments>
+    <Assignment>
+      <UID>2</UID>
+      <TaskUID>2</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>3</UID>
+      <TaskUID>3</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>4</UID>
+      <TaskUID>4</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>5</UID>
+      <TaskUID>5</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>6</UID>
+      <TaskUID>6</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>7</UID>
+      <TaskUID>7</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>8</UID>
+      <TaskUID>8</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>9</UID>
+      <TaskUID>9</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>10</UID>
+      <TaskUID>10</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>11</UID>
+      <TaskUID>11</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>12</UID>
+      <TaskUID>12</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>13</UID>
+      <TaskUID>13</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>14</UID>
+      <TaskUID>14</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>16</UID>
+      <TaskUID>16</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>17</UID>
+      <TaskUID>17</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>18</UID>
+      <TaskUID>18</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>19</UID>
+      <TaskUID>19</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>20</UID>
+      <TaskUID>20</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>21</UID>
+      <TaskUID>21</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>22</UID>
+      <TaskUID>22</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>23</UID>
+      <TaskUID>23</TaskUID>
+      <ResourceUID>3</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>24</UID>
+      <TaskUID>24</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>25</UID>
+      <TaskUID>25</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>26</UID>
+      <TaskUID>26</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>28</UID>
+      <TaskUID>28</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>29</UID>
+      <TaskUID>29</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>30</UID>
+      <TaskUID>30</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>31</UID>
+      <TaskUID>31</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>32</UID>
+      <TaskUID>32</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>33</UID>
+      <TaskUID>33</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>34</UID>
+      <TaskUID>34</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>35</UID>
+      <TaskUID>35</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>36</UID>
+      <TaskUID>36</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>37</UID>
+      <TaskUID>37</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>38</UID>
+      <TaskUID>38</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>40</UID>
+      <TaskUID>40</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>41</UID>
+      <TaskUID>41</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>42</UID>
+      <TaskUID>42</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>43</UID>
+      <TaskUID>43</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>44</UID>
+      <TaskUID>44</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>45</UID>
+      <TaskUID>45</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>46</UID>
+      <TaskUID>46</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>47</UID>
+      <TaskUID>47</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>48</UID>
+      <TaskUID>48</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>49</UID>
+      <TaskUID>49</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>50</UID>
+      <TaskUID>50</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>51</UID>
+      <TaskUID>51</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>52</UID>
+      <TaskUID>52</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>54</UID>
+      <TaskUID>54</TaskUID>
+      <ResourceUID>4</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>55</UID>
+      <TaskUID>55</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>56</UID>
+      <TaskUID>56</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+    <Assignment>
+      <UID>57</UID>
+      <TaskUID>57</TaskUID>
+      <ResourceUID>2</ResourceUID>
+      <Units>1</Units>
+      <Work>PT0H0M0S</Work>
+    </Assignment>
+  </Assignments>
+</Project>
