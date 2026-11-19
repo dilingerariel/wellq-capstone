@@ -407,6 +407,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your confirmation has been received. Professional review may still be pending.';
 
   @override
+  String get viewReviewResult => 'View result';
+
+  @override
+  String get reviewResultTitle => 'Review result';
+
+  @override
+  String get reviewResultLabel => 'Your clinician\'s comment';
+
+  @override
+  String get closeResult => 'Close';
+
+  @override
   String get noNewConfirmation =>
       'Check the exam status. No new confirmation is required.';
 
@@ -468,18 +480,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusReviewed => 'Professionally reviewed';
-
-  @override
-  String get viewReviewResult => 'View result';
-
-  @override
-  String get reviewResultTitle => 'Review result';
-
-  @override
-  String get reviewResultLabel => "Your clinician's comment";
-
-  @override
-  String get closeResult => 'Close';
 
   @override
   String get statusReady => 'Awaiting professional review';
@@ -606,7 +606,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorExtractionNotReady =>
-      'The document proposal is still being prepared. Check again.';
+      'The exam was received. Automatic extraction is unavailable right now, but the clinician can review the PDF and leave you a comment. Do not upload it again.';
 
   @override
   String get errorOffline =>

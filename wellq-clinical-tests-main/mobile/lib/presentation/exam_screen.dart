@@ -58,7 +58,25 @@ class _ExamScreenState extends State<ExamScreen> {
         });
         return;
       }
-      final x = await widget.c.extraction(widget.exam.id);
+      Json x;
+      try {
+        x = await widget.c.extraction(widget.exam.id);
+      } on ApiFailure catch (e) {
+        if (e.code != 'EXTRACTION_NOT_READY' &&
+            e.code != 'EXTRACTION_PROCESSING_FAILED') {
+          rethrow;
+        }
+        if (!mounted) return;
+        setState(() {
+          extraction = null;
+          draft = null;
+          frozen = null;
+          key = null;
+          conflict = false;
+          error = 'errorExtractionNotReady';
+        });
+        return;
+      }
       final review = ExtractionDraft(x);
       if (!mounted) return;
       setState(() {

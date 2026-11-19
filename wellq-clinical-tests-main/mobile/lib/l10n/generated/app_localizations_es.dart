@@ -405,6 +405,18 @@ class AppLocalizationsEs extends AppLocalizations {
       'La confirmación ya fue recibida. Puede faltar la revisión profesional.';
 
   @override
+  String get viewReviewResult => 'Ver resultado';
+
+  @override
+  String get reviewResultTitle => 'Resultado de la revisión';
+
+  @override
+  String get reviewResultLabel => 'Comentario de tu clínico';
+
+  @override
+  String get closeResult => 'Cerrar';
+
+  @override
   String get noNewConfirmation =>
       'Consulta el estado del examen. No se requiere una nueva confirmación.';
 
@@ -466,18 +478,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get statusReviewed => 'Con revisión profesional';
-
-  @override
-  String get viewReviewResult => 'Ver resultado';
-
-  @override
-  String get reviewResultTitle => 'Resultado de la revisión';
-
-  @override
-  String get reviewResultLabel => 'Comentario de tu clínico';
-
-  @override
-  String get closeResult => 'Cerrar';
 
   @override
   String get statusReady => 'Pendiente de revisión profesional';
@@ -604,7 +604,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorExtractionNotReady =>
-      'El documento sigue preparando la propuesta. Consulta nuevamente.';
+      'El examen fue recibido. La extracción automática no está disponible ahora, pero el clínico puede revisar el PDF y dejarte un comentario. No lo cargues de nuevo.';
 
   @override
   String get errorOffline =>

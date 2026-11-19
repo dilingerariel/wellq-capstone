@@ -181,7 +181,7 @@
   "pendingRetryHelp": "Wait for the interval indicated by the server before explicitly retrying.",
   "pendingInterruptedHelp": "The last attempt did not finish. Check status, then explicitly retry; the upload identity is preserved.",
   "pendingLocalHelp": "Saved on this device only. Sending requires your explicit action.",
-  "errorExtractionNotReady": "The document proposal is still being prepared. Check again.",
+  "errorExtractionNotReady": "The exam was received. Automatic extraction is unavailable right now, but the clinician can review the PDF and leave you a comment. Do not upload it again.",
   "errorOffline": "No verified connection. Your operation is still pending.",
   "errorSession": "The session expired. Reconnect the synthetic profile.",
   "errorStorageAuth": "File authorization expired. Explicitly retry.",

@@ -818,6 +818,30 @@ abstract class AppLocalizations {
   /// **'La confirmación ya fue recibida. Puede faltar la revisión profesional.'**
   String get confirmationReceived;
 
+  /// No description provided for @viewReviewResult.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver resultado'**
+  String get viewReviewResult;
+
+  /// No description provided for @reviewResultTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultado de la revisión'**
+  String get reviewResultTitle;
+
+  /// No description provided for @reviewResultLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Comentario de tu clínico'**
+  String get reviewResultLabel;
+
+  /// No description provided for @closeResult.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get closeResult;
+
   /// No description provided for @noNewConfirmation.
   ///
   /// In es, this message translates to:
@@ -931,18 +955,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Con revisión profesional'**
   String get statusReviewed;
-
-  /// No description provided for @viewReviewResult.
-  String get viewReviewResult;
-
-  /// No description provided for @reviewResultTitle.
-  String get reviewResultTitle;
-
-  /// No description provided for @reviewResultLabel.
-  String get reviewResultLabel;
-
-  /// No description provided for @closeResult.
-  String get closeResult;
 
   /// No description provided for @statusReady.
   ///
@@ -1175,7 +1187,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorExtractionNotReady.
   ///
   /// In es, this message translates to:
-  /// **'El documento sigue preparando la propuesta. Consulta nuevamente.'**
+  /// **'El examen fue recibido. La extracción automática no está disponible ahora, pero el clínico puede revisar el PDF y dejarte un comentario. No lo cargues de nuevo.'**
   String get errorExtractionNotReady;
 
   /// No description provided for @errorOffline.

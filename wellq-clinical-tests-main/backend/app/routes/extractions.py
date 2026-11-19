@@ -132,7 +132,9 @@ async def get_extraction(
     extraction_job = doc.get("extraction_job") or {}
     if extraction_job.get("error_code") not in (None, "INVALID_CLINICAL_DATE"):
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            # An extraction-job failure does not mean the API is unavailable:
+            # clinicians can still review the verified PDF manually.
+            status_code=status.HTTP_409_CONFLICT,
             detail={"code": "EXTRACTION_PROCESSING_FAILED",
                     "message": "La extracción requiere atención del servicio antes de estar disponible"},
         )

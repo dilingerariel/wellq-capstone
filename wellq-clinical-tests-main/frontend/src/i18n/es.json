@@ -11,7 +11,7 @@
   "clinicalReconcile": "Consultar resultado de la operación",
   "clinicalReviewer": "Profesional revisor",
   "clinicalValidator": "Profesional validador",
-  "clinicalUnavailable": "El servidor no permite consultar esta extracción: puede estar pendiente de confirmación o en un estado no visible al profesional. La revisión del documento es independiente.",
+  "clinicalUnavailable": "La extracción automática aún no está disponible. Puedes revisar manualmente el PDF verificado y dejar un comentario para el paciente; esta revisión es independiente de la extracción.",
   "clinicalExtraction": "Extracción del examen",
   "clinicalReason": "Motivo de corrección",
   "clinicalAttention": "Este campo requiere atención según las banderas o validación del servidor.",

@@ -181,7 +181,7 @@
   "pendingRetryHelp": "Espera el intervalo indicado por el servidor antes de reintentar explícitamente.",
   "pendingInterruptedHelp": "El último intento no terminó. Consulta estados y luego reintenta explícitamente; se conserva la identidad de la carga.",
   "pendingLocalHelp": "Guardado solo en este dispositivo. El envío requiere tu acción explícita.",
-  "errorExtractionNotReady": "El documento sigue preparando la propuesta. Consulta nuevamente.",
+  "errorExtractionNotReady": "El examen fue recibido. La extracción automática no está disponible ahora, pero el clínico puede revisar el PDF y dejarte un comentario. No lo cargues de nuevo.",
   "errorOffline": "Sin conexión verificada. Tu operación sigue pendiente.",
   "errorSession": "La sesión venció. Vuelve a conectar el perfil sintético.",
   "errorStorageAuth": "Autorización del archivo vencida. Reintenta explícitamente.",

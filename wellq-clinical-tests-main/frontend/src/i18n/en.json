@@ -11,7 +11,7 @@
   "clinicalReconcile": "Check operation outcome",
   "clinicalReviewer": "Reviewing clinician",
   "clinicalValidator": "Validating clinician",
-  "clinicalUnavailable": "The server does not allow reading this extraction. It may await patient confirmation or have a state hidden from clinicians. Document review is independent.",
+  "clinicalUnavailable": "Automatic extraction is not available yet. You can manually review the verified PDF and leave a comment for the patient; this review is independent of extraction.",
   "clinicalExtraction": "Document extraction",
   "clinicalReason": "Correction reason",
   "clinicalAttention": "This field requires attention according to server flags or validation.",

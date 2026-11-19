@@ -131,7 +131,10 @@ export class ClinicianController {
     try {
       ext = await this.api.extraction(this.state.id, s)
     } catch (e) {
-      if (!(e instanceof ApiError && e.status === 409 && e.code === 'EXTRACTION_NOT_READY')) throw e
+      if (
+        !(e instanceof ApiError && e.status === 409 &&
+          ['EXTRACTION_NOT_READY', 'EXTRACTION_PROCESSING_FAILED'].includes(e.code))
+      ) throw e
     }
     this.ensure(g)
     if (ext && ext.clinical_test_id !== this.state.id) throw new ApiError(502, 'INVALID_RESPONSE')

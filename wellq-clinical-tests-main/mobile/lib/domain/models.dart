@@ -17,7 +17,7 @@ class ApiFailure implements Exception {
   bool get conflict => status == 409 || status == 428;
   String get message => code == 'UPLOAD_PAUSED'
       ? 'queuePaused'
-      : code == 'EXTRACTION_NOT_READY'
+      : code == 'EXTRACTION_NOT_READY' || code == 'EXTRACTION_PROCESSING_FAILED'
       ? 'errorExtractionNotReady'
       : switch (status) {
           0 => 'errorOffline',

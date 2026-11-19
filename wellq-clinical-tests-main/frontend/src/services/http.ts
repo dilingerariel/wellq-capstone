@@ -85,6 +85,7 @@ export function createHttp(
                     'CLINICAL_VERSION_REQUIRED',
                     'CLINICAL_VERSION_CONFLICT',
                     'EXTRACTION_NOT_READY',
+                    'EXTRACTION_PROCESSING_FAILED',
                     'INVALID_CLINICAL_DATE',
                     'EXTRACTION_SUPERSEDED',
                     'IDEMPOTENCY_CONFLICT',
