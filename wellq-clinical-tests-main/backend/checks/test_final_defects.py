@@ -19,6 +19,7 @@ from app.config import settings
 from app.models.extraction import ReferenceRange
 from app.models.reporting import LabReportExportResponse
 from app.services import clinical_dates
+from app.services.catalog import catalog_service
 from app.services.clinical_dates import ClinicalDateError, validate_clinical_date
 from app.services.extractor import ExtractionEngine
 from app.services.scoring import scoring_engine
@@ -161,6 +162,9 @@ def test_f01_all_publication_surfaces_and_patient_denials(env, fake_storage, sam
     init, ext = prepared(env, fake_storage, sample_pdf)
     env["monkeypatch"].setattr(settings, "ENVIRONMENT", "production")
     env["monkeypatch"].setattr(settings, "CATALOG_CLINICALLY_APPROVED", approved)
+    # The catalogue is intentionally incomplete in the repository. This test
+    # simulates a fully approved catalogue only to exercise the publication path.
+    env["monkeypatch"].setattr(catalog_service, "definition_complete", approved)
     assert confirm(env, init, ext).status_code == 200
     hc = clinician(env)
     c = env["client"]; base = "/api/v1/patients/patient-test"
@@ -218,6 +222,7 @@ def test_f01_legacy_scores_never_gain_approval_by_toggling_settings(env, fake_st
 def test_f01_history_filters_unapproved_snapshots_and_old_export(env, fake_storage, sample_pdf):
     init, ext = prepared(env, fake_storage, sample_pdf)
     env["monkeypatch"].setattr(settings, "CATALOG_CLINICALLY_APPROVED", True)
+    env["monkeypatch"].setattr(catalog_service, "definition_complete", True)
     env["monkeypatch"].setattr(settings, "ENVIRONMENT", "production")
     assert confirm(env, init, ext).status_code == 200
     snapshot = env["db"].score_snapshots.find_one({}); snapshot.pop("_id")
@@ -429,7 +434,7 @@ def test_openapi_error_envelope_matches_actual_422(env):
     schema = app.openapi()
     clinical = [op for path, item in schema["paths"].items() if path.startswith("/api/v1") and not path.startswith("/api/v1/demo")
         for method, op in item.items() if method in ("get", "post", "patch", "delete")]
-    assert len(clinical) == 20
+    assert len(clinical) == 28
     for op in clinical:
         for status in ("401", "403", "404", "409", "422", "429", "503"):
             assert op["responses"][status]["content"]["application/json"]["schema"]["$ref"].endswith("/ErrorResponse")

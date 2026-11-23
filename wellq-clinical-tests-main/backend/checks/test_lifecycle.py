@@ -107,9 +107,16 @@ def test_openapi_contract(env):
     schema = app.openapi()
     operations = [(path, verb, op) for path, item in schema["paths"].items()
                   for verb, op in item.items() if path.startswith("/api/v1") and not path.startswith("/api/v1/demo") and verb in ("get", "post", "patch", "delete")]
-    assert len(operations) == 20
+    assert len(operations) == 28
+    public_account_flows = {
+        ("/api/v1/auth/clinics", "get"),
+        ("/api/v1/auth/catalog/clinics", "get"),
+        ("/api/v1/auth/patient/register", "post"),
+        ("/api/v1/auth/login", "post"),
+        ("/api/v1/auth/admin/login", "post"),
+    }
     for path, verb, op in operations:
-        assert op.get("security"), (path, verb)
+        assert op.get("security") or (path, verb) in public_account_flows, (path, verb)
         if path.endswith(("/complete", "/refresh-url", "/initiate", "/reprocess", "/export")) or (path.endswith("/extraction") and verb == "patch"):
             assert any(p["name"] == "idempotency-key" and p["required"] for p in op["parameters"])
 

@@ -109,6 +109,35 @@ def test_document_validation_failures(env, sample_pdf, case):
 def test_valid_pdf(env, sample_pdf):
     assert validate_document(sample_pdf, "application/pdf", len(sample_pdf), hashlib.sha256(sample_pdf).hexdigest()) == "application/pdf"
 
+def test_pdf_attachments_are_scanned_separately(env, sample_pdf):
+    import io
+    from pypdf import PdfWriter
+    eicar = b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
+    writer = PdfWriter(clone_from=io.BytesIO(sample_pdf))
+    writer.add_attachment("eicar.txt", eicar)
+    output = io.BytesIO(); writer.write(output)
+    scanned = []
+    env["monkeypatch"].setattr(scanner, "scan", lambda data: scanned.append(bytes(data)))
+    scanner.scan_document(output.getvalue(), "application/pdf")
+    assert scanned[0] == output.getvalue()
+    assert eicar in scanned[1:]
+
+def test_pdf_attachment_scan_unavailable_remains_retryable(env, sample_pdf):
+    import io
+    from pypdf import PdfWriter
+    writer = PdfWriter(clone_from=io.BytesIO(sample_pdf))
+    writer.add_attachment("sample.txt", b"SYNTHETIC ATTACHMENT")
+    output = io.BytesIO(); writer.write(output)
+    calls = 0
+    def unavailable_after_outer_pdf(_data):
+        nonlocal calls
+        calls += 1
+        if calls > 1:
+            raise ScannerUnavailable()
+    env["monkeypatch"].setattr(scanner, "scan", unavailable_after_outer_pdf)
+    with pytest.raises(ScannerUnavailable):
+        scanner.scan_document(output.getvalue(), "application/pdf")
+
 def test_storage_never_falls_back(env):
     storage = StorageService()
     env["monkeypatch"].setattr(settings, "GCS_BUCKET_NAME", None)
@@ -154,6 +183,29 @@ def test_exhausted_lease_becomes_terminal(env, fake_storage, sample_pdf):
         "upload.job.attempts": settings.JOB_MAX_ATTEMPTS, "upload.job.lease_until": datetime.utcnow() - timedelta(seconds=1)}})
     run_once(env["raw"])
     assert env["db"].clinical_tests.find_one({})["upload"]["status"] == "failed"
+
+def test_targeted_worker_does_not_claim_another_extraction(env, monkeypatch):
+    from app.services.extractor import extraction_engine
+    now = datetime.utcnow() - timedelta(seconds=1)
+    for clinical_test_id in ("ct_requested", "ct_other"):
+        env["raw"].clinical_tests.insert_one({
+            "client_id": "tenant-a", "patient_id": "patient-test",
+            "clinical_test_id": clinical_test_id, "deleted_at": None,
+            "upload": {"upload_id": "upload-" + clinical_test_id,
+                       "client_upload_id": "mobile-" + clinical_test_id,
+                       "idempotency_key": "init-" + clinical_test_id},
+            "extraction_job": {"status": "pending", "attempts": 0, "available_at": now},
+        })
+    monkeypatch.setattr(extraction_engine, "run_extraction_pipeline",
+                        lambda *_: {"extraction_id": "ext_requested"})
+
+    assert run_once(env["raw"], "extraction", clinical_test_id="ct_requested")
+    requested = env["raw"].clinical_tests.find_one({"clinical_test_id": "ct_requested"})
+    other = env["raw"].clinical_tests.find_one({"clinical_test_id": "ct_other"})
+    assert requested["extraction_job"]["status"] == "done"
+    assert requested["extraction_job"]["attempts"] == 1
+    assert other["extraction_job"]["status"] == "pending"
+    assert other["extraction_job"]["attempts"] == 0
 
 def test_real_signer_arguments_enforce_short_expiry_and_create_only(env):
     calls = []

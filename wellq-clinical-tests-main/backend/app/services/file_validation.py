@@ -60,4 +60,34 @@ class ClamAVScanner:
             raise ScannerUnavailable("Scanner did not approve")
         except (OSError, TimeoutError):
             raise ScannerUnavailable("Scanner unavailable")
+
+    def scan_document(self, data, mime_type):
+        """Scan the uploaded bytes and separately scan PDF attachments.
+
+        ClamAV does not reliably recurse into embedded PDF files. Scanning each
+        attachment prevents a clean-looking PDF wrapper from hiding malware.
+        The total extracted attachment size is bounded by the upload limit.
+        """
+        self.scan(data)
+        if mime_type != "application/pdf":
+            return
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(io.BytesIO(data), strict=True)
+            total = 0
+            for attachments in reader.attachments.values():
+                for attachment in attachments:
+                    if not isinstance(attachment, bytes):
+                        raise FileRejected("DOCUMENT_CORRUPT")
+                    total += len(attachment)
+                    if total > settings.MAX_CLINICAL_FILE_BYTES:
+                        raise FileRejected("SIZE_REJECTED")
+                    self.scan(attachment)
+        except (FileRejected, ScannerUnavailable):
+            raise
+        except Exception:
+            # A document whose attachments cannot be enumerated is not safe to
+            # promote, even if the outer PDF itself passed MIME validation.
+            raise FileRejected("DOCUMENT_CORRUPT") from None
+
 scanner = ClamAVScanner()

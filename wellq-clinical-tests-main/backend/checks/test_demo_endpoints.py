@@ -36,6 +36,7 @@ def test_link_patient_and_multi_tenant_isolation(env):
     raw_db = env["raw"]
     set_demo_private_key(env["key"])
     env["monkeypatch"].setattr(settings, "DEMO_AUTH_ENABLED", True)
+    env["monkeypatch"].setattr(settings, "LEGACY_DEMO_LOGIN_ENABLED", True)
 
     patient_id = "paciente_ariel_demo"
     clinic_a = "clinica_alemana"
@@ -133,6 +134,7 @@ def test_demo_login_endpoint(env):
     client = env["client"]
     set_demo_private_key(env["key"])
     env["monkeypatch"].setattr(settings, "DEMO_AUTH_ENABLED", True)
+    env["monkeypatch"].setattr(settings, "LEGACY_DEMO_LOGIN_ENABLED", True)
 
     # 1. Login como clínico
     res_clinician = client.post(
@@ -182,6 +184,7 @@ def test_synthetic_mobile_upload_is_saved_and_downloadable_by_authorized_clinici
     client, raw = env["client"], env["raw"]
     env["monkeypatch"].setattr(settings, "DEMO_AUTH_ENABLED", True)
     env["monkeypatch"].setattr(settings, "DEMO_MONGO_STORAGE_ENABLED", True)
+    env["monkeypatch"].setattr(settings, "LEGACY_DEMO_LOGIN_ENABLED", True)
     set_demo_private_key(env["key"])
     pdf = (Path(__file__).resolve().parents[2] / "mobile" / "assets" / "synthetic.pdf").read_bytes()
     digest = hashlib.sha256(pdf).hexdigest()
@@ -196,7 +199,9 @@ def test_synthetic_mobile_upload_is_saved_and_downloadable_by_authorized_clinici
         "patient_id": "paciente_ariel_demo", "clinic_id": "clinica_alemana", "clinician_id": "rene_faundez"
     })
     assert link.status_code == 200
-
+    raw.user_accounts.insert_one({"client_id": "clinica_alemana", "account_id": "paciente_ariel_demo",
+        "patient_id": "paciente_ariel_demo", "role": "patient", "email": "paciente_demo@example.invalid",
+        "active": True})
     initiation = client.post("/api/v1/clinical-tests/uploads/initiate", headers={
         **patient_headers, "Idempotency-Key": "synthetic-upload-001"
     }, json={

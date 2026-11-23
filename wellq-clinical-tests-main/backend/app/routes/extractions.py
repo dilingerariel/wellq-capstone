@@ -4,7 +4,7 @@ import logging
 import uuid
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Header
 from pymongo.database import Database
 from pydantic import BaseModel, ConfigDict
 
@@ -575,6 +575,7 @@ class ReprocessRequest(BaseModel):
 @atomic_write
 async def reprocess_extraction(
     clinical_test_id: str,
+    background_tasks: BackgroundTasks,
     body: Optional[ReprocessRequest] = None,
     idempotency_key: str = Header(..., min_length=8, max_length=200),
     current_patient: str = Depends(get_current_patient),
@@ -608,6 +609,8 @@ async def reprocess_extraction(
     if ext_info.get("reprocess_idempotency_key") == idempotency_key:
         if old_ext and ext_info.get("status") not in ("queued", "extracting"):
             return _response_from_ext_doc(old_ext)
+        from app.services.demo_ai import schedule_synthetic_demo_extraction
+        schedule_synthetic_demo_extraction(background_tasks, doc)
         return ExtractionResponse(clinical_test_id=clinical_test_id, extraction_id=old_ext_id or "pending",
             status=ExtractionStatus(ext_info.get("status", "queued")), document={"document_type": "other"})
 
@@ -660,6 +663,9 @@ async def reprocess_extraction(
         "extraction.status": "queued", "extraction.reprocess_count": reprocess_count + 1,
         "extraction.reprocess_idempotency_key": idempotency_key,
         "extraction_job": {"status": "pending", "attempts": 0, "available_at": now}, "updated_at": now}})
+    queued_doc = db.clinical_tests.find_one({"clinical_test_id": clinical_test_id, "deleted_at": None})
+    from app.services.demo_ai import schedule_synthetic_demo_extraction
+    schedule_synthetic_demo_extraction(background_tasks, queued_doc)
     _audit_event(db, "extraction_reprocessed", doc["patient_id"], clinical_test_id, old_ext_id,
                  "patient", current_patient)
     return ExtractionResponse(clinical_test_id=clinical_test_id, extraction_id=old_ext_id or "pending",

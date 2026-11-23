@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "index.py": {
+      "maxDuration": 60
+    }
+  }
+}

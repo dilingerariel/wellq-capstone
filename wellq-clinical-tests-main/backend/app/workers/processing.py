@@ -21,19 +21,23 @@ from app.services.clinical_dates import ClinicalDateError
 
 logger = logging.getLogger(__name__)
 
-def run_once(raw_db, kind="upload", now=None):
+def run_once(raw_db, kind="upload", now=None, clinical_test_id=None):
     now = now or datetime.utcnow()
     field = "upload.job" if kind == "upload" else "extraction_job"
     token = uuid.uuid4().hex
     terminal = {field + ".status": "failed", field + ".error_code": "RETRY_EXHAUSTED"}
     terminal["upload.status" if kind == "upload" else "extraction.status"] = "failed" if kind == "upload" else "extraction_failed"
-    raw_db.clinical_tests.update_many({"client_id": {"$type": "string"}, "deleted_at": None,
+    expired_query = {"client_id": {"$type": "string"}, "deleted_at": None,
         field + ".status": "running", field + ".lease_until": {"$lte": now},
-        field + ".attempts": {"$gte": settings.JOB_MAX_ATTEMPTS}}, {"$set": terminal})
+        field + ".attempts": {"$gte": settings.JOB_MAX_ATTEMPTS}}
     query = {"client_id": {"$type": "string"}, "deleted_at": None,
              field + ".attempts": {"$lt": settings.JOB_MAX_ATTEMPTS}, "$or": [
                 {field + ".status": "pending", field + ".available_at": {"$lte": now}},
                 {field + ".status": "running", field + ".lease_until": {"$lte": now}}]}
+    if clinical_test_id is not None:
+        expired_query["clinical_test_id"] = clinical_test_id
+        query["clinical_test_id"] = clinical_test_id
+    raw_db.clinical_tests.update_many(expired_query, {"$set": terminal})
     doc = raw_db.clinical_tests.find_one_and_update(query,
         {"$set": {field + ".status": "running", field + ".lease_token": token,
                    field + ".lease_until": now + timedelta(seconds=settings.JOB_LEASE_SECONDS)},
@@ -54,7 +58,7 @@ def run_once(raw_db, kind="upload", now=None):
             validate_document(data, content_type, file["size_bytes"], file["sha256"])
             if content_type != file["mime_type"]:
                 raise FileRejected("MIME_MISMATCH")
-            scanner.scan(data)
+            scanner.scan_document(data, content_type)
             secure_key, secure_generation = storage_service.promote(expected, generation, file["sha256"])
             fence[field + ".lease_until"] = {"$gt": datetime.utcnow()}
             with db.atomic():

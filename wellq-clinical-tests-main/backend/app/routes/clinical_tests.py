@@ -39,17 +39,6 @@ from app.models.scoring import LabScoreResponse
 router = APIRouter()
 
 
-def _process_one_synthetic_demo_extraction():
-    """Run one queued extraction during the Vercel synthetic-demo request."""
-    from app.database import mongodb
-    from app.workers.processing import run_once
-    if mongodb.db is not None:
-        claimed = run_once(mongodb.db, "extraction")
-        logger.info("WellQ synthetic extraction worker invoked; claimed_job=%s", bool(claimed))
-    else:
-        logger.warning("WellQ synthetic extraction worker invoked without a database connection")
-
-
 # ============ ENDPOINT 1: INITIATE UPLOAD ============
 
 @router.post(
@@ -98,24 +87,10 @@ async def complete_upload(
     db: Database = Depends(get_database),
 ):
     result = uploads.complete(upload_id, request, idempotency_key, current_patient, db)
-    runtime_checks = {
-        "demo_auth": settings.DEMO_AUTH_ENABLED,
-        "demo_storage": settings.DEMO_MONGO_STORAGE_ENABLED,
-        "non_production": settings.ENVIRONMENT != "production",
-        "provider_approved": settings.AI_PROVIDER_APPROVED,
-        "gemini_provider": settings.AI_PROVIDER == "gemini_api",
-        "api_key_present": bool(settings.GEMINI_API_KEY),
-    }
-    missing_checks = [name for name, passed in runtime_checks.items() if not passed]
     doc = db.clinical_tests.find_one({"upload.upload_id": upload_id, "patient_id": current_patient,
                                       "deleted_at": None})
-    if doc and doc.get("ai_consent") and doc.get("extraction_job", {}).get("status") == "pending":
-        if not missing_checks:
-            logger.info("WellQ synthetic extraction task scheduled")
-            background_tasks.add_task(_process_one_synthetic_demo_extraction)
-        else:
-            logger.warning("WellQ synthetic extraction task not scheduled; missing checks=%s",
-                           ",".join(missing_checks))
+    from app.services.demo_ai import schedule_synthetic_demo_extraction
+    schedule_synthetic_demo_extraction(background_tasks, doc)
     return result
 
 # ============ ENDPOINT 4: UPLOAD STATUS ============

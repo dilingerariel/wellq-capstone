@@ -27,7 +27,8 @@ class ProviderMarker(BaseModel):
     marker_code: str
     raw_name: str = Field(min_length=1)
     value_raw: str = Field(min_length=1)
-    unit_raw: str = Field(min_length=1)
+    # Some valid documents omit a unit; empty means "not printed", never infer one.
+    unit_raw: str = Field(default="", max_length=100)
     confidence: ProviderConfidence
     reference: Optional[ReferenceRange] = None
     page: int = Field(ge=1)

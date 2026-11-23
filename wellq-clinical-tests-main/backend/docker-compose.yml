@@ -22,7 +22,32 @@ services:
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     networks: [wellq-network]
+  worker:
+    build: .
+    command: ["python", "-B", "-m", "app.workers.processing"]
+    env_file: .env
+    environment:
+      ENVIRONMENT: production
+      WELLQ_DEBUG: "false"
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: "3310"
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    depends_on:
+      - mongodb
+      - clamav
+    networks: [wellq-network]
+  clamav:
+    image: clamav/clamav:stable
+    restart: unless-stopped
+    volumes:
+      - clamav_signatures:/var/lib/clamav
+    networks: [wellq-network]
 volumes:
   mongodb_data:
+  clamav_signatures:
 networks:
   wellq-network:
