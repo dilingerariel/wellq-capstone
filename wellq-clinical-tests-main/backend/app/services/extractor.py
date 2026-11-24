@@ -130,6 +130,9 @@ class ExtractionEngine:
         provider = self.provider
         if provider is None or not settings.AI_PROVIDER_APPROVED:
             raise ExtractionUnavailable("Approved multimodal provider required")
+        if getattr(provider, "clinical_data_provider", False):
+            if settings.ENVIRONMENT != "production" or not settings.AI_CLINICAL_DATA_APPROVED:
+                raise ExtractionUnavailable("Clinical provider requires production and explicit approval")
         if provider.is_test and settings.ENVIRONMENT != "test":
             raise ExtractionUnavailable("Test provider forbidden outside isolated tests")
         doc = db.clinical_tests.find_one({"clinical_test_id": clinical_test_id, "deleted_at": None})

@@ -37,10 +37,15 @@ class Settings(BaseSettings):
     JOB_MAX_ATTEMPTS: int = 5
     CATALOG_CLINICALLY_APPROVED: bool = False
     AI_PROVIDER_APPROVED: bool = False
-    AI_PROVIDER: Literal["none", "gemini_api"] = "none"
+    AI_PROVIDER: Literal["none", "gemini_api", "vertex_ai"] = "none"
+    # Real clinical documents require a separate, explicit institutional approval.
+    AI_CLINICAL_DATA_APPROVED: bool = False
     GEMINI_API_KEY: Optional[str] = None
     GEMINI_MODEL_ID: str = "gemini-3.8-flash"
     GEMINI_TIMEOUT_SECONDS: int = Field(45, ge=5, le=120)
+    VERTEX_AI_PROJECT_ID: Optional[str] = None
+    VERTEX_AI_LOCATION: Optional[str] = None
+    VERTEX_AI_MODEL_ID: str = "gemini-3.8-flash"
     DEMO_AUTH_ENABLED: bool = Field(False, validation_alias="WELLQ_DEMO_AUTH_ENABLED")
     DEMO_JWT_PRIVATE_KEY: Optional[str] = Field(None, validation_alias="WELLQ_DEMO_JWT_PRIVATE_KEY")
     DEMO_MONGO_STORAGE_ENABLED: bool = Field(False, validation_alias="WELLQ_DEMO_MONGO_STORAGE_ENABLED")
@@ -93,5 +98,17 @@ class Settings(BaseSettings):
                 raise RuntimeError("RSA verification key of at least 2048 bits required")
         if "*" in self.CORS_ORIGINS:
             raise RuntimeError("Wildcard CORS forbidden")
+
+    def validate_clinical_services(self):
+        """Validate dependencies required by production upload/extraction workers."""
+        if self.ENVIRONMENT != "production":
+            return
+        if not self.CLAMAV_HOST:
+            raise RuntimeError("ClamAV scanner is required in production")
+        if self.AI_PROVIDER == "vertex_ai":
+            if not all((self.VERTEX_AI_PROJECT_ID, self.VERTEX_AI_LOCATION, self.VERTEX_AI_MODEL_ID)):
+                raise RuntimeError("Vertex AI project, location, and model must be configured")
+            if not self.AI_PROVIDER_APPROVED or not self.AI_CLINICAL_DATA_APPROVED:
+                raise RuntimeError("Vertex AI clinical processing requires explicit approvals")
 
 settings = Settings()

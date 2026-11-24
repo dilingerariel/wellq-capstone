@@ -13,6 +13,7 @@ from app.models.errors import ErrorResponse
 async def lifespan(app):
     if settings.DEMO_AUTH_ENABLED and settings.ENVIRONMENT != "production":
         demo.prepare_demo_identity()
+    settings.validate_clinical_services()
     connect_to_mongo()
     try:
         yield
@@ -70,6 +71,7 @@ async def health():
 async def ready():
     try:
         settings.validate_identity()
+        settings.validate_clinical_services()
         if mongodb.client is None:
             raise RuntimeError()
         mongodb.client.admin.command("ping")

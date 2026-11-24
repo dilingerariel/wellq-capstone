@@ -17,6 +17,11 @@ services:
     environment:
       ENVIRONMENT: production
       WELLQ_DEBUG: "false"
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: "3310"
+    depends_on:
+      - mongodb
+      - clamav
     read_only: true
     tmpfs: [/tmp]
     security_opt: ["no-new-privileges:true"]

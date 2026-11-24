@@ -64,11 +64,16 @@ def run_once(raw_db, kind="upload", now=None, clinical_test_id=None):
             with db.atomic():
                 if not db.clinical_tests.find_one(fence):
                     return True
+                clinical_ai_enabled = bool(doc.get("ai_consent") and (
+                    settings.ENVIRONMENT != "production" or (
+                        settings.AI_PROVIDER_APPROVED and settings.AI_PROVIDER == "vertex_ai"
+                        and settings.AI_CLINICAL_DATA_APPROVED and settings.VERTEX_AI_PROJECT_ID
+                        and settings.VERTEX_AI_LOCATION and settings.VERTEX_AI_MODEL_ID)))
                 fields = {"file.gcs_object_key": secure_key, "file.generation": secure_generation,
                     "file.verified_at": now, "upload.validated_at": now, "upload.status": "ready_for_review",
                     "upload.processing_status": {"malware_scan": "passed", "mime_validation": "passed"},
-                    field + ".status": "done", "extraction.status": "queued" if doc.get("ai_consent") else "not_applicable"}
-                if doc.get("ai_consent"):
+                    field + ".status": "done", "extraction.status": "queued" if clinical_ai_enabled else "not_applicable"}
+                if clinical_ai_enabled:
                     fields["extraction_job"] = {"status": "pending", "attempts": 0, "available_at": now}
                 db.clinical_tests.update_one(fence, {"$set": fields})
                 audit(db, "upload_verified", "clinical_test", doc["clinical_test_id"])
@@ -136,6 +141,7 @@ def run_once(raw_db, kind="upload", now=None, clinical_test_id=None):
     return True
 
 def main():
+    settings.validate_clinical_services()
     connect_to_mongo()
     try:
         while True:

@@ -558,6 +558,7 @@ _REPROCESSABLE_STATES = (
     ExtractionStatus.EXTRACTION_FAILED.value,
     ExtractionStatus.UNREADABLE.value,
     ExtractionStatus.DISCARDED.value,
+    ExtractionStatus.NOT_APPLICABLE.value,
 )
 
 
@@ -618,6 +619,8 @@ async def reprocess_extraction(
     if (old_ext is None and ext_info.get("status") == "extraction_failed"
             and (doc.get("extraction_job") or {}).get("error_code") == "INVALID_CLINICAL_DATE"):
         current_status = "extraction_failed"
+    elif old_ext is None and ext_info.get("status") in _REPROCESSABLE_STATES:
+        current_status = ext_info["status"]
     if current_status == ExtractionStatus.CONFIRMED.value:
         if not body.confirm_reprocess_confirmed:
             raise HTTPException(
@@ -633,6 +636,19 @@ async def reprocess_extraction(
                     "message": f"No se puede reprocesar desde el estado '{current_status}'. Permitido desde: "
                                f"extraction_failed, unreadable, discarded y, con confirmación explícita, confirmed"}
         )
+
+    if current_status == ExtractionStatus.NOT_APPLICABLE.value:
+        processing = (doc.get("upload") or {}).get("processing_status") or {}
+        if (not doc.get("ai_consent") or not doc.get("file", {}).get("verified_at")
+                or (doc.get("upload") or {}).get("status") != "ready_for_review"
+                or processing.get("malware_scan") != "passed"):
+            raise HTTPException(409, detail={"code": "REPROCESS_NOT_ALLOWED",
+                "message": "El documento necesita consentimiento vigente, verificación y escaneo antivirus aprobado"})
+        if (settings.ENVIRONMENT != "production" or settings.AI_PROVIDER != "vertex_ai"
+                or not settings.AI_PROVIDER_APPROVED or not settings.AI_CLINICAL_DATA_APPROVED
+                or not settings.VERTEX_AI_PROJECT_ID or not settings.VERTEX_AI_LOCATION):
+            raise HTTPException(503, detail={"code": "AI_CONFIGURATION_MISSING",
+                "message": "La extracción clínica no está habilitada para este entorno"})
 
     reprocess_count = int(ext_info.get("reprocess_count", 0))
     if reprocess_count >= MAX_REPROCESSES_PER_EXAM:
