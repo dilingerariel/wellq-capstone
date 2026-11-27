@@ -72,3 +72,11 @@ The repository contains the gated Vertex adapter and ClamAV-before-promotion
 worker flow. No GCP project is currently configured, so ADC, model access, and
 real-document inference have not been exercised. Keep both approval flags off
 until infrastructure and institutional review are complete.
+
+ClamAV integration was checked on 2026-11-27 in an isolated Docker test stack.
+The real daemon and backend worker suite passed 6/6 checks: clean-file
+promotion, EICAR rejection, unavailable-scanner fail-closed behavior, and
+worker state handling. The object-storage adapter was a synthetic filesystem
+test double, and no patient documents were used. This does not verify the
+public Vercel deployment; evidence and scope are recorded in
+`reports/clamav-eicar-local-2026-11-27.md` and its pytest XML.
